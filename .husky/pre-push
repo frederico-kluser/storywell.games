@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+if [ -z "$SKIP_VERSION_BUMP" ]; then
+	printf '🔢 Auto incrementing patch version before push...\n'
+	npm version patch --no-git-tag-version >/dev/null 2>&1 || {
+		printf '❌ Failed to bump patch version. Aborting push.\n'
+		exit 1
+	}
+	NEW_VERSION=$(node -pe "require('./package.json').version")
+	printf '✅ Version bumped to %s (remember to commit the change).\n' "$NEW_VERSION"
+else
+	printf '⚠️  SKIP_VERSION_BUMP is set. Skipping automatic version bump.\n'
+fi
+
+printf '🧪 Running full test suite before push...\n'
+
+npm run test

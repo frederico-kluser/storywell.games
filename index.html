@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>storywell.games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <style>
+      /* CSS Custom Properties for Dynamic Theming */
+      :root {
+        --theme-bg: #f5f5f4;
+        --theme-bg-secondary: #ffffff;
+        --theme-bg-accent: #e7e5e4;
+        --theme-text: #1c1917;
+        --theme-text-secondary: #78716c;
+        --theme-text-accent: #44403c;
+        --theme-border: #d6d3d1;
+        --theme-border-strong: #1c1917;
+        --theme-btn-primary: #1c1917;
+        --theme-btn-primary-text: #ffffff;
+        --theme-btn-secondary: #e7e5e4;
+        --theme-btn-secondary-text: #1c1917;
+        --theme-success: #166534;
+        --theme-warning: #d97706;
+        --theme-danger: #dc2626;
+        --theme-shadow: #1c1917;
+      }
+
+      body {
+        font-family: 'VT323', monospace;
+        background-color: var(--theme-bg);
+        color: var(--theme-text);
+        font-size: 20px; /* Slightly larger for readability */
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+      }
+      .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+      }
+
+      /* Retro Paper Input - Now uses CSS variables */
+      .retro-input {
+        background-color: var(--theme-bg-secondary);
+        border: 2px solid var(--theme-border-strong);
+        color: var(--theme-text);
+        font-family: 'VT323', monospace;
+        box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      }
+      .retro-input:focus {
+        border-color: var(--theme-border-strong);
+        outline: none;
+        box-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+      }
+
+      /* Retro Button - Now uses CSS variables */
+      .retro-btn {
+        border: 2px solid var(--theme-border-strong);
+        background-color: var(--theme-btn-secondary);
+        color: var(--theme-btn-secondary-text);
+        box-shadow: 4px 4px 0px var(--theme-shadow);
+        transition: all 0.1s, background-color 0.3s ease, border-color 0.3s ease;
+      }
+      .retro-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 2px 2px 0px var(--theme-shadow);
+      }
+      .retro-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: translate(2px, 2px);
+      }
+
+      /* Primary Button Variant */
+      .retro-btn-primary {
+        background-color: var(--theme-btn-primary);
+        color: var(--theme-btn-primary-text);
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+      }
+
+      /* Card Slide Animations */
+      @keyframes slideLeft {
+        0% { transform: translateX(0); opacity: 1; }
+        50% { transform: translateX(-30px); opacity: 0.5; }
+        100% { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideRight {
+        0% { transform: translateX(0); opacity: 1; }
+        50% { transform: translateX(30px); opacity: 0.5; }
+        100% { transform: translateX(0); opacity: 1; }
+      }
+      .animate-slide-left {
+        animation: slideLeft 0.3s ease-out;
+      }
+      .animate-slide-right {
+        animation: slideRight 0.3s ease-out;
+      }
+
+      /* Page Turn Effect (3D) */
+      @keyframes pageTurnLeft {
+        0% { transform: perspective(1000px) rotateY(0deg); transform-origin: left center; }
+        50% { transform: perspective(1000px) rotateY(-10deg); transform-origin: left center; }
+        100% { transform: perspective(1000px) rotateY(0deg); transform-origin: left center; }
+      }
+      @keyframes pageTurnRight {
+        0% { transform: perspective(1000px) rotateY(0deg); transform-origin: right center; }
+        50% { transform: perspective(1000px) rotateY(10deg); transform-origin: right center; }
+        100% { transform: perspective(1000px) rotateY(0deg); transform-origin: right center; }
+      }
+      .animate-page-turn-left {
+        animation: pageTurnLeft 0.4s ease-out;
+      }
+      .animate-page-turn-right {
+        animation: pageTurnRight 0.4s ease-out;
+      }
+
+      /* Book Page Texture */
+      .book-page-texture {
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 30px,
+            rgba(0,0,0,0.02) 30px,
+            rgba(0,0,0,0.02) 31px
+          );
+      }
+
+      /* Prevent text selection during swipe */
+      .no-select {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      /* Theme-aware utility classes */
+      .theme-bg { background-color: var(--theme-bg); }
+      .theme-bg-secondary { background-color: var(--theme-bg-secondary); }
+      .theme-bg-accent { background-color: var(--theme-bg-accent); }
+      .theme-text { color: var(--theme-text); }
+      .theme-text-secondary { color: var(--theme-text-secondary); }
+      .theme-border { border-color: var(--theme-border); }
+      .theme-border-strong { border-color: var(--theme-border-strong); }
+
+      /* Shimmer Animation for Progress Bars */
+      @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      .animate-shimmer {
+        animation: shimmer 1.5s infinite;
+      }
+
+      /* Slide Up Animation */
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-slide-up {
+        animation: slideUp 0.3s ease-out forwards;
+      }
+
+      /* Scale In Animation */
+      @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .animate-scale-in {
+        animation: scaleIn 0.3s ease-out forwards;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

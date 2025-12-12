@@ -1,0 +1,7 @@
+{
+  "name": "storywell.games",
+  "description": "An infinite, single-player text RPG where AI manages a persistent world state, relationships, and narrative via a group chat interface.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
