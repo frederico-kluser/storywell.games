@@ -83,7 +83,7 @@ export const ChatBubbleView: React.FC<ChatBubbleProps> = ({
 		setIsTyping(true);
 
 		const interval = setInterval(() => {
-			// Speed: 10ms for fast reading (approx 100 chars/sec)
+			// Speed: 20ms for comfortable reading (approx 50 chars/sec)
 			setDisplayedText((prev) => {
 				if (prev.length < fullText.length) {
 					return prev + fullText.charAt(prev.length);
@@ -98,7 +98,7 @@ export const ChatBubbleView: React.FC<ChatBubbleProps> = ({
 					return prev;
 				}
 			});
-		}, 10);
+		}, 20);
 
 		return () => clearInterval(interval);
 	}, [message.text, message.id, skipAnimation]);

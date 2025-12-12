@@ -199,6 +199,10 @@ export interface GameState {
   // Theme Colors - AI-generated color palette based on universe context
   // Falls back to DEFAULT_THEME_COLORS when not set
   themeColors?: ThemeColors;
+
+  // Viewed Cards - Track message IDs that have been displayed with typewriter effect
+  // Cards in this list will show text instantly without animation on subsequent views
+  viewedCards?: string[];
 }
 
 /**

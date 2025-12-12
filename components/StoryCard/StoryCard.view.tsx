@@ -113,7 +113,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 					return prev;
 				}
 			});
-		}, 10);
+		}, 20);
 
 		return () => clearInterval(interval);
 	}, [message.text, message.id, skipAnimation, isActive]);

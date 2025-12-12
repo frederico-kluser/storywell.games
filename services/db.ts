@@ -346,11 +346,17 @@ export const dbService = {
       updatedLocations[key] = { ...loc, gameId: newId };
     });
 
-    const updatedMessages = game.messages.map((msg, idx) => ({
-      ...msg,
-      id: `msg_${newId}_${idx}`,
-      gameId: newId
-    }));
+    // Create a mapping from old message IDs to new IDs for viewedCards remapping
+    const messageIdMap: Record<string, string> = {};
+    const updatedMessages = game.messages.map((msg, idx) => {
+      const newMsgId = `msg_${newId}_${idx}`;
+      messageIdMap[msg.id] = newMsgId;
+      return {
+        ...msg,
+        id: newMsgId,
+        gameId: newId
+      };
+    });
 
     const updatedEvents = (game.events || []).map((evt, idx) => ({
       ...evt,
@@ -364,6 +370,11 @@ export const dbService = {
       senderId: msg.senderId === game.playerCharacterId ? newPlayerCharacterId : msg.senderId
     }));
 
+    // Remap viewedCards to new message IDs
+    const updatedViewedCards = (game.viewedCards || [])
+      .map(oldId => messageIdMap[oldId])
+      .filter((newId): newId is string => newId !== undefined);
+
     const importedGame: GameState = {
       ...game,
       id: newId,
@@ -372,6 +383,7 @@ export const dbService = {
       locations: updatedLocations,
       messages: finalMessages,
       events: updatedEvents,
+      viewedCards: updatedViewedCards,
       lastPlayed: Date.now()
     };
 

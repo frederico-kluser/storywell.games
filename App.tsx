@@ -134,6 +134,7 @@ const App: React.FC = () => {
 		backgroundLocationName,
 		creationPhase,
 		processingPhase,
+		markCardAsViewed,
 	} = useGameEngine();
 
 	const { colors } = useThemeColors();
@@ -631,7 +632,9 @@ const App: React.FC = () => {
 										? msg.pageNumber - 1
 										: Math.max(0, visibleMessages.indexOf(msg));
 								const isActiveCard = pageIndex === currentCardIndex;
-								const shouldSkipAnimation = !isActiveCard;
+								// Skip animation if card is not active OR if it was previously viewed
+								const wasViewed = activeStory.viewedCards?.includes(msg.id) ?? false;
+								const shouldSkipAnimation = !isActiveCard || wasViewed;
 
 									let senderName = '';
 									if (sender) {
@@ -664,6 +667,12 @@ const App: React.FC = () => {
 												locationBackgroundImage={activeStory.locations[activeStory.currentLocationId]?.backgroundImage}
 												apiKey={apiKey}
 												skipAnimation={shouldSkipAnimation}
+												onTypingComplete={() => {
+													// Mark card as viewed when typewriter animation completes
+													if (!wasViewed) {
+														markCardAsViewed(msg.id);
+													}
+												}}
 												selectedVoice={selectedVoice}
 												useTone={useTone}
 												colors={colors}

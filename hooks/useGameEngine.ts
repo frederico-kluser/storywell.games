@@ -90,6 +90,9 @@ interface UseGameEngineReturn {
 
   // Processing Progress
   processingPhase: ProcessingPhase;
+
+  // Viewed Cards - Track which cards have been displayed with typewriter
+  markCardAsViewed: (messageId: string) => void;
 }
 
 const stripDiacritics = (value: string) =>
@@ -1061,6 +1064,25 @@ export const useGameEngine = (): UseGameEngineReturn => {
   const activeStory = stories.find(s => s.id === currentStoryId);
   const player = activeStory ? activeStory.characters[activeStory.playerCharacterId] : null;
 
+  /**
+   * Marks a card as viewed so it won't show the typewriter effect again.
+   * @param messageId - The ID of the message that was displayed with typewriter
+   */
+  const markCardAsViewed = (messageId: string) => {
+    if (!currentStoryId) return;
+
+    safeUpdateStory(prev => {
+      const viewedCards = prev.viewedCards || [];
+      // Only add if not already viewed
+      if (viewedCards.includes(messageId)) return prev;
+
+      return {
+        ...prev,
+        viewedCards: [...viewedCards, messageId]
+      };
+    });
+  };
+
   return {
     apiKey, setApiKey, stories, currentStoryId, setCurrentStoryId,
     language, setLanguage: handleLanguageChange, inputValue, setInputValue,
@@ -1082,6 +1104,8 @@ export const useGameEngine = (): UseGameEngineReturn => {
     // Creation Progress
     creationPhase,
     // Processing Progress
-    processingPhase
+    processingPhase,
+    // Viewed Cards
+    markCardAsViewed
   };
 };
