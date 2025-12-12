@@ -29,6 +29,10 @@ interface GridMapProps {
   onToggleFlip: () => void;
   /** Current location name for display */
   locationName?: string;
+  /** Location background image for the map */
+  locationBackgroundImage?: string;
+  /** Map of characterId to avatarBase64 for current avatars (fallback for snapshot data) */
+  characterAvatars?: Record<string, string | undefined>;
   /** Translation strings */
   t: Record<string, string>;
 }
@@ -210,6 +214,8 @@ export const GridMap: React.FC<GridMapProps> = ({
   isFlipped,
   onToggleFlip,
   locationName,
+  locationBackgroundImage,
+  characterAvatars,
   t,
 }) => {
   // Get the appropriate grid snapshot for the current message
@@ -229,8 +235,18 @@ export const GridMap: React.FC<GridMapProps> = ({
     return cells;
   }, []);
 
-  // Characters from current grid snapshot
-  const characters = currentGrid?.characterPositions || [];
+  // Characters from current grid snapshot with avatar fallback
+  const characters = useMemo(() => {
+    const positions = currentGrid?.characterPositions || [];
+    // Use current avatars as fallback if snapshot doesn't have them
+    if (characterAvatars) {
+      return positions.map((char) => ({
+        ...char,
+        avatarBase64: char.avatarBase64 || characterAvatars[char.characterId],
+      }));
+    }
+    return positions;
+  }, [currentGrid, characterAvatars]);
 
   return (
     <div
@@ -330,8 +346,22 @@ export const GridMap: React.FC<GridMapProps> = ({
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
+              position: 'relative',
+              backgroundImage: locationBackgroundImage ? `url(${locationBackgroundImage})` : undefined,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
             }}
           >
+            {/* Background overlay for better grid visibility */}
+            {locationBackgroundImage && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundColor: `${colors.background}CC`,
+                }}
+              />
+            )}
             {currentGrid ? (
               <div
                 style={{
@@ -346,6 +376,8 @@ export const GridMap: React.FC<GridMapProps> = ({
                   border: `2px solid ${colors.borderStrong}`,
                   borderRadius: '4px',
                   overflow: 'hidden',
+                  position: 'relative',
+                  zIndex: 1,
                 }}
               >
                 {gridCells.map(({ x, y }) => (
