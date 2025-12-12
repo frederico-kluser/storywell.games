@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { supportedLanguages } from './i18n/locales';
 import { StoryCreator } from './components/StoryCreator';
 import { StoryCard } from './components/StoryCard';
@@ -154,6 +154,14 @@ const App: React.FC = () => {
 	const { visibleMessages } = useMessageQueue(activeStory?.messages || []);
 	const totalCards = visibleMessages.length;
 
+	// State for pulse animation on Next button (shows when new content is available)
+	const [showNextPulse, setShowNextPulse] = useState(false);
+
+	// Callback to stop pulse animation when user navigates
+	const handleNavigate = useCallback(() => {
+		setShowNextPulse(false);
+	}, []);
+
 	// Card navigation for keyboard and swipe
 	const {
 		currentIndex: currentCardIndex,
@@ -165,9 +173,11 @@ const App: React.FC = () => {
 		canGoPrevious,
 		touchHandlers,
 		swipeDirection,
+		isMobile,
 	} = useCardNavigation({
 		totalCards,
 		enabled: !!currentStoryId && !!activeStory,
+		onNavigate: handleNavigate,
 	});
 
 	const pendingCardIndexRef = useRef<number | null>(null);
@@ -231,12 +241,14 @@ const App: React.FC = () => {
 				const remainingNewCards = totalCards - 1 - (currentCardIndex + 1);
 				if (remainingNewCards > 0) {
 					setNewCardsCount(remainingNewCards);
+					setShowNextPulse(true); // Show pulse animation when new content is available
 				}
 			} else if (previousLength > 0) {
 				// AI responses arrived - don't auto-advance, just update the count
 				const cardsAhead = totalCards - 1 - currentCardIndex;
 				if (cardsAhead > 0) {
 					setNewCardsCount(cardsAhead);
+					setShowNextPulse(true); // Show pulse animation when new content is available
 				}
 			} else {
 				// First load - go to last card
@@ -248,12 +260,17 @@ const App: React.FC = () => {
 
 	const isOnLastCard = totalCards === 0 || currentCardIndex >= totalCards - 1;
 
-	// Reset new cards count when user reaches the last card
+	// Reset new cards count and pulse animation when user reaches the last card
 	useEffect(() => {
-		if (isOnLastCard && newCardsCount > 0) {
-			setNewCardsCount(0);
+		if (isOnLastCard) {
+			if (newCardsCount > 0) {
+				setNewCardsCount(0);
+			}
+			if (showNextPulse) {
+				setShowNextPulse(false);
+			}
 		}
-	}, [isOnLastCard, newCardsCount]);
+	}, [isOnLastCard, newCardsCount, showNextPulse]);
 
 	// Wrapper for handleSendMessage to track user-initiated messages
 	const handleSendMessageWithTracking = async (message: string) => {
@@ -658,6 +675,8 @@ const App: React.FC = () => {
 												isActive={isActiveCard}
 												t={t}
 												language={storyLanguage}
+												showNextPulse={showNextPulse}
+												isMobile={isMobile}
 											/>
 										</div>
 									);
@@ -684,6 +703,7 @@ const App: React.FC = () => {
 									onClick={() => {
 										goToLast();
 										setNewCardsCount(0);
+										setShowNextPulse(false);
 									}}
 									className="absolute bottom-4 right-4 z-30 flex items-center gap-2 px-4 py-3 font-bold uppercase tracking-wider text-sm transition-all hover:scale-105 active:scale-95 animate-pulse border-2"
 									style={{

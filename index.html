@@ -184,6 +184,21 @@
       .animate-scale-in {
         animation: scaleIn 0.3s ease-out forwards;
       }
+
+      /* Pulse Glow Animation for Next Button (new content available) */
+      @keyframes pulseGlow {
+        0%, 100% {
+          transform: scale(1);
+          box-shadow: 0 0 0 0 var(--theme-btn-primary);
+        }
+        50% {
+          transform: scale(1.05);
+          box-shadow: 0 0 20px 4px var(--theme-btn-primary);
+        }
+      }
+      .animate-pulse-glow {
+        animation: pulseGlow 1.5s ease-in-out infinite;
+      }
     </style>
   </head>
   <body>

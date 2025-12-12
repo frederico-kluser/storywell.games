@@ -26,6 +26,8 @@ export interface StoryCardProps {
 	isActive: boolean;
 	t: Record<string, string>;
 	language: Language;
+	showNextPulse?: boolean; // Show pulse animation on Next button when new content is available
+	isMobile?: boolean; // Whether device is mobile (show swipe hint) or desktop (show arrow keys hint)
 }
 
 /**
@@ -54,6 +56,8 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 	isActive,
 	t,
 	language = 'en',
+	showNextPulse = false,
+	isMobile = false,
 }) => {
 	const isNarrator = message.senderId === 'GM' && message.type === MessageType.NARRATION;
 	const isSystem = message.type === MessageType.SYSTEM || message.senderId === 'SYSTEM';
@@ -375,7 +379,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 							Page {(message.pageNumber ?? currentIndex + 1)} of {totalCards}
 						</div>
 						<div className="text-xs font-mono hidden md:block" style={{ color: colors.textSecondary }}>
-							Use arrow keys or swipe to navigate
+							{isMobile ? t.swipeToNavigate || 'Swipe to navigate' : t.arrowKeysToNavigate || 'Use arrow keys to navigate'}
 						</div>
 					</div>
 				</div>
@@ -398,37 +402,41 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 					<span className="hidden md:inline">{t.back || 'Previous'}</span>
 				</button>
 
-				{/* Page Indicators (dots) */}
-				<div className="flex items-center gap-1.5 max-w-[200px] overflow-hidden">
-					{Array.from({ length: Math.min(totalCards, 7) }).map((_, i) => {
-						// Show dots around current index
-						let dotIndex = i;
-						if (totalCards > 7) {
-							const start = Math.max(0, Math.min(currentIndex - 3, totalCards - 7));
-							dotIndex = start + i;
-						}
-
-						return (
-							<div
-								key={dotIndex}
-								className="w-2 h-2 rounded-full transition-all"
-								style={{
-									backgroundColor: dotIndex === currentIndex ? colors.buttonPrimary : colors.border,
-									transform: dotIndex === currentIndex ? 'scale(1.3)' : 'scale(1)',
-								}}
-							/>
-						);
-					})}
+				{/* Position Indicator - Progress Bar Style (non-dotted) */}
+				<div className="flex items-center gap-2 min-w-[120px] md:min-w-[180px]">
+					{/* Progress Bar Container */}
+					<div
+						className="flex-1 h-2 rounded-full overflow-hidden relative"
+						style={{ backgroundColor: colors.border }}
+					>
+						{/* Progress Fill */}
+						<div
+							className="h-full rounded-full transition-all duration-300 ease-out"
+							style={{
+								backgroundColor: colors.buttonPrimary,
+								width: totalCards > 1 ? `${((currentIndex + 1) / totalCards) * 100}%` : '100%',
+							}}
+						/>
+					</div>
+					{/* Numeric Indicator */}
+					<span
+						className="text-xs font-mono font-bold whitespace-nowrap"
+						style={{ color: colors.textSecondary }}
+					>
+						{currentIndex + 1}/{totalCards}
+					</span>
 				</div>
 
 				<button
 					onClick={onNext}
 					disabled={!canGoNext}
-					className="flex items-center gap-2 px-4 py-3 md:px-6 md:py-3 font-bold uppercase text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100"
+					className={`flex items-center gap-2 px-4 py-3 md:px-6 md:py-3 font-bold uppercase text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 ${
+						showNextPulse && canGoNext ? 'animate-pulse-glow' : ''
+					}`}
 					style={{
-						backgroundColor: colors.buttonSecondary,
-						color: colors.buttonSecondaryText,
-						border: `2px solid ${colors.border}`,
+						backgroundColor: showNextPulse && canGoNext ? colors.buttonPrimary : colors.buttonSecondary,
+						color: showNextPulse && canGoNext ? colors.buttonPrimaryText : colors.buttonSecondaryText,
+						border: `2px solid ${showNextPulse && canGoNext ? colors.buttonPrimary : colors.border}`,
 						boxShadow: canGoNext ? `4px 4px 0px ${colors.shadow}` : 'none',
 					}}
 				>

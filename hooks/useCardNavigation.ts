@@ -4,6 +4,7 @@ interface UseCardNavigationProps {
 	totalCards: number;
 	enabled?: boolean;
 	onIndexChange?: (index: number) => void;
+	onNavigate?: () => void; // Callback when any navigation action occurs
 }
 
 interface UseCardNavigationReturn {
@@ -15,7 +16,7 @@ interface UseCardNavigationReturn {
 	goToLast: () => void;
 	canGoNext: boolean;
 	canGoPrevious: boolean;
-	// Touch/Swipe handlers
+	// Touch/Swipe handlers (touch only for mobile, mouse handlers are no-op on desktop)
 	touchHandlers: {
 		onTouchStart: (e: React.TouchEvent) => void;
 		onTouchMove: (e: React.TouchEvent) => void;
@@ -27,7 +28,20 @@ interface UseCardNavigationReturn {
 	};
 	swipeDirection: 'left' | 'right' | null;
 	swipeProgress: number; // 0 to 1, for animation purposes
+	isMobile: boolean; // Whether the device is mobile (swipe enabled)
 }
+
+// Detect if device is mobile/touch device
+const isMobileDevice = (): boolean => {
+	if (typeof window === 'undefined') return false;
+	return (
+		'ontouchstart' in window ||
+		navigator.maxTouchPoints > 0 ||
+		// @ts-expect-error - msMaxTouchPoints exists on older IE
+		navigator.msMaxTouchPoints > 0 ||
+		/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+	);
+};
 
 const SWIPE_THRESHOLD = 50; // Minimum distance to trigger swipe
 const SWIPE_VELOCITY_THRESHOLD = 0.3; // Minimum velocity to trigger swipe
@@ -40,14 +54,21 @@ export const useCardNavigation = ({
 	totalCards,
 	enabled = true,
 	onIndexChange,
+	onNavigate,
 }: UseCardNavigationProps): UseCardNavigationReturn => {
 	const [currentIndex, setCurrentIndexState] = useState(0);
 	const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
 	const [swipeProgress, setSwipeProgress] = useState(0);
+	const [isMobile, setIsMobile] = useState(false);
 
 	// Touch/Mouse tracking refs
 	const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
 	const isDraggingRef = useRef(false);
+
+	// Detect mobile device on mount
+	useEffect(() => {
+		setIsMobile(isMobileDevice());
+	}, []);
 
 	// Keep index within bounds when totalCards changes
 	useEffect(() => {
@@ -98,31 +119,35 @@ export const useCardNavigation = ({
 			const newIndex = currentIndex + 1;
 			setCurrentIndexState(newIndex);
 			onIndexChange?.(newIndex);
+			onNavigate?.(); // Notify navigation occurred
 			setSwipeDirection('left');
 			setTimeout(() => setSwipeDirection(null), 300);
 		}
-	}, [currentIndex, canGoNext, onIndexChange]);
+	}, [currentIndex, canGoNext, onIndexChange, onNavigate]);
 
 	const goToPrevious = useCallback(() => {
 		if (canGoPrevious) {
 			const newIndex = currentIndex - 1;
 			setCurrentIndexState(newIndex);
 			onIndexChange?.(newIndex);
+			onNavigate?.(); // Notify navigation occurred
 			setSwipeDirection('right');
 			setTimeout(() => setSwipeDirection(null), 300);
 		}
-	}, [currentIndex, canGoPrevious, onIndexChange]);
+	}, [currentIndex, canGoPrevious, onIndexChange, onNavigate]);
 
 	const goToFirst = useCallback(() => {
 		setCurrentIndexState(0);
 		onIndexChange?.(0);
-	}, [onIndexChange]);
+		onNavigate?.(); // Notify navigation occurred
+	}, [onIndexChange, onNavigate]);
 
 	const goToLast = useCallback(() => {
 		const lastIndex = Math.max(0, totalCards - 1);
 		setCurrentIndexState(lastIndex);
 		onIndexChange?.(lastIndex);
-	}, [totalCards, onIndexChange]);
+		onNavigate?.(); // Notify navigation occurred
+	}, [totalCards, onIndexChange, onNavigate]);
 
 	// Keyboard navigation
 	useEffect(() => {
@@ -215,10 +240,13 @@ export const useCardNavigation = ({
 		setTimeout(() => setSwipeDirection(null), 300);
 	}, [enabled, swipeProgress, swipeDirection, goToNext, goToPrevious]);
 
-	// Mouse drag handlers (for desktop swipe)
+	// Mouse drag handlers - DISABLED on desktop to prevent swipe
+	// On desktop, users should use arrow keys or navigation buttons
+	// These handlers are kept as no-ops for the interface compatibility
 	const handleMouseDown = useCallback(
 		(e: React.MouseEvent) => {
-			if (!enabled) return;
+			// Only enable mouse swipe on mobile devices (for hybrid devices with touch+mouse)
+			if (!enabled || !isMobile) return;
 			isDraggingRef.current = true;
 			touchStartRef.current = {
 				x: e.clientX,
@@ -227,12 +255,13 @@ export const useCardNavigation = ({
 			};
 			setSwipeProgress(0);
 		},
-		[enabled],
+		[enabled, isMobile],
 	);
 
 	const handleMouseMove = useCallback(
 		(e: React.MouseEvent) => {
-			if (!enabled || !isDraggingRef.current || !touchStartRef.current) return;
+			// Only enable mouse swipe on mobile devices
+			if (!enabled || !isMobile || !isDraggingRef.current || !touchStartRef.current) return;
 
 			const deltaX = e.clientX - touchStartRef.current.x;
 			const deltaY = e.clientY - touchStartRef.current.y;
@@ -249,11 +278,12 @@ export const useCardNavigation = ({
 				}
 			}
 		},
-		[enabled, canGoNext, canGoPrevious],
+		[enabled, isMobile, canGoNext, canGoPrevious],
 	);
 
 	const handleMouseUp = useCallback(() => {
-		if (!enabled || !isDraggingRef.current) return;
+		// Only enable mouse swipe on mobile devices
+		if (!enabled || !isMobile || !isDraggingRef.current) return;
 
 		// Check if swipe was completed
 		if (swipeProgress >= 0.5) {
@@ -269,13 +299,13 @@ export const useCardNavigation = ({
 		touchStartRef.current = null;
 		setSwipeProgress(0);
 		setTimeout(() => setSwipeDirection(null), 300);
-	}, [enabled, swipeProgress, swipeDirection, goToNext, goToPrevious]);
+	}, [enabled, isMobile, swipeProgress, swipeDirection, goToNext, goToPrevious]);
 
 	const handleMouseLeave = useCallback(() => {
-		if (isDraggingRef.current) {
+		if (isDraggingRef.current && isMobile) {
 			handleMouseUp();
 		}
-	}, [handleMouseUp]);
+	}, [handleMouseUp, isMobile]);
 
 	return {
 		currentIndex,
@@ -297,5 +327,6 @@ export const useCardNavigation = ({
 		},
 		swipeDirection,
 		swipeProgress,
+		isMobile,
 	};
 };
