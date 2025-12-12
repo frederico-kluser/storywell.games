@@ -203,6 +203,10 @@ export interface GameState {
   // Viewed Cards - Track message IDs that have been displayed with typewriter effect
   // Cards in this list will show text instantly without animation on subsequent views
   viewedCards?: string[];
+
+  // Grid Map Snapshots - Historical grid positions associated with message numbers
+  // Each snapshot captures character positions at a specific point in the story
+  gridSnapshots?: GridSnapshot[];
 }
 
 /**
@@ -445,3 +449,73 @@ export const DEFAULT_THEME_COLORS: ThemeColors = {
  * Default font family (VT323 - retro terminal style)
  */
 export const DEFAULT_FONT_FAMILY = 'VT323';
+
+// ============================================================================
+// GRID MAP SYSTEM
+// ============================================================================
+
+/**
+ * Represents a position on the 10x10 grid map.
+ * Coordinates range from 0-9 for both x and y.
+ */
+export interface GridPosition {
+  /** X coordinate (0-9, left to right) */
+  x: number;
+  /** Y coordinate (0-9, top to bottom) */
+  y: number;
+}
+
+/**
+ * Represents a character's position on the grid.
+ */
+export interface GridCharacterPosition {
+  /** Character ID */
+  characterId: string;
+  /** Character name for display */
+  characterName: string;
+  /** Grid position */
+  position: GridPosition;
+  /** Whether this is the player character */
+  isPlayer: boolean;
+  /** Avatar base64 for display on map */
+  avatarBase64?: string;
+}
+
+/**
+ * A snapshot of the grid state at a specific point in the story.
+ * Each snapshot is associated with a message/card number.
+ */
+export interface GridSnapshot {
+  /** Unique ID for this snapshot */
+  id: string;
+  /** Game ID this snapshot belongs to */
+  gameId: string;
+  /** The message pageNumber when this grid state was captured */
+  atMessageNumber: number;
+  /** Timestamp when this snapshot was created */
+  timestamp: number;
+  /** Location ID this grid represents */
+  locationId: string;
+  /** Location name for display */
+  locationName: string;
+  /** Array of character positions on the grid */
+  characterPositions: GridCharacterPosition[];
+}
+
+/**
+ * Response from the grid update prompt.
+ */
+export interface GridUpdateResponse {
+  /** Whether the grid should be updated */
+  shouldUpdate: boolean;
+  /** Array of character positions if update is needed */
+  characterPositions?: {
+    characterId: string;
+    characterName: string;
+    x: number;
+    y: number;
+    isPlayer: boolean;
+  }[];
+  /** Brief explanation of why positions changed */
+  reasoning?: string;
+}

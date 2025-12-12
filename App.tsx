@@ -687,6 +687,11 @@ const App: React.FC = () => {
 												language={storyLanguage}
 												showNextPulse={showNextPulse}
 												isMobile={isMobile}
+												gridSnapshots={activeStory.gridSnapshots}
+												currentLocationName={activeStory.locations[activeStory.currentLocationId]?.name}
+												characterAvatars={Object.fromEntries(
+													Object.entries(activeStory.characters).map(([id, char]) => [id, char.avatarBase64])
+												)}
 											/>
 										</div>
 									);

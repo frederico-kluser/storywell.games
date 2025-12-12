@@ -213,6 +213,12 @@ export const translations: Record<Language, Translations> = {
 		landingViewProject: 'View on GitHub',
 		landingLicense: 'Licensed under CC BY-NC 4.0',
 		landingLicenseDesc: 'Free to use and modify for non-commercial purposes',
+		// Grid Map
+		mapTitle: 'Map',
+		backToCard: 'Back',
+		noMapData: 'No map data available',
+		viewMap: 'View Map',
+		map: 'Map',
 	},
 	pt: {
 		appTitle: 'storywell.games',
@@ -372,6 +378,12 @@ export const translations: Record<Language, Translations> = {
 		landingViewProject: 'Ver no GitHub',
 		landingLicense: 'Licenciado sob CC BY-NC 4.0',
 		landingLicenseDesc: 'Livre para usar e modificar para fins não comerciais',
+		// Grid Map
+		mapTitle: 'Mapa',
+		backToCard: 'Voltar',
+		noMapData: 'Nenhum dado de mapa disponível',
+		viewMap: 'Ver Mapa',
+		map: 'Mapa',
 	},
 	es: {
 		appTitle: 'storywell.games',
@@ -532,6 +544,12 @@ export const translations: Record<Language, Translations> = {
 		landingViewProject: 'Ver en GitHub',
 		landingLicense: 'Licenciado bajo CC BY-NC 4.0',
 		landingLicenseDesc: 'Libre para usar y modificar con fines no comerciales',
+		// Grid Map
+		mapTitle: 'Mapa',
+		backToCard: 'Volver',
+		noMapData: 'No hay datos de mapa disponibles',
+		viewMap: 'Ver Mapa',
+		map: 'Mapa',
 	},
 	fr: {
 		appTitle: 'storywell.games',
@@ -695,6 +713,12 @@ export const translations: Record<Language, Translations> = {
 		landingViewProject: 'Voir sur GitHub',
 		landingLicense: 'Sous licence CC BY-NC 4.0',
 		landingLicenseDesc: "Libre d'utilisation et de modification à des fins non commerciales",
+		// Grid Map
+		mapTitle: 'Carte',
+		backToCard: 'Retour',
+		noMapData: 'Aucune donnée de carte disponible',
+		viewMap: 'Voir la Carte',
+		map: 'Carte',
 	},
 	ru: {
 		appTitle: 'storywell.games',
@@ -857,6 +881,12 @@ export const translations: Record<Language, Translations> = {
 		landingViewProject: 'Смотреть на GitHub',
 		landingLicense: 'Лицензия CC BY-NC 4.0',
 		landingLicenseDesc: 'Свободно для использования и модификации в некоммерческих целях',
+		// Grid Map
+		mapTitle: 'Карта',
+		backToCard: 'Назад',
+		noMapData: 'Нет данных карты',
+		viewMap: 'Показать Карту',
+		map: 'Карта',
 	},
 	zh: {
 		appTitle: 'storywell.games',
@@ -1007,5 +1037,11 @@ export const translations: Record<Language, Translations> = {
 		landingViewProject: '在GitHub上查看',
 		landingLicense: 'CC BY-NC 4.0许可',
 		landingLicenseDesc: '可免费用于非商业目的的使用和修改',
+		// Grid Map
+		mapTitle: '地图',
+		backToCard: '返回',
+		noMapData: '没有可用的地图数据',
+		viewMap: '查看地图',
+		map: '地图',
 	},
 };

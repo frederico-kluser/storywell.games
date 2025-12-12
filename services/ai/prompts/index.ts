@@ -276,3 +276,14 @@ export {
   type NarrativeQualityAnalysisResponse,
   type NarrativeIssue,
 } from './narrativeQualityAnalysis.prompt';
+
+// =============================================================================
+// GRID UPDATE PROMPT
+// =============================================================================
+
+export {
+  buildGridUpdatePrompt,
+  gridUpdateSchema,
+  type GridUpdatePromptParams,
+  type GridUpdateResponse,
+} from './gridUpdate.prompt';

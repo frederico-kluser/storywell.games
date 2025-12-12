@@ -1,10 +1,10 @@
 
-import { GameState, Character, Location, ChatMessage, GameEvent } from '../types';
+import { GameState, Character, Location, ChatMessage, GameEvent, GridSnapshot } from '../types';
 import { sanitizeMessages } from '../utils/messages';
 
 const DB_NAME = 'InfinitumRPG_Core';
-const DB_VERSION = 2;
-const EXPORT_VERSION = 1;
+const DB_VERSION = 3;
+const EXPORT_VERSION = 2;
 
 /**
  * Interface for exported game data with version info.
@@ -20,7 +20,8 @@ const STORES = {
   CHARACTERS: 'characters',
   LOCATIONS: 'locations',
   MESSAGES: 'messages',
-  EVENTS: 'events'
+  EVENTS: 'events',
+  GRIDS: 'grids'
 };
 
 /**
@@ -59,6 +60,10 @@ export const dbService = {
           const evtStore = db.createObjectStore(STORES.EVENTS, { keyPath: 'id' });
           evtStore.createIndex('by_game_id', 'gameId', { unique: false });
         }
+        if (!db.objectStoreNames.contains(STORES.GRIDS)) {
+          const gridStore = db.createObjectStore(STORES.GRIDS, { keyPath: 'id' });
+          gridStore.createIndex('by_game_id', 'gameId', { unique: false });
+        }
       };
 
       request.onsuccess = (event) => {
@@ -80,7 +85,7 @@ export const dbService = {
     const db = await dbService.open();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(
-        [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS], 
+        [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS, STORES.GRIDS],
         'readwrite'
       );
 
@@ -89,7 +94,7 @@ export const dbService = {
 
       const gameId = gameState.id;
       const sanitizedMessages = sanitizeMessages(gameState.messages || []);
-      const { characters, locations, events, ...metaData } = gameState;
+      const { characters, locations, events, gridSnapshots, ...metaData } = gameState;
       tx.objectStore(STORES.GAMES).put(metaData);
 
       const charStore = tx.objectStore(STORES.CHARACTERS);
@@ -111,6 +116,11 @@ export const dbService = {
       (events || []).forEach(evt => {
         evtStore.put({ ...evt, gameId });
       });
+
+      const gridStore = tx.objectStore(STORES.GRIDS);
+      (gridSnapshots || []).forEach(grid => {
+        gridStore.put({ ...grid, gameId });
+      });
     });
   },
 
@@ -125,7 +135,7 @@ export const dbService = {
     return new Promise(async (resolve, reject) => {
       try {
         const tx = db.transaction(
-            [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS], 
+            [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS, STORES.GRIDS],
             'readonly'
         );
 
@@ -148,11 +158,12 @@ export const dbService = {
             return;
         }
 
-        const [charsArr, locsArr, msgsArr, evtsArr] = await Promise.all([
+        const [charsArr, locsArr, msgsArr, evtsArr, gridsArr] = await Promise.all([
             getAllByIndex(STORES.CHARACTERS, 'by_game_id', id),
             getAllByIndex(STORES.LOCATIONS, 'by_game_id', id),
             getAllByIndex(STORES.MESSAGES, 'by_game_id', id),
             getAllByIndex(STORES.EVENTS, 'by_game_id', id),
+            getAllByIndex(STORES.GRIDS, 'by_game_id', id),
         ]);
 
         const characters: Record<string, Character> = {};
@@ -165,12 +176,16 @@ export const dbService = {
         const sanitizedMessages = sanitizeMessages(sortedMessages);
         const hadDuplicates = sanitizedMessages.length !== sortedMessages.length;
 
+        // Sort grid snapshots by message number
+        const sortedGrids = (gridsArr as GridSnapshot[]).sort((a, b) => a.atMessageNumber - b.atMessageNumber);
+
         const fullState: GameState = {
             ...metaData,
             characters,
             locations,
             messages: sanitizedMessages,
-            events: evtsArr
+            events: evtsArr,
+            gridSnapshots: sortedGrids
         };
 
         resolve(fullState);
@@ -220,7 +235,7 @@ export const dbService = {
     const db = await dbService.open();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(
-            [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS], 
+            [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS, STORES.GRIDS],
             'readwrite'
         );
 
@@ -233,7 +248,7 @@ export const dbService = {
             const store = tx.objectStore(storeName);
             const index = store.index('by_game_id');
             const request = index.openKeyCursor(IDBKeyRange.only(id));
-            
+
             request.onsuccess = () => {
                 const cursor = request.result;
                 if (cursor) {
@@ -247,6 +262,7 @@ export const dbService = {
         deleteByIndex(STORES.LOCATIONS);
         deleteByIndex(STORES.MESSAGES);
         deleteByIndex(STORES.EVENTS);
+        deleteByIndex(STORES.GRIDS);
     });
   },
   
@@ -364,6 +380,18 @@ export const dbService = {
       gameId: newId
     }));
 
+    // Update grid snapshots with new game ID
+    const updatedGridSnapshots = (game.gridSnapshots || []).map((grid, idx) => ({
+      ...grid,
+      id: `grid_${newId}_${idx}`,
+      gameId: newId,
+      // Update player character ID in character positions
+      characterPositions: grid.characterPositions.map(pos => ({
+        ...pos,
+        characterId: pos.characterId === game.playerCharacterId ? newPlayerCharacterId : pos.characterId
+      }))
+    }));
+
     // Update message senderIds if they reference old player ID
     const finalMessages = updatedMessages.map(msg => ({
       ...msg,
@@ -384,6 +412,7 @@ export const dbService = {
       messages: finalMessages,
       events: updatedEvents,
       viewedCards: updatedViewedCards,
+      gridSnapshots: updatedGridSnapshots,
       lastPlayed: Date.now()
     };
 

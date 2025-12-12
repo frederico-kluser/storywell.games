@@ -19,7 +19,7 @@
  * o sistema tentando várias vezes até conseguir uma taxa favorável.
  */
 
-import { GameState, Language, Character, Location, HeavyContext } from '../../../types';
+import { GameState, Language, Character, Location, HeavyContext, GridCharacterPosition } from '../../../types';
 import { getLanguageName } from '../../../i18n/locales';
 
 /**
@@ -115,6 +115,28 @@ Important Notes: ${(heavyContext.importantNotes || []).join(' | ') || 'None'}
     ? player.inventory.join(', ')
     : 'Empty';
 
+  // Build grid context section if available
+  let gridContextSection = '';
+  if (gameState.gridSnapshots && gameState.gridSnapshots.length > 0) {
+    const latestGrid = gameState.gridSnapshots[gameState.gridSnapshots.length - 1];
+    const playerPosition = latestGrid.characterPositions.find((p: GridCharacterPosition) => p.isPlayer);
+    const gridPositions = latestGrid.characterPositions
+      .map((pos: GridCharacterPosition) => {
+        if (pos.isPlayer) return `- ${pos.characterName} [PLAYER]: (${pos.position.x}, ${pos.position.y})`;
+        const distance = playerPosition
+          ? Math.abs(pos.position.x - playerPosition.position.x) + Math.abs(pos.position.y - playerPosition.position.y)
+          : 0;
+        return `- ${pos.characterName}: (${pos.position.x}, ${pos.position.y}) - ${distance} cells from player`;
+      })
+      .join('\n');
+
+    gridContextSection = `
+=== SPATIAL POSITIONS (10x10 GRID) ===
+${gridPositions}
+(Consider distances: 0-1 cells = close range, 2-3 cells = medium range, 4+ cells = far)
+`;
+  }
+
   return `
 You are a game master analyzing a custom player action to determine its success/failure probabilities.
 Your analysis must be DETERMINISTIC and CONSISTENT - the same action in the same context should always yield the same probabilities.
@@ -126,7 +148,7 @@ Player: ${player?.name || 'Unknown'} - ${player?.description || 'No description'
 Player Stats: ${playerStats}
 Player Inventory: ${playerInventory}
 Player State: ${player?.state || 'Unknown'}
-${heavyContextSection}
+${heavyContextSection}${gridContextSection}
 === RECENT EVENTS ===
 ${recentMessagesText}
 
@@ -159,7 +181,13 @@ You must evaluate the action based on:
    - If action uses player's strengths: increase goodChance
    - If action goes against player's weaknesses: increase badChance
 
-5. **PROBABILITY CONSTRAINTS:**
+5. **SPATIAL POSITIONING (if grid data available):**
+   - Actions targeting distant characters (4+ cells) are harder
+   - Close range actions (0-1 cells) are more reliable
+   - Movement-based actions depend on distance to destination
+   - Stealth actions harder when characters are nearby
+
+6. **PROBABILITY CONSTRAINTS:**
    - goodChance: 0-50 (max 50%)
    - badChance: 0-50 (max 50%)
    - Sum should typically not exceed 70% (leaving room for neutral outcomes)

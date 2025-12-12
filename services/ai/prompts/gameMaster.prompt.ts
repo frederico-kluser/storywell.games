@@ -37,7 +37,7 @@
  * @see {@link gmResponseSchema} - Schema JSON da resposta esperada
  */
 
-import { GameState, Language, FateResult, Character, Location, HeavyContext, Item } from '../../../types';
+import { GameState, Language, FateResult, Character, Location, HeavyContext, Item, GridSnapshot, GridCharacterPosition } from '../../../types';
 import { getLanguageName } from '../../../i18n/locales';
 import { getEconomyRulesForGMPrompt } from '../../../constants/economy';
 import { formatInventoryForPrompt, formatStatsForPrompt, isItemInventory } from '../../../utils/inventory';
@@ -354,6 +354,33 @@ export function buildGameMasterPrompt({
     }
   }
 
+  // Build grid context section if available
+  let gridContextSection = '';
+  if (gameState.gridSnapshots && gameState.gridSnapshots.length > 0) {
+    const latestGrid = gameState.gridSnapshots[gameState.gridSnapshots.length - 1];
+    const gridPositions = latestGrid.characterPositions
+      .map((pos: GridCharacterPosition) => {
+        const distance = pos.isPlayer ? '' : ` - Distance from player: ~${
+          Math.abs(pos.position.x - (latestGrid.characterPositions.find((p: GridCharacterPosition) => p.isPlayer)?.position.x || 5)) +
+          Math.abs(pos.position.y - (latestGrid.characterPositions.find((p: GridCharacterPosition) => p.isPlayer)?.position.y || 5))
+        } cells`;
+        return `- ${pos.characterName}${pos.isPlayer ? ' [PLAYER]' : ''}: position (${pos.position.x}, ${pos.position.y})${distance}`;
+      })
+      .join('\n    ');
+
+    gridContextSection = `
+    === SPATIAL CONTEXT (10x10 GRID MAP) ===
+    Characters' current positions on the map (coordinates 0-9):
+    ${gridPositions}
+
+    Consider spatial positioning when:
+    - Determining if characters can interact directly (same or adjacent cells)
+    - Describing movement ("approaches", "moves away", "crosses the room")
+    - Combat range and positioning
+    - Characters at distance (3+ cells) require movement to interact closely
+`;
+  }
+
   // Build fate instruction if there's a fate event
   let fateInstruction = '';
   if (fateResult && fateResult.type !== 'neutral') {
@@ -429,7 +456,7 @@ export function buildGameMasterPrompt({
     These characters ALREADY EXIST in the game. When they speak, use their exact name.
     ${knownCharactersList || '(No NPCs introduced yet)'}
 
-${universeContextSection}${heavyContextSection}${fateInstruction}${narrativeStyleSection}
+${universeContextSection}${heavyContextSection}${gridContextSection}${fateInstruction}${narrativeStyleSection}
 ${getEconomyRulesForGMPrompt()}
 
     === ACTION RESOLUTION LOGIC (MANDATORY) ===

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { GameState, ChatMessage, MessageType, Language, Character, FateResult, HeavyContext, GMResponseMessage, ThemeColors, DEFAULT_THEME_COLORS } from '../types';
+import { GameState, ChatMessage, MessageType, Language, Character, FateResult, HeavyContext, GMResponseMessage, ThemeColors, DEFAULT_THEME_COLORS, GridSnapshot } from '../types';
 import { TTSVoice } from '../utils/ai';
 import { sanitizeMessages } from '../utils/messages';
-import { generateGameTurn, initializeStory, validateApiKey, processPlayerMessage, updateHeavyContext, classifyAndProcessPlayerInput, StoryInitializationResult, generateThemeColors, generateLocationBackground } from '../services/ai/openaiClient';
+import { generateGameTurn, initializeStory, validateApiKey, processPlayerMessage, updateHeavyContext, classifyAndProcessPlayerInput, StoryInitializationResult, generateThemeColors, generateLocationBackground, updateGridPositions, createInitialGridSnapshot } from '../services/ai/openaiClient';
 import { dbService, ExportedGameData } from '../services/db';
 import { getBrowserLanguage, translations, setLanguageCookie } from '../i18n/locales';
 import { parseOpenAIError } from '../utils/errorHandler';
@@ -591,7 +591,8 @@ export const useGameEngine = (): UseGameEngineReturn => {
         messages: [],
         events: [],
         universeContext, // Store the generated universe narrative context
-        themeColors // Store the generated theme colors
+        themeColors, // Store the generated theme colors
+        gridSnapshots: [] // Initialize empty grid snapshots array
       };
 
       // 4. Populate Initial Messages (support both old and new format)
@@ -656,6 +657,11 @@ export const useGameEngine = (): UseGameEngineReturn => {
       }
 
       newState.messages = sanitizeMessages(newMessages);
+
+      // Create initial grid snapshot for the new story
+      const initialGridSnapshot = createInitialGridSnapshot(newState, newMessages.length);
+      newState.gridSnapshots = [initialGridSnapshot];
+      console.log('[Grid] Created initial grid snapshot for new story');
 
       await dbService.saveGame(newState);
       loadedStoriesRef.current.add(newStoryId);
@@ -926,6 +932,48 @@ export const useGameEngine = (): UseGameEngineReturn => {
         console.error("Heavy context update failed:", contextErr);
       } finally {
         setIsUpdatingContext(false);
+      }
+
+      // 7. Update Grid Positions (runs in background, non-blocking)
+      try {
+        // Get the latest message number after the response was added
+        const latestStory = storiesRef.current.find(s => s.id === currentStoryId);
+        const currentMessageNumber = latestStory ? latestStory.messages.length : contextStory.messages.length + (response.messages?.length || 0);
+
+        // Check if this is the first grid snapshot or if we need to update
+        const hasGridSnapshots = latestStory?.gridSnapshots && latestStory.gridSnapshots.length > 0;
+
+        if (!hasGridSnapshots) {
+          // Create initial grid snapshot
+          const initialSnapshot = createInitialGridSnapshot(
+            latestStory || contextStory,
+            currentMessageNumber
+          );
+          safeUpdateStory(prev => ({
+            ...prev,
+            gridSnapshots: [...(prev.gridSnapshots || []), initialSnapshot]
+          }));
+          console.log('[Grid] Created initial grid snapshot');
+        } else {
+          // Try to update grid positions based on recent events
+          const gridResult = await updateGridPositions(
+            apiKey,
+            latestStory || contextStory,
+            response,
+            storyLang,
+            currentMessageNumber
+          );
+
+          if (gridResult.updated && gridResult.snapshot) {
+            safeUpdateStory(prev => ({
+              ...prev,
+              gridSnapshots: [...(prev.gridSnapshots || []), gridResult.snapshot!]
+            }));
+          }
+        }
+      } catch (gridErr) {
+        // Log error but don't block the game - grid update is non-critical
+        console.error("Grid update failed:", gridErr);
       }
 
     } catch (err: any) {

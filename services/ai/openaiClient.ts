@@ -13,6 +13,9 @@ import {
 	DEFAULT_THEME_COLORS,
 	DEFAULT_FONT_FAMILY,
 	NarrativeGenre,
+	GridSnapshot,
+	GridCharacterPosition,
+	GridUpdateResponse,
 } from '../../types';
 import { THEMED_FONTS, getFontByFamily } from '../../constants/fonts';
 import { languageInfo } from '../../i18n/locales';
@@ -30,10 +33,12 @@ import {
 	buildCustomActionAnalysisPrompt,
 	buildThemeColorsPrompt,
 	buildLocationBackgroundPrompt,
+	buildGridUpdatePrompt,
 	themeColorsSchema,
 	customActionAnalysisSchema,
 	onboardingSchema,
 	heavyContextSchema,
+	gridUpdateSchema,
 } from './prompts';
 import type { TextClassificationResponse, CustomActionAnalysisResponse } from './prompts';
 import type { HeavyContextResponse, HeavyContextFieldChange, HeavyContextListChange } from './prompts';
@@ -80,6 +85,9 @@ const MODEL_CONFIG = {
 	actionOptions: 'gpt-4.1-mini', // Gerar 5 sugestões de ação (requer contexto narrativo)
 	textClassification: 'gpt-4.1-nano', // Classificar texto como ação ou fala
 	themeColors: 'gpt-4.1-mini', // Gerar paleta de cores baseada no universo
+
+	// Grid update - usa gpt-4.1-nano (95% economia) para análise espacial simples
+	gridUpdate: 'gpt-4.1-nano', // Atualizar posições no grid do mapa
 } as const;
 
 // Modelo padrão para fallback
@@ -1527,4 +1535,195 @@ export const processOnboardingStep = async (
 		console.error('Onboarding Error:', error);
 		throw error;
 	}
+};
+
+/**
+ * Result of updating the grid map positions.
+ */
+export interface GridUpdateResult {
+	/** Whether the grid was updated */
+	updated: boolean;
+	/** The new grid snapshot if updated */
+	snapshot?: GridSnapshot;
+}
+
+/**
+ * Updates character positions on the 10x10 grid map based on recent game events.
+ * This should be called after each action to track character movement.
+ *
+ * @param apiKey - OpenAI API Key.
+ * @param gameState - Current game state.
+ * @param recentResponse - The GM response from the action that just happened.
+ * @param language - Target language.
+ * @param currentMessageNumber - The current message/page number for the snapshot.
+ * @returns Result indicating if update occurred and the new snapshot.
+ */
+export const updateGridPositions = async (
+	apiKey: string,
+	gameState: GameState,
+	recentResponse: GMResponse,
+	language: Language,
+	currentMessageNumber: number,
+): Promise<GridUpdateResult> => {
+	// Get current grid positions from most recent snapshot
+	const currentGridPositions = gameState.gridSnapshots && gameState.gridSnapshots.length > 0
+		? gameState.gridSnapshots[gameState.gridSnapshots.length - 1].characterPositions
+		: undefined;
+
+	// Format messages for the prompt
+	const messagesForContext = (recentResponse.messages || []).map((msg: GMResponseMessage) => {
+		if (msg.type === 'dialogue') {
+			return {
+				type: 'dialogue' as const,
+				characterName: msg.characterName || 'Unknown NPC',
+				dialogue: msg.dialogue || msg.text || '',
+			};
+		}
+		if (msg.type === 'system') {
+			return {
+				type: 'system' as const,
+				text: msg.text || '',
+			};
+		}
+		return {
+			type: 'narration' as const,
+			text: msg.text || '',
+		};
+	});
+
+	const prompt = buildGridUpdatePrompt({
+		gameState,
+		recentMessages: messagesForContext as GMResponseMessage[],
+		eventLog: recentResponse.stateUpdates.eventLog,
+		currentGridPositions,
+		language,
+	});
+
+	const schemaInstruction = `\n\nYou MUST respond with a valid JSON object following this exact schema:\n${JSON.stringify(
+		gridUpdateSchema,
+		null,
+		2,
+	)}`;
+
+	const messages: LLMMessage[] = [
+		{
+			role: 'system',
+			content:
+				'You are a spatial positioning analyzer for an RPG game. Analyze character movements and determine grid positions. Always respond with valid JSON.',
+		},
+		{
+			role: 'user',
+			content: prompt + schemaInstruction,
+		},
+	];
+
+	try {
+		const response = await queryLLM(apiKey, messages, {
+			model: MODEL_CONFIG.gridUpdate, // gpt-4.1-nano - análise espacial simples
+			responseFormat: 'json',
+		});
+
+		if (!response.text) {
+			return { updated: false };
+		}
+
+		const parsed: GridUpdateResponse = JSON.parse(cleanJsonString(response.text));
+
+		if (!parsed.shouldUpdate || !parsed.characterPositions) {
+			return { updated: false };
+		}
+
+		// Get current location info
+		const currentLocation = gameState.locations[gameState.currentLocationId];
+
+		// Get character avatars for display
+		const characterPositions: GridCharacterPosition[] = parsed.characterPositions.map((pos) => {
+			const character = gameState.characters[pos.characterId];
+			return {
+				characterId: pos.characterId,
+				characterName: pos.characterName,
+				position: { x: pos.x, y: pos.y },
+				isPlayer: pos.isPlayer,
+				avatarBase64: character?.avatarBase64,
+			};
+		});
+
+		// Create the new snapshot
+		const snapshot: GridSnapshot = {
+			id: `grid_${gameState.id}_${Date.now()}`,
+			gameId: gameState.id,
+			atMessageNumber: currentMessageNumber,
+			timestamp: Date.now(),
+			locationId: gameState.currentLocationId,
+			locationName: currentLocation?.name || 'Unknown',
+			characterPositions,
+		};
+
+		console.log(`[Grid Update] Updated positions at message #${currentMessageNumber}: ${parsed.reasoning || 'No reason provided'}`);
+
+		return {
+			updated: true,
+			snapshot,
+		};
+	} catch (error) {
+		console.error('Grid Update Failed:', error);
+		return { updated: false };
+	}
+};
+
+/**
+ * Creates an initial grid snapshot for a new game or location change.
+ * Places characters in default positions.
+ *
+ * @param gameState - Current game state.
+ * @param messageNumber - The message number for the snapshot.
+ * @returns Initial grid snapshot.
+ */
+export const createInitialGridSnapshot = (
+	gameState: GameState,
+	messageNumber: number,
+): GridSnapshot => {
+	const currentLocation = gameState.locations[gameState.currentLocationId];
+	const charactersAtLocation = Object.values(gameState.characters).filter(
+		(c) => c.locationId === gameState.currentLocationId
+	);
+
+	// Place player in center, other characters around
+	const characterPositions: GridCharacterPosition[] = charactersAtLocation.map((char, index) => {
+		let x: number, y: number;
+
+		if (char.isPlayer) {
+			// Player starts at center
+			x = 5;
+			y = 5;
+		} else {
+			// NPCs are placed around the player
+			// Simple circle placement around center
+			const angle = (index * 2 * Math.PI) / Math.max(charactersAtLocation.length - 1, 1);
+			const radius = 2;
+			x = Math.round(5 + radius * Math.cos(angle));
+			y = Math.round(5 + radius * Math.sin(angle));
+			// Clamp to grid bounds
+			x = Math.max(0, Math.min(9, x));
+			y = Math.max(0, Math.min(9, y));
+		}
+
+		return {
+			characterId: char.id,
+			characterName: char.name,
+			position: { x, y },
+			isPlayer: char.isPlayer,
+			avatarBase64: char.avatarBase64,
+		};
+	});
+
+	return {
+		id: `grid_${gameState.id}_${Date.now()}`,
+		gameId: gameState.id,
+		atMessageNumber: messageNumber,
+		timestamp: Date.now(),
+		locationId: gameState.currentLocationId,
+		locationName: currentLocation?.name || 'Unknown',
+		characterPositions,
+	};
 };

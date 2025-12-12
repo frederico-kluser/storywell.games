@@ -1,0 +1,458 @@
+/**
+ * @fileoverview GridMap Component - 10x10 Map Grid with 3D Flip Animation
+ *
+ * This component displays a 10x10 grid map showing character positions
+ * in the current location. It integrates with the card navigation system
+ * and shows historical grid states based on the current message number.
+ *
+ * Features:
+ * - 3D flip animation to reveal the map
+ * - Blinking player character indicator
+ * - Character avatars displayed on grid cells
+ * - Historical grid view based on current card/message
+ * - Responsive grid sizing matching card dimensions
+ */
+
+import React, { useState, useEffect, useMemo } from 'react';
+import { GridSnapshot, GridCharacterPosition, ThemeColors } from '../../types';
+
+interface GridMapProps {
+  /** Array of all grid snapshots for the story */
+  gridSnapshots: GridSnapshot[];
+  /** Current message/card number being viewed */
+  currentMessageNumber: number;
+  /** Theme colors for styling */
+  colors: ThemeColors;
+  /** Whether the map is flipped/visible */
+  isFlipped: boolean;
+  /** Callback to toggle flip state */
+  onToggleFlip: () => void;
+  /** Current location name for display */
+  locationName?: string;
+  /** Translation strings */
+  t: Record<string, string>;
+}
+
+/**
+ * Gets the appropriate grid snapshot for a given message number.
+ * Returns the most recent snapshot that was created at or before the message.
+ */
+function getGridForMessage(
+  snapshots: GridSnapshot[],
+  messageNumber: number
+): GridSnapshot | null {
+  if (!snapshots || snapshots.length === 0) return null;
+
+  // Find the most recent snapshot at or before this message number
+  let relevantSnapshot: GridSnapshot | null = null;
+
+  for (const snapshot of snapshots) {
+    if (snapshot.atMessageNumber <= messageNumber) {
+      if (!relevantSnapshot || snapshot.atMessageNumber > relevantSnapshot.atMessageNumber) {
+        relevantSnapshot = snapshot;
+      }
+    }
+  }
+
+  return relevantSnapshot;
+}
+
+/**
+ * GridCell component renders a single cell of the 10x10 grid.
+ */
+const GridCell: React.FC<{
+  x: number;
+  y: number;
+  characters: GridCharacterPosition[];
+  colors: ThemeColors;
+}> = ({ x, y, characters, colors }) => {
+  const [blinkState, setBlinkState] = useState(true);
+
+  // Find characters at this position
+  const charsAtPosition = characters.filter(
+    (c) => c.position.x === x && c.position.y === y
+  );
+
+  const hasPlayer = charsAtPosition.some((c) => c.isPlayer);
+  const playerChar = charsAtPosition.find((c) => c.isPlayer);
+  const npcChars = charsAtPosition.filter((c) => !c.isPlayer);
+
+  // Blinking effect for player
+  useEffect(() => {
+    if (!hasPlayer) return;
+
+    const interval = setInterval(() => {
+      setBlinkState((prev) => !prev);
+    }, 500);
+
+    return () => clearInterval(interval);
+  }, [hasPlayer]);
+
+  // Determine cell styling based on content
+  const isOccupied = charsAtPosition.length > 0;
+  const borderColor = isOccupied ? colors.borderStrong : colors.border;
+  const bgColor = hasPlayer
+    ? blinkState
+      ? colors.buttonPrimary
+      : colors.backgroundAccent
+    : isOccupied
+    ? colors.backgroundSecondary
+    : colors.background;
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        aspectRatio: '1',
+        border: `1px solid ${borderColor}`,
+        backgroundColor: bgColor,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'background-color 0.2s ease',
+      }}
+      title={
+        charsAtPosition.length > 0
+          ? charsAtPosition.map((c) => c.characterName).join(', ')
+          : `(${x}, ${y})`
+      }
+    >
+      {/* Player avatar */}
+      {playerChar && playerChar.avatarBase64 && (
+        <img
+          src={`data:image/png;base64,${playerChar.avatarBase64}`}
+          alt={playerChar.characterName}
+          style={{
+            width: '90%',
+            height: '90%',
+            objectFit: 'cover',
+            borderRadius: '50%',
+            opacity: blinkState ? 1 : 0.5,
+            transition: 'opacity 0.2s ease',
+          }}
+        />
+      )}
+      {/* Player initials fallback */}
+      {playerChar && !playerChar.avatarBase64 && (
+        <span
+          style={{
+            fontSize: '10px',
+            fontWeight: 'bold',
+            color: blinkState ? colors.buttonPrimaryText : colors.text,
+            transition: 'color 0.2s ease',
+          }}
+        >
+          {playerChar.characterName.charAt(0).toUpperCase()}
+        </span>
+      )}
+      {/* NPC avatars (show first NPC if no player) */}
+      {!hasPlayer && npcChars.length > 0 && (
+        <>
+          {npcChars[0].avatarBase64 ? (
+            <img
+              src={`data:image/png;base64,${npcChars[0].avatarBase64}`}
+              alt={npcChars[0].characterName}
+              style={{
+                width: '90%',
+                height: '90%',
+                objectFit: 'cover',
+                borderRadius: '50%',
+              }}
+            />
+          ) : (
+            <span
+              style={{
+                fontSize: '10px',
+                fontWeight: 'bold',
+                color: colors.textAccent,
+              }}
+            >
+              {npcChars[0].characterName.charAt(0).toUpperCase()}
+            </span>
+          )}
+          {/* Badge for multiple NPCs */}
+          {npcChars.length > 1 && (
+            <span
+              style={{
+                position: 'absolute',
+                bottom: '2px',
+                right: '2px',
+                fontSize: '8px',
+                backgroundColor: colors.warning,
+                color: '#fff',
+                borderRadius: '50%',
+                width: '14px',
+                height: '14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              +{npcChars.length - 1}
+            </span>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+/**
+ * GridMap component displays a 10x10 map with character positions.
+ * Uses a 3D flip animation to reveal the map when activated.
+ */
+export const GridMap: React.FC<GridMapProps> = ({
+  gridSnapshots,
+  currentMessageNumber,
+  colors,
+  isFlipped,
+  onToggleFlip,
+  locationName,
+  t,
+}) => {
+  // Get the appropriate grid snapshot for the current message
+  const currentGrid = useMemo(
+    () => getGridForMessage(gridSnapshots, currentMessageNumber),
+    [gridSnapshots, currentMessageNumber]
+  );
+
+  // Generate 10x10 grid cells
+  const gridCells = useMemo(() => {
+    const cells: { x: number; y: number }[] = [];
+    for (let y = 0; y < 10; y++) {
+      for (let x = 0; x < 10; x++) {
+        cells.push({ x, y });
+      }
+    }
+    return cells;
+  }, []);
+
+  // Characters from current grid snapshot
+  const characters = currentGrid?.characterPositions || [];
+
+  return (
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        perspective: '1000px',
+        position: 'relative',
+      }}
+    >
+      {/* Flip container */}
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'relative',
+          transformStyle: 'preserve-3d',
+          transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
+        }}
+      >
+        {/* Back face - The Map Grid */}
+        <div
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            backfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+            backgroundColor: colors.background,
+            borderRadius: '8px',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {/* Map Header */}
+          <div
+            style={{
+              padding: '12px',
+              borderBottom: `1px solid ${colors.border}`,
+              backgroundColor: colors.backgroundSecondary,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div>
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    color: colors.text,
+                  }}
+                >
+                  {t.mapTitle || 'Map'}
+                </h3>
+                {(locationName || currentGrid?.locationName) && (
+                  <p
+                    style={{
+                      margin: '4px 0 0',
+                      fontSize: '12px',
+                      color: colors.textSecondary,
+                    }}
+                  >
+                    {locationName || currentGrid?.locationName}
+                  </p>
+                )}
+              </div>
+              <button
+                onClick={onToggleFlip}
+                style={{
+                  padding: '6px 12px',
+                  fontSize: '12px',
+                  backgroundColor: colors.buttonSecondary,
+                  color: colors.buttonSecondaryText,
+                  border: `1px solid ${colors.border}`,
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                {t.backToCard || 'Back'}
+              </button>
+            </div>
+          </div>
+
+          {/* Grid Container */}
+          <div
+            style={{
+              flex: 1,
+              padding: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {currentGrid ? (
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(10, 1fr)',
+                  gridTemplateRows: 'repeat(10, 1fr)',
+                  gap: '1px',
+                  width: '100%',
+                  maxWidth: '300px',
+                  aspectRatio: '1',
+                  backgroundColor: colors.border,
+                  border: `2px solid ${colors.borderStrong}`,
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                }}
+              >
+                {gridCells.map(({ x, y }) => (
+                  <GridCell
+                    key={`${x}-${y}`}
+                    x={x}
+                    y={y}
+                    characters={characters}
+                    colors={colors}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div
+                style={{
+                  textAlign: 'center',
+                  color: colors.textSecondary,
+                  padding: '20px',
+                }}
+              >
+                <p style={{ margin: 0 }}>{t.noMapData || 'No map data available'}</p>
+              </div>
+            )}
+          </div>
+
+          {/* Legend */}
+          {currentGrid && characters.length > 0 && (
+            <div
+              style={{
+                padding: '8px 12px',
+                borderTop: `1px solid ${colors.border}`,
+                backgroundColor: colors.backgroundSecondary,
+                maxHeight: '100px',
+                overflowY: 'auto',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '8px',
+                  fontSize: '11px',
+                }}
+              >
+                {characters.map((char) => (
+                  <div
+                    key={char.characterId}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '2px 6px',
+                      backgroundColor: char.isPlayer
+                        ? colors.buttonPrimary
+                        : colors.backgroundAccent,
+                      color: char.isPlayer
+                        ? colors.buttonPrimaryText
+                        : colors.text,
+                      borderRadius: '4px',
+                    }}
+                  >
+                    {char.avatarBase64 ? (
+                      <img
+                        src={`data:image/png;base64,${char.avatarBase64}`}
+                        alt=""
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          borderRadius: '50%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    ) : (
+                      <span
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          borderRadius: '50%',
+                          backgroundColor: char.isPlayer
+                            ? colors.buttonPrimaryText
+                            : colors.textSecondary,
+                          color: char.isPlayer
+                            ? colors.buttonPrimary
+                            : colors.backgroundSecondary,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '10px',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        {char.characterName.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <span>{char.characterName}</span>
+                    <span style={{ opacity: 0.6 }}>
+                      ({char.position.x}, {char.position.y})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default GridMap;
