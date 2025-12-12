@@ -1,12 +1,12 @@
 # storywell.games
 
-**Versão:** 1.4.0
+**Versão:** 1.4.2
 
 Um motor de RPG de texto alimentado por IA que cria experiências narrativas dinâmicas e imersivas. O jogo utiliza
 GPT-4.1 da OpenAI para gerar histórias, gerenciar estados de personagens e responder às ações do jogador em tempo real.
 
-> **Novidade v1.3.0:** Sistema completo de Qualidade Narrativa com 15 gêneros literários, técnicas de "mostrar, não
-> contar", diferenciação de vozes de NPCs e controle de ritmo narrativo.
+> **Novidade v1.4.0:** Sistema completo de Qualidade Narrativa com 15 gêneros literários, técnicas de "mostrar, não
+> contar", diferenciação de vozes de NPCs, geração de backgrounds de localização e controle de ritmo narrativo.
 
 ---
 
@@ -15,19 +15,20 @@ GPT-4.1 da OpenAI para gerar histórias, gerenciar estados de personagens e resp
 1. [Visão Geral](#visão-geral)
 2. [Arquitetura do Projeto](#arquitetura-do-projeto)
 3. [Sistema de Tipos](#sistema-de-tipos)
-4. [Sistema de Qualidade Narrativa](#sistema-de-qualidade-narrativa-v130)
-5. [Engenharia de Prompts](#engenharia-de-prompts)
-6. [Construção de Contexto](#construção-de-contexto)
-7. [Tomada de Decisões da IA](#tomada-de-decisões-da-ia)
-8. [Gerenciamento de Estado](#gerenciamento-de-estado)
-9. [Banco de Dados](#banco-de-dados)
-10. [Fluxo do Jogo](#fluxo-do-jogo)
-11. [Componentes de UI](#componentes-de-ui)
-12. [Internacionalização](#internacionalização)
-13. [Tratamento de Erros](#tratamento-de-erros)
-14. [Stack Tecnológico](#stack-tecnológico)
-15. [Instalação e Uso](#instalação-e-uso)
-16. [Guia de Contribuição](#guia-de-contribuição)
+4. [Principais Técnicas do Código](#principais-técnicas-do-código)
+5. [Sistema de Qualidade Narrativa](#sistema-de-qualidade-narrativa)
+6. [Sistema de Requisições à IA](#sistema-de-requisições-à-ia)
+7. [Gerenciamento de Estado](#gerenciamento-de-estado)
+8. [Banco de Dados IndexedDB](#banco-de-dados-indexeddb)
+9. [Sistema de Economia](#sistema-de-economia)
+10. [Engenharia de Prompts](#engenharia-de-prompts)
+11. [Fluxo do Jogo](#fluxo-do-jogo)
+12. [Componentes de UI](#componentes-de-ui)
+13. [Internacionalização](#internacionalização)
+14. [Tratamento de Erros](#tratamento-de-erros)
+15. [Stack Tecnológico](#stack-tecnológico)
+16. [Instalação e Uso](#instalação-e-uso)
+17. [Guia de Contribuição](#guia-de-contribuição)
 
 ---
 
@@ -38,14 +39,14 @@ storywell.games é um motor de RPG baseado em navegador que usa inteligência ar
 - **Gerar mundos dinâmicos** - Crie universos originais ou jogue em universos conhecidos (filmes, livros, jogos)
 - **Gerenciar personagens** - NPCs com personalidades, inventários, estatísticas e relacionamentos
 - **Resolver ações** - Validação de magia, combate, consumíveis e interações
-- **Criar narrativas** - Diálogos e narrações contextualmente apropriados
-- **Gerar avatares** - Retratos e backgrounds via gpt-image-1-mini
-- **Text-to-Speech** - Narração por voz via OpenAI TTS
+- **Criar narrativas** - Diálogos e narrações contextualmente apropriados com 15 gêneros narrativos
+- **Gerar avatares** - Retratos de personagens via gpt-image-1-mini
+- **Gerar backgrounds** - Cenários imersivos de localização via gpt-image-1-mini
+- **Text-to-Speech** - Narração por voz com tom emocional via gpt-4o-mini-tts
 - **Speech-to-Text** - Comandos por voz via Whisper
 - **Sistema de Destino (Fate)** - Cada sugestão de ação inclui probabilidades de eventos positivos/negativos
 - **Sistema de Itens e Currency** - Itens estruturados com categorias, preços e efeitos; economia com gold
-- **Transporte de Campanhas** - Exportação/importação versionada de saves (JSON assinado) + validação local
-- **Ferramentas de Apoio** - Viewer retro de logs, modal de erros categorizado e fila de mensagens com anti-spam
+- **Transporte de Campanhas** - Exportação/importação versionada de saves (JSON) + validação local
 
 ### Recursos Principais
 
@@ -55,63 +56,80 @@ storywell.games é um motor de RPG baseado em navegador que usa inteligência ar
 | **IA Generativa**          | GPT-4.1 para narrativa, gpt-image-1-mini para imagens, Whisper para STT, gpt-4o-mini-tts para voz e prompts com schema JSON obrigatório                    |
 | **Persistência**           | IndexedDB normalizado, auto-save por turno, heavy context incremental e exportação/importação versionada                                                   |
 | **Internacionalização**    | EN/PT/ES/FR/RU/ZH com detecção automática + cookie, UI retro-futurista e suporte de voz sincronizado                                                       |
-| **Ferramentas para devs**  | Console log viewer, testes Jest/RTL cobrindo hooks/serviços/componentes e estrutura modular com separation of concerns                                     |
+| **Ferramentas para devs**  | Testes Jest/RTL cobrindo hooks/serviços/componentes e estrutura modular com separation of concerns                                                          |
 
 ---
 
 ## Arquitetura do Projeto
 
 ```
-/components               # Camada de apresentação
+/components               # Camada de apresentação (React)
   /ActionInput            # Input com sugestões, rolagem de destino e modo "Outro"
-  /ChatBubble             # Balões com typewriter, botões de TTS e avatares
-  /ErrorModal             # Modal de erros categorizados (quota, key, rede...)
-  /FateToast              # Toast para feedback imediato do FateResult
-  /LogViewer              # Console retro alimentado por useConsoleLogs
-  /StoryCreator           # Wizard colaborativo de mundo/Personagem
-  /VoiceInput             # Captura áudio e envia para Whisper
-  /VoiceSettings          # Seleção/preview das vozes gpt-4o-mini-tts
+    ActionInput.tsx       # Componente principal (300+ linhas)
+  /ChatBubble             # Balões com typewriter e avatares
+  /StoryCard              # Cards de história com navegação
+  /ErrorModal             # Modal de erros categorizados
+  /FateToast              # Toast para feedback do FateResult
+  /StoryCreator.tsx       # Wizard colaborativo de mundo/personagem
+  /VoiceInput.tsx         # Captura áudio e envia para Whisper
+  /VoiceSettings          # Seleção/preview das vozes TTS
+  /LandingPage.tsx        # Página inicial com API key e seleção de idioma
 
-/hooks                    # Regras de negócio
-  useGameEngine.ts        # Orquestra API, IndexedDB, prompts e UI
-  useConsoleLogs.ts       # Espelha console.* em estado React
-  useMessageQueue.ts      # Mantém timeline ordenada, paginação e salto automático dos cards
+/hooks                    # Regras de negócio e estado
+  useGameEngine.ts        # Hook principal - orquestra API, DB, prompts e UI (800+ linhas)
+  useCardNavigation.ts    # Navegação de cards com teclado e swipe (200+ linhas)
+  useMessageQueue.ts      # Timeline ordenada e anti-duplicação
+  useThemeColors.tsx      # Contexto de cores do tema
+  useWakeLock.ts          # Previne sleep do dispositivo
 
 /services                 # Integrações externas e data layer
   /ai
-    openaiClient.ts       # Loop do GM, prompts, avatars, TTS, STT
-    systemPrompts.ts      # Catálogo de prompts modulares
-    prompts/*.prompt.ts   # Onboarding, GM, action options, heavy context etc
-  db.ts                   # Data mapper IndexedDB + export/import versionado
-  geminiService.ts        # Re-export central para componentes legados
+    openaiClient.ts       # Cliente OpenAI - loop GM, avatars, TTS, STT (1500+ linhas)
+    systemPrompts.ts      # Catálogo legado de prompts
+    /prompts              # Sistema modular de prompts
+      index.ts            # Exporta todos os prompts e schemas
+      gameMaster.prompt.ts           # Loop principal do jogo
+      storyInitialization.prompt.ts  # Criação do estado inicial
+      onboarding.prompt.ts           # Wizard de criação de mundo
+      actionOptions.prompt.ts        # Sugestões de ação
+      heavyContext.prompt.ts         # Memória narrativa persistente
+      universeContext.prompt.ts      # Contexto profundo do universo
+      characterAvatar.prompt.ts      # Geração de avatares
+      locationBackground.prompt.ts   # Geração de backgrounds
+      narrativeStyles.ts             # 15 gêneros narrativos
+      helpers.ts                     # Funções auxiliares
+  db.ts                   # Data mapper IndexedDB + export/import versionado (380+ linhas)
 
 /utils                    # Utilitários compartilhados
   ai.ts                   # Wrapper OpenAI (LLM, TTS, Whisper, Images)
   helpers.ts              # Limpeza de JSON, blob helpers
   errorHandler.ts         # Classificação de erros OpenAI
-  inventory.ts            # Operações de inventário, type guards, migração
-  migration.ts            # Migração de saves legados (string[] → Item[])
+  inventory.ts            # Operações de inventário, type guards, migração (670+ linhas)
+  migration.ts            # Migração de saves legados
+  messages.ts             # Sanitização de mensagens
 
 /constants                # Constantes do jogo
-  economy.ts              # Regras econômicas, preços, gold inicial por universo
-  index.ts                # Re-exports
+  economy.ts              # Regras econômicas, preços, gold inicial (350+ linhas)
 
 /i18n                     # Internacionalização
   locales.ts              # Traduções + cookies + detecção de idioma
 
-/__tests__                # Testes Jest + Testing Library (hooks, serviços, UI)
-/types.ts                 # Tipos globais (GameState, GMResponse etc)
-/App.tsx                  # Componente raiz / composição de views
+/contexts                 # React Contexts
+  LoadingContext.tsx      # Estado global de loading
+
+/__tests__                # Testes Jest + Testing Library
+/types.ts                 # Tipos globais (GameState, GMResponse, etc)
+/App.tsx                  # Componente raiz / composição de views (1000+ linhas)
 ```
 
 ### Separação de Responsabilidades
 
-| Camada                     | Responsabilidade                      |
-| -------------------------- | ------------------------------------- |
-| **Views** (`components/`)  | Renderização pura, recebem props      |
-| **Logic** (`hooks/`)       | Gerenciamento de estado, orquestração |
-| **Services** (`services/`) | APIs externas (OpenAI, IndexedDB)     |
-| **Utils** (`utils/`)       | Funções auxiliares reutilizáveis      |
+| Camada                     | Responsabilidade                      | Arquivos-Chave                       |
+| -------------------------- | ------------------------------------- | ------------------------------------ |
+| **Views** (`components/`)  | Renderização pura, recebem props      | `StoryCard.view.tsx`, `ActionInput.tsx` |
+| **Logic** (`hooks/`)       | Gerenciamento de estado, orquestração | `useGameEngine.ts`, `useCardNavigation.ts` |
+| **Services** (`services/`) | APIs externas (OpenAI, IndexedDB)     | `openaiClient.ts`, `db.ts`           |
+| **Utils** (`utils/`)       | Funções auxiliares reutilizáveis      | `inventory.ts`, `errorHandler.ts`    |
 
 ---
 
@@ -119,167 +137,534 @@ storywell.games é um motor de RPG baseado em navegador que usa inteligência ar
 
 ### GameState - Estado Principal do Jogo
 
+**Arquivo:** `types.ts:175-202`
+
 ```typescript
 interface GameState {
-	id: string;
-	title: string;
-	turnCount: number;
-	lastPlayed: number;
-	config: GameConfig;
+  id: string;
+  title: string;
+  turnCount: number;
+  lastPlayed: number;
+  config: GameConfig;
 
-	// Coleções em runtime (mapas para acesso O(1))
-	characters: Record<string, Character>;
-	locations: Record<string, Location>;
-	messages: ChatMessage[];
-	events: GameEvent[];
+  // Coleções em runtime (mapas para acesso O(1))
+  characters: Record<string, Character>;
+  locations: Record<string, Location>;
+  messages: ChatMessage[];
+  events: GameEvent[];
 
-	// Ponteiros de contexto atual
-	playerCharacterId: string;
-	currentLocationId: string;
+  // Ponteiros de contexto atual
+  playerCharacterId: string;
+  currentLocationId: string;
+
+  // Heavy Context - Contexto narrativo persistente
+  heavyContext?: HeavyContext;
+
+  // Universe Context - Contexto profundo gerado na criação
+  universeContext?: string;
+
+  // Theme Colors - Paleta de cores baseada no universo
+  themeColors?: ThemeColors;
 }
 ```
 
 ### Character - Modelo de Entidade
 
+**Arquivo:** `types.ts:92-106`
+
 ```typescript
 interface Character {
-	id: string;
-	name: string;
-	description: string;
-	isPlayer: boolean;
-	locationId: string;
-	stats: CharacterStats | Record<string, number>; // Para jogadores: hp, maxHp, gold obrigatórios
-	inventory: Item[] | string[]; // Item[] (novo) ou string[] (legado, será migrado)
-	relationships: Record<string, number>; // CharID -> 0-100
-	state: 'idle' | 'talking' | 'fighting' | 'unconscious' | 'dead';
-	avatarUrl?: string; // Base64 da imagem gerada
+  id: string;
+  gameId?: string;                              // Foreign Key para IndexedDB
+  name: string;
+  description: string;
+  isPlayer: boolean;
+  locationId: string;
+  stats: CharacterStats;                        // hp, maxHp, gold obrigatórios
+  inventory: Item[];                            // Lista estruturada de itens
+  relationships: Record<string, number>;        // CharacterID -> 0-100 (Afinidade)
+  state: 'idle' | 'talking' | 'fighting' | 'unconscious' | 'dead';
+  avatarColor?: string;                         // Hex code fallback
+  avatarBase64?: string;                        // Imagem gerada (IndexedDB)
 }
 ```
 
-### Item - Sistema de Itens (v1.2.0)
+### Item - Sistema de Itens
+
+**Arquivo:** `types.ts:43-73`
 
 ```typescript
 type ItemCategory =
-	| 'consumable' // Poções, comida, pergaminhos
-	| 'weapon' // Espadas, arcos, armas
-	| 'armor' // Escudos, capacetes, armaduras
-	| 'valuable' // Gemas, joias, tesouros
-	| 'material' // Materiais de crafting
-	| 'quest' // Itens de missão (não vendíveis)
-	| 'currency' // Moedas, créditos
-	| 'misc'; // Outros
+  | 'weapon'      // Espadas, arcos, armas
+  | 'armor'       // Escudos, armaduras
+  | 'consumable'  // Poções, comida, pergaminhos
+  | 'material'    // Materiais de crafting
+  | 'quest'       // Itens de missão (não vendíveis)
+  | 'valuable'    // Gemas, joias, tesouros
+  | 'currency'    // Moedas
+  | 'misc';       // Outros
 
 interface Item {
-	id: string; // ID único do item
-	name: string; // Nome de exibição
-	category: ItemCategory; // Categoria para preços e regras
-	description?: string; // Descrição opcional
-	baseValue?: number; // Valor base em gold
-	quantity?: number; // Quantidade se empilhável
-	isStackable?: boolean; // Se pode empilhar
-	effects?: ItemEffect[]; // Efeitos quando usado/equipado
-	isEquipped?: boolean; // Se está equipado (armas/armaduras)
-}
-
-interface ItemEffect {
-	stat: string; // Stat a modificar (ex: 'hp', 'gold')
-	value: number; // Quantidade a adicionar/subtrair
-	duration?: number; // Duração em turnos (opcional)
-}
-```
-
-### CharacterStats - Stats do Personagem
-
-```typescript
-interface CharacterStats {
-	hp: number; // Pontos de vida atuais
-	maxHp: number; // Pontos de vida máximos
-	gold: number; // Quantidade de gold
-	[key: string]: number; // Stats adicionais (força, mana, etc.)
+  name: string;
+  description?: string;
+  quantity: number;
+  category: ItemCategory;
+  baseValue?: number;      // Valor em gold
+  stackable: boolean;
+  consumable: boolean;
+  effects?: ItemEffect[];  // Efeitos quando usado
+  canSell?: boolean;
+  canDrop?: boolean;
 }
 ```
 
 ### GMResponse - Formato de Saída da IA
 
+**Arquivo:** `types.ts:251-261`
+
 ```typescript
 interface GMResponse {
-	messages: {
-		senderName: string; // 'Narrator', 'SYSTEM', ou nome do NPC
-		text: string;
-		type: 'dialogue' | 'narration' | 'system';
-	}[];
-	stateUpdates: {
-		newLocations?: Location[];
-		newCharacters?: Character[];
-		updatedCharacters?: Partial<Character>[];
-		locationChange?: string;
-		eventLog?: string;
-	};
+  messages: GMResponseMessage[];
+  stateUpdates: {
+    newLocations?: Location[];
+    newCharacters?: Character[];
+    updatedCharacters?: Partial<Character>[];
+    locationChange?: string;      // Novo ID de localização
+    eventLog?: string;            // Resumo do turno
+  };
+}
+```
+
+### HeavyContext - Contexto Narrativo Persistente
+
+**Arquivo:** `types.ts:288-295`
+
+```typescript
+interface HeavyContext {
+  mainMission?: string;         // Missão de longo prazo
+  currentMission?: string;      // Objetivo imediato
+  activeProblems?: string[];    // Problemas/conflitos ativos
+  currentConcerns?: string[];   // Preocupações/medos
+  importantNotes?: string[];    // Elementos importantes da história
+  lastUpdated?: number;
 }
 ```
 
 ---
 
-## Sistema de Economia (v1.2.0)
+## Principais Técnicas do Código
 
-### Regras de Preços por Categoria
+Esta seção detalha as técnicas mais importantes implementadas no código, com referências específicas aos arquivos e funções.
 
-| Categoria  | Preço Mínimo     | Preço Máximo |
-| ---------- | ---------------- | ------------ |
-| consumable | 5 gold           | 50 gold      |
-| weapon     | 20 gold          | 500 gold     |
-| armor      | 30 gold          | 600 gold     |
-| valuable   | 50 gold          | 1000 gold    |
-| material   | 1 gold           | 20 gold      |
-| quest      | 0 (não vendível) | 0            |
-| currency   | 1 gold           | 1000 gold    |
-| misc       | 1 gold           | 50 gold      |
+### 1. Fuzzy Matching para Busca de Personagens
 
-### Gold Inicial por Tipo de Universo
+**Arquivo:** `hooks/useGameEngine.ts:115-154`
 
-| Universo            | Gold Inicial |
-| ------------------- | ------------ |
-| Fantasy/Medieval    | 50           |
-| Sci-Fi/Space        | 100          |
-| Cyberpunk           | 150          |
-| Modern/Contemporary | 200          |
-| Steampunk           | 75           |
-| Horror              | 30           |
-| Western             | 40           |
-| Post-Apocalyptic    | 20           |
-
-### Multiplicadores de Compra/Venda
-
-- **Compra:** 100% do valor base (sem markup)
-- **Venda:** 50% do valor base (jogador recebe metade)
-
-### Migração Automática
-
-Saves antigos com `inventory: string[]` são automaticamente migrados para `Item[]` ao carregar:
+O sistema usa uma estratégia de 4 níveis para encontrar personagens por nome, tolerando erros de digitação e acentos:
 
 ```typescript
-// Antes (legado)
-inventory: ['Espada de Ferro', 'Poção de Cura'];
+const findCharacterByName = (
+  characters: Record<string, Character>,
+  charName: string
+): Character | undefined => {
+  const normalizedSearch = normalizeSpeakerName(charName);
+  const charArray = Object.values(characters);
 
-// Depois (migrado)
-inventory: [
-	{ id: 'item_123', name: 'Espada de Ferro', category: 'weapon', baseValue: 100 },
-	{ id: 'item_124', name: 'Poção de Cura', category: 'consumable', baseValue: 25 },
-];
+  // 1. Exact match (case insensitive)
+  let found = charArray.find(c =>
+    c.name.toLowerCase() === charName.toLowerCase()
+  );
+  if (found) return found;
+
+  // 2. Normalized match (ignoring accents/special chars)
+  found = charArray.find(c =>
+    normalizeSpeakerName(c.name) === normalizedSearch
+  );
+  if (found) return found;
+
+  // 3. Partial match - search name contains character name or vice versa
+  found = charArray.find(c => {
+    const normalizedCharName = normalizeSpeakerName(c.name);
+    return normalizedCharName.includes(normalizedSearch) ||
+           normalizedSearch.includes(normalizedCharName);
+  });
+  if (found) return found;
+
+  // 4. Word-based match - any significant word matches
+  const searchWords = normalizedSearch.split(/\s+/).filter(w => w.length > 2);
+  if (searchWords.length > 0) {
+    found = charArray.find(c => {
+      const charWords = normalizeSpeakerName(c.name).split(/\s+/).filter(w => w.length > 2);
+      return searchWords.some(sw => charWords.some(cw => cw === sw || cw.includes(sw)));
+    });
+  }
+
+  return found;
+};
 ```
 
-A categoria é detectada automaticamente usando keywords bilíngues (EN, PT, ES).
+**Funções auxiliares:** `stripDiacritics()` e `normalizeSpeakerName()` em `useGameEngine.ts:95-106`
+
+### 2. Padrão Data Mapper para IndexedDB
+
+**Arquivo:** `services/db.ts:31-381`
+
+O banco usa normalização relacional: o `GameState` é decomposto em 5 tabelas e reconstruído ao carregar.
+
+```typescript
+// Decomposição ao salvar (db.ts:79-115)
+saveGame: async (gameState: GameState): Promise<void> => {
+  const db = await dbService.open();
+  const tx = db.transaction(
+    [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS],
+    'readwrite'
+  );
+
+  const gameId = gameState.id;
+  const { characters, locations, events, ...metaData } = gameState;
+
+  // Metadados vão para GAMES
+  tx.objectStore(STORES.GAMES).put(metaData);
+
+  // Personagens normalizados com gameId
+  Object.values(characters).forEach(char => {
+    tx.objectStore(STORES.CHARACTERS).put({ ...char, gameId });
+  });
+
+  // Localizações, mensagens e eventos também normalizados
+  // ...
+}
+
+// Reconstrução ao carregar (db.ts:123-187)
+loadGame: async (id: string): Promise<GameState | undefined> => {
+  // Query paralela em todas as tabelas
+  const [charsArr, locsArr, msgsArr, evtsArr] = await Promise.all([
+    getAllByIndex(STORES.CHARACTERS, 'by_game_id', id),
+    getAllByIndex(STORES.LOCATIONS, 'by_game_id', id),
+    getAllByIndex(STORES.MESSAGES, 'by_game_id', id),
+    getAllByIndex(STORES.EVENTS, 'by_game_id', id),
+  ]);
+
+  // Reconstrói a árvore hidratada
+  const characters: Record<string, Character> = {};
+  charsArr.forEach((c: Character) => characters[c.id] = c);
+  // ...
+}
+```
+
+### 3. Type Guards para Sistema de Inventário
+
+**Arquivo:** `utils/inventory.ts:27-57`
+
+Type guards garantem segurança de tipos em runtime e suportam migração automática:
+
+```typescript
+// Verifica se é um Item válido
+export function isItem(item: unknown): item is Item {
+  if (typeof item !== 'object' || item === null) return false;
+  const obj = item as Record<string, unknown>;
+  return (
+    typeof obj.id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.category === 'string'
+  );
+}
+
+// Verifica se é inventário legado (string[])
+export function isLegacyInventory(inventory: unknown): inventory is string[] {
+  if (!Array.isArray(inventory)) return false;
+  if (inventory.length === 0) return false;
+  return typeof inventory[0] === 'string';
+}
+
+// Verifica se é inventário moderno (Item[])
+export function isItemInventory(inventory: unknown): inventory is Item[] {
+  if (!Array.isArray(inventory)) return false;
+  if (inventory.length === 0) return true; // Empty array é válido
+  return isItem(inventory[0]);
+}
+```
+
+### 4. Detecção de Categoria Bilíngue
+
+**Arquivo:** `utils/inventory.ts:67-205`
+
+O sistema detecta categorias de itens usando keywords em múltiplos idiomas:
+
+```typescript
+const CATEGORY_KEYWORDS: Record<ItemCategory, string[]> = {
+  consumable: [
+    // English
+    'potion', 'elixir', 'food', 'drink', 'herb', 'medicine',
+    // Portuguese
+    'poção', 'pocao', 'elixir', 'comida', 'bebida', 'erva',
+    // Spanish
+    'poción', 'comida', 'bebida', 'hierba', 'medicina',
+  ],
+  weapon: [
+    'sword', 'axe', 'bow', 'dagger', // English
+    'espada', 'machado', 'arco', 'adaga', // Portuguese
+    'espada', 'hacha', 'arco', 'daga', // Spanish
+  ],
+  // ... outras categorias
+};
+
+export function detectItemCategory(name: string): ItemCategory {
+  const lower = name.toLowerCase();
+  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    for (const keyword of keywords) {
+      if (lower.includes(keyword)) {
+        return category as ItemCategory;
+      }
+    }
+  }
+  return 'misc';
+}
+```
+
+### 5. Transformação de Resposta da IA
+
+**Arquivo:** `services/ai/openaiClient.ts:150-232`
+
+A função `transformRawResponse` normaliza a resposta JSON da IA para o formato tipado:
+
+```typescript
+const transformRawResponse = (raw: any): GMResponse => {
+  // Initialize stateUpdates if not present
+  if (!raw.stateUpdates) raw.stateUpdates = {};
+  if (!raw.stateUpdates.newCharacters) raw.stateUpdates.newCharacters = [];
+
+  // Track character IDs to avoid duplicates
+  const existingNewCharacterIds = new Set(
+    raw.stateUpdates.newCharacters.map((c: any) => c.id)
+  );
+
+  // Process messages and extract new characters from dialogue
+  if (raw.messages && Array.isArray(raw.messages)) {
+    raw.messages = raw.messages.map((msg: any): GMResponseMessage => {
+      // Handle old format (senderName/text) - convert to new format
+      if (msg.senderName !== undefined && msg.characterName === undefined) {
+        if (msg.type === 'dialogue') {
+          return {
+            type: 'dialogue',
+            characterName: msg.senderName,
+            dialogue: msg.text,
+            voiceTone: msg.voiceTone || 'neutral',
+          };
+        }
+        // ... handle other types
+      }
+
+      // Extract newCharacterData from dialogue messages
+      if (msg.type === 'dialogue' && msg.newCharacterData) {
+        const charData = msg.newCharacterData;
+        if (charData.id && !existingNewCharacterIds.has(charData.id)) {
+          raw.stateUpdates.newCharacters.push(transformNewCharacterData(charData));
+          existingNewCharacterIds.add(charData.id);
+        }
+      }
+
+      return msg;
+    });
+  }
+
+  // Transform stats arrays to objects: [{key: "hp", value: 100}] → {hp: 100}
+  // Transform relationships arrays to objects
+  // Normalize inventory to Item[] format
+  // ...
+
+  return raw as GMResponse;
+};
+```
+
+### 6. Sistema de Navegação com Swipe
+
+**Arquivo:** `hooks/useCardNavigation.ts:1-200`
+
+Hook que gerencia navegação por teclado, touch e mouse:
+
+```typescript
+const SWIPE_THRESHOLD = 50;        // Distância mínima para trigger
+const SWIPE_VELOCITY_THRESHOLD = 0.3;
+
+export const useCardNavigation = ({
+  totalCards,
+  enabled = true,
+  onIndexChange,
+}: UseCardNavigationProps): UseCardNavigationReturn => {
+  const [currentIndex, setCurrentIndexState] = useState(0);
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const [swipeProgress, setSwipeProgress] = useState(0);
+
+  const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+
+  // Keyboard navigation (Arrow keys, Home, End)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!enabled) return;
+      switch (e.key) {
+        case 'ArrowLeft': goToPrevious(); break;
+        case 'ArrowRight': goToNext(); break;
+        case 'Home': goToFirst(); break;
+        case 'End': goToLast(); break;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [enabled, goToNext, goToPrevious]);
+
+  // Touch handlers with velocity detection
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStartRef.current) return;
+    const deltaX = /* calculate delta */;
+    const velocity = deltaX / elapsed;
+
+    if (Math.abs(deltaX) > SWIPE_THRESHOLD ||
+        Math.abs(velocity) > SWIPE_VELOCITY_THRESHOLD) {
+      if (deltaX > 0) goToPrevious();
+      else goToNext();
+    }
+  }, [goToNext, goToPrevious]);
+
+  return { currentIndex, touchHandlers, swipeDirection, swipeProgress, /* ... */ };
+};
+```
+
+### 7. Classificação de Erros OpenAI
+
+**Arquivo:** `utils/errorHandler.ts:19-77`
+
+Sistema robusto de classificação de erros:
+
+```typescript
+export const parseOpenAIError = (error: any): { errorType: ErrorType; message?: string } => {
+  // Handle OpenAI SDK errors
+  if (error?.error?.code || error?.error?.type) {
+    const code = error.error.code || error.error.type;
+    switch (code) {
+      case 'insufficient_quota':
+        return { errorType: 'insufficient_quota', message };
+      case 'invalid_api_key':
+        return { errorType: 'invalid_key', message };
+      case 'rate_limit_exceeded':
+        return { errorType: 'rate_limit', message };
+      default:
+        return { errorType: 'generic', message };
+    }
+  }
+
+  // Handle HTTP status codes
+  if (error?.status) {
+    switch (error.status) {
+      case 401: return { errorType: 'invalid_key' };
+      case 429:
+        if (error.message?.includes('quota'))
+          return { errorType: 'insufficient_quota' };
+        return { errorType: 'rate_limit' };
+      case 500: case 502: case 503:
+        return { errorType: 'network' };
+    }
+  }
+
+  // Handle string patterns
+  const errorMessage = error?.message || String(error);
+  if (errorMessage.includes('insufficient_quota'))
+    return { errorType: 'insufficient_quota' };
+  if (errorMessage.includes('invalid') && errorMessage.includes('key'))
+    return { errorType: 'invalid_key' };
+  // ...
+
+  return { errorType: 'generic', message: errorMessage };
+};
+```
+
+### 8. Configuração de Modelos por Tarefa
+
+**Arquivo:** `services/ai/openaiClient.ts:52-81`
+
+Estratégia de seleção de modelos otimizada para custo vs qualidade:
+
+```typescript
+const MODEL_CONFIG = {
+  // Tarefas complexas - mantém gpt-4.1 ($2.00/1M input, $8.00/1M output)
+  gameMaster: 'gpt-4.1',           // Loop principal: narrativa, NPCs, mecânicas
+  storyInitialization: 'gpt-4.1', // Criação inicial do mundo
+  universeContext: 'gpt-4.1',     // Geração de contexto narrativo
+
+  // Tarefas médias - gpt-4.1-mini (80% economia)
+  onboarding: 'gpt-4.1-mini',     // Entrevista de criação
+  heavyContext: 'gpt-4.1-mini',   // Análise de contexto
+  playerMessageProcessing: 'gpt-4.1-mini',
+  customActionAnalysis: 'gpt-4.1-mini',
+  actionOptions: 'gpt-4.1-mini',  // 5 sugestões de ação
+  themeColors: 'gpt-4.1-mini',
+
+  // Tarefas simples - gpt-4.1-nano (95% economia)
+  textClassification: 'gpt-4.1-nano',
+} as const;
+```
+
+### 9. Presets de Geração de Imagem
+
+**Arquivo:** `utils/ai.ts:44-57`
+
+```typescript
+const IMAGE_SIZE_PRESETS = {
+  characterAvatar: {
+    imageSize: '1024x1024',
+    quality: 'medium',
+    targetDimensions: { width: 124, height: 124 },
+    description: 'Character avatars scaled down to 124px squares.',
+  },
+  locationBackground: {
+    imageSize: '1536x1024',
+    quality: 'medium',
+    targetDimensions: { width: 768, height: 512 },
+    description: 'Cinematic widescreen backgrounds for locations.',
+  },
+} as const;
+```
+
+### 10. Sanitização de Mensagens
+
+**Arquivo:** `utils/messages.ts`
+
+Remove duplicatas geradas por race conditions:
+
+```typescript
+export function sanitizeMessages(messages: ChatMessage[]): ChatMessage[] {
+  const seen = new Set<string>();
+  const result: ChatMessage[] = [];
+
+  for (const msg of messages) {
+    // Deduplication by ID
+    if (seen.has(msg.id)) continue;
+    seen.add(msg.id);
+
+    // Deduplication by content within 2-second window
+    const contentKey = `${msg.senderId}|${msg.type}|${msg.text}`;
+    const recentDupe = result.find(existing =>
+      Math.abs(existing.timestamp - msg.timestamp) < 2000 &&
+      `${existing.senderId}|${existing.type}|${existing.text}` === contentKey
+    );
+    if (recentDupe) continue;
+
+    result.push(msg);
+  }
+
+  return result;
+}
+```
 
 ---
 
-## Sistema de Qualidade Narrativa (v1.3.0)
-
-O storywell.games implementa um sistema avançado de qualidade narrativa baseado em técnicas literárias profissionais.
-Este sistema garante que as histórias geradas tenham a qualidade de ficção publicável.
+## Sistema de Qualidade Narrativa
 
 ### Gêneros Narrativos (15 Presets)
 
-Cada universo pode ser configurado com um gênero narrativo que define vocabulário, tom, ritmo e técnicas específicas:
+**Arquivo:** `services/ai/prompts/narrativeStyles.ts`
+
+Cada universo pode ser configurado com um gênero que define vocabulário, tom e técnicas:
 
 | Gênero             | Estilo                                                | Tom Principal           |
 | ------------------ | ----------------------------------------------------- | ----------------------- |
@@ -299,619 +684,221 @@ Cada universo pode ser configurado com um gênero narrativo que define vocabulá
 | `superhero`        | Ação heróica - dilemas morais, poderes                | Heroico, espetacular    |
 | `slice_of_life`    | Cotidiano - momentos pequenos, realismo               | Contemplativo, caloroso |
 
-### Configuração de Gênero
+### Diferenciação de Voz de NPCs
 
-Cada preset define:
+**Arquivo:** `services/ai/prompts/gameMaster.prompt.ts:104-149`
+
+Cada NPC recebe um perfil de voz inferido da sua descrição:
 
 ```typescript
-interface NarrativeStyle {
-	genre: NarrativeGenre;
-	displayName: string;
-	description: string;
-	vocabulary: {
-		complexity: 'simple' | 'moderate' | 'elaborate' | 'archaic';
-		useWords: string[]; // Palavras características a usar
-		avoidWords: string[]; // Palavras a evitar
-		formality: 'casual' | 'neutral' | 'formal' | 'ceremonial';
-	};
-	sentencePatterns: {
-		averageLength: 'short' | 'medium' | 'long' | 'varied';
-		rhythm: 'staccato' | 'flowing' | 'mixed';
-		complexity: 'simple' | 'compound' | 'complex';
-		patterns: string[]; // Padrões específicos do gênero
-	};
-	atmosphere: {
-		primaryTone: string;
-		secondaryTones: string[];
-		sensoryPriorities: ('visual' | 'auditory' | 'tactile' | 'olfactory' | 'gustatory')[];
-		violenceLevel: 'none' | 'implied' | 'moderate' | 'graphic';
-		humorStyle: 'none' | 'subtle' | 'moderate' | 'frequent';
-	};
-	techniques: string[]; // Técnicas a usar
-	avoid: string[]; // O que evitar
-	examplePhrases: string[]; // Exemplos de prosa no estilo
+function inferVoiceProfileFromDescription(description: string): Partial<NPCVoiceProfile> {
+  const desc = description.toLowerCase();
+  const profile: Partial<NPCVoiceProfile> = {};
+
+  // Inferir classe social
+  if (desc.includes('rei') || desc.includes('king') || desc.includes('queen')) {
+    profile.socialClass = 'royalty';
+    profile.educationLevel = 'educated';
+  } else if (desc.includes('mercador') || desc.includes('merchant')) {
+    profile.socialClass = 'middle';
+    profile.verbalTics = ['meu amigo', 'bom negócio', 'entre nós'];
+  } else if (desc.includes('camponês') || desc.includes('peasant')) {
+    profile.socialClass = 'lower';
+    profile.educationLevel = 'uneducated';
+  }
+
+  // Inferir ritmo de fala
+  if (desc.includes('velho') || desc.includes('elderly')) {
+    profile.speechRhythm = 'slow';
+  } else if (desc.includes('nervoso') || desc.includes('anxious')) {
+    profile.speechRhythm = 'erratic';
+  }
+
+  return profile;
 }
 ```
 
 ### Sistema "Mostrar, Não Contar"
 
-O sistema inclui regras rígidas para evitar "contar" emoções em vez de "mostrá-las":
+O sistema inclui regras rígidas para evitar "contar" emoções:
 
 ```typescript
 // NUNCA faça isso:
-'Ela estava com raiva.';
-'Ele estava nervoso.';
-'Maria ficou triste.';
+'Ela estava com raiva.'
+'Ele estava nervoso.'
 
 // SEMPRE faça isso:
-'Ela bateu o punho na mesa, sua voz subindo uma oitava.';
-'Ele ajustou a gravata pela terceira vez, os olhos saltando para a porta.';
-'Maria virou o rosto para a janela. A chuva traçava caminhos no vidro.';
-```
-
-O sistema detecta automaticamente violações através de:
-
-- Lista de indicadores de "contar" em PT/EN/ES
-- Análise de qualidade pós-geração com scoring (0-100)
-- Sugestões de reescrita para frases problemáticas
-
-### Diferenciação de Voz de NPCs
-
-Cada NPC recebe um perfil de voz único baseado em:
-
-```typescript
-interface NPCVoiceProfile {
-	educationLevel: 'uneducated' | 'common' | 'educated' | 'scholarly' | 'archaic';
-	socialClass: 'outcast' | 'lower' | 'middle' | 'upper' | 'nobility' | 'royalty';
-	region: string; // Afeta dialeto
-	profession: string; // Afeta jargão
-	verbalTics: string[]; // "né", "sabe", "tipo assim"
-	catchphrases: string[]; // Frases características
-	speechRhythm: 'slow' | 'normal' | 'fast' | 'erratic';
-	personalityTrait: string; // Traço dominante que afeta fala
-}
-```
-
-**Templates Pré-definidos:**
-
-- `peasant` - Vocabulário simples, gírias, ritmo rápido
-- `merchant` - Vocabulário médio, expressões comerciais
-- `scholar` - Vocabulário técnico, referências eruditas
-- `noble` - Tom formal e superior, ritmo pausado
-- `soldier` - Tom direto, jargão militar
-- `mystic` - Fala enigmática, referências ao destino
-- `criminal` - Gírias de rua, linguagem codificada
-- `child` - Vocabulário limitado, entusiasmo
-
-### Sistema de Controle de Ritmo (Pacing)
-
-O sistema monitora e ajusta automaticamente o ritmo narrativo:
-
-| Nível          | Descrição          | Características                                |
-| -------------- | ------------------ | ---------------------------------------------- |
-| `high_tension` | Alta tensão        | Frases curtas, ações imediatas, urgência       |
-| `building`     | Construindo tensão | Complicações crescentes, prenúncios            |
-| `moderate`     | Ritmo moderado     | Equilíbrio ação/reflexão, progresso constante  |
-| `calm`         | Calmo/Respiro      | Exploração, relacionamentos, momentos pessoais |
-| `release`      | Liberação          | Resolução de tensão, consequências, reflexão   |
-
-O sistema emite avisos automáticos:
-
-- ⚠️ Alta tensão por mais de 3 turnos → "Considere um momento de respiro"
-- ⚠️ Cenas calmas por mais de 5 turnos → "Considere introduzir conflito"
-
-### Sistema de Foreshadowing e Callbacks
-
-Rastreamento automático de elementos narrativos plantados:
-
-```typescript
-interface NarrativeThread {
-	id: string;
-	type: 'foreshadowing' | 'callback' | 'chekhov_gun';
-	description: string;
-	plantedTurn: number;
-	status: 'planted' | 'referenced' | 'resolved';
-	resolvedTurn?: number;
-	importance: 'minor' | 'moderate' | 'major';
-}
-```
-
-**Tipos de Threads:**
-
-- **Foreshadowing** - Prenúncios de eventos futuros (profecias, avisos, comportamentos suspeitos)
-- **Chekhov's Gun** - Objetos/habilidades introduzidos que devem ser usados depois
-- **Callback** - Referências a eventos passados que criam conexão
-
-### Análise de Qualidade Narrativa
-
-O sistema inclui um analisador de qualidade que pontua narrativas geradas:
-
-```typescript
-interface NarrativeQualityAnalysisResponse {
-	overallScore: number; // 0-100
-	meetsQualityThreshold: boolean; // Threshold = 70
-	summary: string;
-	strengths: string[];
-	issues: NarrativeIssue[];
-}
-
-interface NarrativeIssue {
-	type: 'tell_not_show' | 'voice_homogenization' | 'pacing' | 'cliche' | 'genre_violation' | 'repetition';
-	severity: 'low' | 'medium' | 'high';
-	originalText: string;
-	explanation: string;
-	suggestion?: string;
-}
-```
-
-**Escala de Pontuação:**
-
-- 90-100: Prosa excelente, qualidade publicável
-- 80-89: Boa qualidade, problemas menores
-- 70-79: Aceitável, alguns problemas notáveis
-- 60-69: Abaixo do threshold, precisa melhorar
-- < 60: Problemas significativos de qualidade
-
----
-
-## Engenharia de Prompts
-
-Os prompts são o **cérebro do motor de jogo**. Eles definem como a IA se comporta e qual formato ela retorna.
-
-### Estrutura Modular de Prompts
-
-Os prompts estão organizados em uma estrutura modular em `services/ai/prompts/`:
-
-```
-services/ai/prompts/
-├── index.ts                           # Exporta todos os prompts
-├── onboarding.prompt.ts               # Criação de mundo
-├── gameMaster.prompt.ts               # Loop principal do jogo
-├── storyInitialization.prompt.ts      # Estado inicial
-├── playerMessageProcessing.prompt.ts  # Adaptação de diálogo
-├── actionOptions.prompt.ts            # Sugestões de ações
-├── characterAvatar.prompt.ts          # Geração de avatares
-├── heavyContext.prompt.ts             # Memória narrativa persistente
-├── universeContext.prompt.ts          # Contexto profundo do universo
-├── textClassification.prompt.ts       # Classificação de texto
-├── customActionAnalysis.prompt.ts     # Análise de ações customizadas
-├── narrativeStyles.ts                 # Sistema de estilos narrativos (v1.3.0)
-├── narrativeQualityAnalysis.prompt.ts # Análise de qualidade (v1.3.0)
-└── helpers.ts                         # Funções auxiliares
-```
-
-### Padrão de Arquivos de Prompt
-
-Cada arquivo de prompt segue o mesmo padrão:
-
-```typescript
-/**
- * @fileoverview Descrição do propósito do prompt
- * @module prompts/nomeDoPrompt
- */
-
-// Interface de parâmetros tipados
-export interface NomeDoPromptParams {
-  param1: TipoParam1;
-  param2: TipoParam2;
-}
-
-/**
- * Constrói o prompt para [propósito].
- *
- * @param {NomeDoPromptParams} params - Parâmetros de entrada
- * @returns {string} O prompt formatado
- *
- * @example
- * const prompt = buildNomeDoPrompt({ param1, param2 });
- */
-export function buildNomeDoPrompt(params: NomeDoPromptParams): string {
-  // Lógica de construção do prompt
-  return `...`;
-}
-
-// Schema JSON (quando aplicável)
-export const nomeDoPromptSchema = { ... };
-```
-
-### Importação de Prompts
-
-```typescript
-// Importação recomendada (centralizada)
-import {
-	buildOnboardingPrompt,
-	buildGameMasterPrompt,
-	buildStoryInitializationPrompt,
-	buildPlayerMessageProcessingPrompt,
-	buildActionOptionsPrompt,
-	buildCharacterAvatarPrompt,
-	// Schemas
-	onboardingSchema,
-	gmResponseSchema,
-	actionOptionsSchema,
-} from './services/ai/prompts';
-
-// Uso
-const prompt = buildGameMasterPrompt({
-	gameState,
-	playerInput: 'Lanço uma bola de fogo',
-	language: 'pt',
-	fateResult: { type: 'good', hint: 'Crítico!' },
-});
-```
-
-### Catálogo de Prompts
-
-| Prompt                                | Arquivo                              | Uso                             | Modelo           |
-| ------------------------------------- | ------------------------------------ | ------------------------------- | ---------------- |
-| `buildOnboardingPrompt`               | `onboarding.prompt.ts`               | Entrevista de criação de mundo  | GPT-4.1          |
-| `buildGameMasterPrompt`               | `gameMaster.prompt.ts`               | Loop principal do jogo          | GPT-4.1          |
-| `buildStoryInitializationPrompt`      | `storyInitialization.prompt.ts`      | Criação do estado inicial       | GPT-4.1          |
-| `buildPlayerMessageProcessingPrompt`  | `playerMessageProcessing.prompt.ts`  | Adaptação de diálogo            | GPT-4.1          |
-| `buildActionOptionsPrompt`            | `actionOptions.prompt.ts`            | Sugestões de ações              | GPT-4.1          |
-| `buildCharacterAvatarPrompt`          | `characterAvatar.prompt.ts`          | Geração de avatares             | gpt-image-1-mini |
-| `buildHeavyContextPrompt`             | `heavyContext.prompt.ts`             | Memória narrativa persistente   | GPT-4.1          |
-| `buildUniverseContextPrompt`          | `universeContext.prompt.ts`          | Contexto profundo do universo   | GPT-4.1          |
-| `buildNarrativeQualityAnalysisPrompt` | `narrativeQualityAnalysis.prompt.ts` | Análise de qualidade narrativa  | GPT-4.1          |
-| `generateNarrativeInstructions`       | `narrativeStyles.ts`                 | Instruções de estilo por gênero | -                |
-
----
-
-### 1. buildOnboardingPrompt - Criação de Mundo
-
-```typescript
-import { buildOnboardingPrompt } from './prompts';
-
-const prompt = buildOnboardingPrompt({
-	history: [{ question: 'Qual universo?', answer: 'Star Wars' }],
-	universeType: 'existing',
-	language: 'pt',
-});
-```
-
-**Propósito:** Entrevista interativa para construir o mundo do RPG.
-
-**Parâmetros:** | Parâmetro | Tipo | Descrição | |-----------|------|-----------| | `history` |
-`{question: string, answer: string}[]` | Histórico de perguntas e respostas | | `universeType` |
-`'original' \| 'existing'` | Tipo de universo | | `language` | `Language` | Idioma alvo |
-
-**Coleta 7 dados obrigatórios:**
-
-1. Nome do Universo/Cenário
-2. Período/Era temporal
-3. Nome do personagem
-4. Aparência do personagem
-5. Background/História
-6. Localização inicial
-7. Memórias do personagem
-
----
-
-### 2. buildGameMasterPrompt - Loop Principal
-
-```typescript
-import { buildGameMasterPrompt } from './prompts';
-
-const prompt = buildGameMasterPrompt({
-	gameState,
-	playerInput: 'Lanço bola de fogo no goblin',
-	language: 'pt',
-	fateResult: { type: 'good', hint: 'Crítico!' },
-});
-```
-
-**Propósito:** Define a lógica do Game Master para resolução de ações.
-
-**Parâmetros:** | Parâmetro | Tipo | Descrição | |-----------|------|-----------| | `gameState` | `GameState` | Estado
-completo do jogo | | `playerInput` | `string` | Ação do jogador | | `language` | `Language` | Idioma alvo | |
-`fateResult` | `FateResult?` | Evento de destino opcional |
-
-**Regras de Validação:**
-
-- MAGIA: Verificar mana nos Stats, deduzir custo
-- COMBATE: Verificar arma no Inventário
-- CONSUMÍVEIS: Verificar e remover item se usado
-- PROPRIEDADES OCULTAS: Aplicar efeitos (veneno, buffs)
-
----
-
-### 3. buildStoryInitializationPrompt - Estado Inicial
-
-```typescript
-import { buildStoryInitializationPrompt } from './prompts';
-
-const prompt = buildStoryInitializationPrompt({
-	config: {
-		universeName: 'Star Wars',
-		universeType: 'existing',
-		playerName: 'Kira',
-		playerDesc: 'Jovem padawan',
-		startSituation: 'Templo Jedi',
-		background: 'Órfã treinada desde criança',
-		memories: 'Lembra de um misterioso salvador',
-	},
-	language: 'pt',
-});
-```
-
-**Propósito:** Cria o estado inicial do jogo.
-
-**Parâmetros:** | Parâmetro | Tipo | Descrição | |-----------|------|-----------| | `config` | `StoryConfig` |
-Configuração da história do onboarding | | `language` | `Language` | Idioma alvo |
-
----
-
-### 4. buildPlayerMessageProcessingPrompt - Adaptador de Diálogo
-
-```typescript
-import { buildPlayerMessageProcessingPrompt } from './prompts';
-
-const prompt = buildPlayerMessageProcessingPrompt({
-	gameState,
-	rawInput: 'oi, tudo bem?',
-	language: 'pt',
-});
-// Transforma em: "Salve, nobre viajante! Que notícias trazes?"
-```
-
-**Propósito:** Transforma input casual em diálogo apropriado ao universo.
-
-**Parâmetros:** | Parâmetro | Tipo | Descrição | |-----------|------|-----------| | `gameState` | `GameState` | Estado
-do jogo para contexto | | `rawInput` | `string` | Texto original do jogador | | `language` | `Language` | Idioma alvo |
-
----
-
-### 5. buildActionOptionsPrompt - Sugestões de Ação
-
-```typescript
-import { buildActionOptionsPrompt } from './prompts';
-
-const prompt = buildActionOptionsPrompt({
-	gameState,
-	language: 'pt',
-});
-```
-
-**Propósito:** Gera 5 opções de ação com probabilidades de eventos.
-
-**Parâmetros:** | Parâmetro | Tipo | Descrição | |-----------|------|-----------| | `gameState` | `GameState` | Estado
-do jogo para contexto | | `language` | `Language` | Idioma das opções |
-
-**Formato da Resposta:**
-
-```typescript
-{
-	options: [
-		{
-			text: string, // Texto da ação (3-8 palavras)
-			goodChance: number, // 0-50% chance de evento bom
-			badChance: number, // 0-50% chance de evento ruim
-			goodHint: string, // Dica do que pode acontecer de bom
-			badHint: string, // Dica do que pode acontecer de ruim
-		},
-	];
-}
+'Ela bateu o punho na mesa, sua voz subindo uma oitava.'
+'Ele ajustou a gravata pela terceira vez, os olhos saltando para a porta.'
 ```
 
 ---
 
-### 6. buildCharacterAvatarPrompt - Geração de Avatar
+## Sistema de Requisições à IA
+
+### Fluxo de Requisição LLM
+
+**Arquivo:** `utils/ai.ts:163-184`
 
 ```typescript
-import { buildCharacterAvatarPrompt } from './prompts';
+export const queryLLM = async (
+  apiKey: string,
+  messages: LLMMessage[],
+  config: LLMRequestConfig,
+): Promise<LLMResponse> => {
+  const client = new OpenAI({
+    apiKey,
+    dangerouslyAllowBrowser: true, // Required for browser-side usage
+  });
 
-const prompt = buildCharacterAvatarPrompt({
-	characterName: 'Elara',
-	characterDescription: 'Elfa com cabelos prateados e olhos verdes',
-	universeContext: 'Fantasia Medieval',
-});
+  const response = await client.chat.completions.create({
+    model: config.model,
+    messages: messages,
+    temperature: 0, // Determinístico
+    response_format: config.responseFormat === 'json'
+      ? { type: 'json_object' }
+      : { type: 'text' },
+    ...(config.maxTokens && { max_tokens: config.maxTokens }),
+  });
+
+  return {
+    text: response.choices[0]?.message?.content || null,
+  };
+};
 ```
 
-**Propósito:** Gera avatares via gpt-image-1-mini.
+### Construção de Contexto para o Game Master
 
-**Parâmetros:** | Parâmetro | Tipo | Descrição | |-----------|------|-----------| | `characterName` | `string` | Nome do
-personagem | | `characterDescription` | `string` | Descrição visual | | `universeContext` | `string` | Contexto do
-universo |
-
----
-
-### JSON Schemas
-
-#### gmResponseSchema
+**Arquivo:** `services/ai/openaiClient.ts` (função `generateGameTurn`)
 
 ```typescript
-{
-  messages: [{
-    messages: [{
-    type: enum["dialogue", "narration", "system"],
-    voiceTone: string,
-    text?: string,
-    characterName?: string,      // Obrigatório quando type === 'dialogue'
-    dialogue?: string,           // Obrigatório quando type === 'dialogue'
-    newCharacterData?: {
-      id: string,
-      name: string,
-      description: string,
-      locationId: string,
-      state: enum['idle','talking','fighting','unconscious','dead'],
-      inventory?: string[],
-      stats?: [{ key: string, value: number }]
-    }
-  }],
-  stateUpdates: {
-    newLocations?: Location[],
-    newCharacters?: Character[],
-    updatedCharacters?: {
-      id: string,
-      stats?: [{key: string, value: number}],
-      inventory?: string[],
-      relationships?: [{targetId: string, score: number}]
-    }[],
-    locationChange?: string,
-    eventLog: string  // OBRIGATÓRIO
-  }
-}
-```
-
-- **Narração/Sistema:** usam apenas `text` + `voiceTone`.
-- **Diálogo:** deve trazer `characterName` + `dialogue`. Se o NPC ainda não existe, inclua `newCharacterData` para que o
-  cliente possa registrá-lo e gerar avatar.
-- **Agência do Jogador:** nunca gere `type: "dialogue"` cujo `characterName` seja o jogador ou variações dele ("Player",
-  "You", "Você", etc.). Caso um NPC aguarde resposta, descreva essa expectativa numa mensagem de narração.
-- **Avatares:** sempre que `newCharacterData` aparece, o backend chama o gerador de avatar e salva o resultado antes de
-  enviar ao app.
-
----
-
-## Construção de Contexto
-
-### Como o contexto é montado para cada chamada de IA
-
-```typescript
-// Em generateGameTurn()
+// Montagem do contexto
 const messages: LLMMessage[] = [
-	{
-		role: 'system',
-		content: systemPrompt + schemaInstruction,
-	},
-	{
-		role: 'user',
-		content: `History (Context): ${JSON.stringify(gameState.messages.slice(-100))}`,
-	},
-	{
-		role: 'user',
-		content: `Player Action: "${input}"`,
-	},
+  {
+    role: 'system',
+    content: systemPrompt + '\n\n' + JSON.stringify(gmResponseSchema),
+  },
+  {
+    role: 'user',
+    content: `History (Context): ${JSON.stringify(gameState.messages.slice(-100))}`,
+  },
+  {
+    role: 'user',
+    content: `Player Action: "${input}"`,
+  },
 ];
-```
 
-### Componentes do Contexto
+// Execução
+const response = await queryLLM(apiKey, messages, {
+  model: MODEL_CONFIG.gameMaster,
+  responseFormat: 'json',
+});
 
-1. **System Prompt** (~2000 tokens)
+// Processamento
+const raw = JSON.parse(cleanJsonString(response.text));
+const result = transformRawResponse(raw);
 
-   - Regras do universo
-   - Estado completo do jogador
-   - NPCs na cena
-   - Instruções de validação
-
-2. **Histórico Recente** (últimas 100 mensagens)
-
-   - Fornece continuidade narrativa
-   - Evita repetições
-   - Mantém coerência de diálogos
-
-3. **Ação do Jogador**
-   - Texto exato digitado/selecionado
-   - Usado para resolução de mecânicas
-
-### Geração de Opções de Ação
-
-```typescript
-// Em generateActionOptions()
-const contextPrompt = `
-Current Location: ${location.name} - ${location.description}
-Player: ${player.name} - ${player.description}
-Recent events: ${recentMessages.map((m) => m.text).join(' | ')}
-
-Rules:
-1. Generate exactly 5 distinct actions
-2. Actions should be short (3-8 words)
-3. Mix types: dialogue, exploration, combat, interaction
-4. Write in ${languageName}
-5. Make them specific to the situation
-6. Include at least one cautious option
-`;
-```
-
-### Heavy Context Incremental Updates
-
-- **Main Mission:** arco principal de longo prazo (texto livre maior)
-- **Current Mission:** objetivo imediato que guia o próximo turno
-- **Active Problems / Current Concerns / Important Notes:** listas de até 5 itens cada
-
-Em vez de sobrescrever todo o contexto, o LLM envia apenas as diferenças:
-
-```json
-{
-	"shouldUpdate": true,
-	"changes": {
-		"mainMission": { "action": "set", "value": "Impedir que o império acorde o titã." },
-		"currentMission": { "action": "clear" },
-		"activeProblems": [
-			{ "action": "remove", "value": "Tempestade acima" },
-			{ "action": "add", "value": "Guardas do templo em alerta" }
-		],
-		"importantNotes": [{ "action": "add", "value": "A runa reage à luz da lua" }]
-	}
+// Geração paralela de avatares para novos personagens
+if (result.stateUpdates.newCharacters?.length > 0) {
+  result.stateUpdates.newCharacters = await Promise.all(
+    result.stateUpdates.newCharacters.map(async (char) => {
+      const avatar = await generateCharacterAvatar(
+        apiKey, char.name, char.description,
+        gameState.config.universeName, gameState.config.visualStyle
+      );
+      return { ...char, avatarBase64: avatar };
+    })
+  );
 }
 ```
 
-O motor aplica cada `set/clear` para campos singulares e `add/remove` para listas, garantindo deduplicação e limite de 5
-itens.
+### Geração de Imagens
 
----
+**Arquivo:** `services/ai/openaiClient.ts:269-347`
 
-## Tomada de Decisões da IA
+```typescript
+export const generateCharacterAvatar = async (
+  apiKey: string,
+  charName: string,
+  charDesc: string,
+  universeContext: string,
+  visualStyle?: string,
+): Promise<string | undefined> => {
+  const prompt = buildCharacterAvatarPrompt({
+    characterName: charName,
+    characterDescription: charDesc,
+    universeContext,
+    visualStyle,
+  });
 
-### Fluxo de Resolução de Ação
+  const avatarPreset = getImageGenerationPreset('characterAvatar');
 
-```
-Jogador: "Lanço bola de fogo no goblin"
-         ↓
-┌─────────────────────────────────────┐
-│  1. VALIDAÇÃO DE VIABILIDADE        │
-│  - Jogador tem mana suficiente?     │
-│  - Jogador sabe magia de fogo?      │
-│  - Há um goblin na cena?            │
-└─────────────────────────────────────┘
-         ↓
-┌─────────────────────────────────────┐
-│  2. CÁLCULO DE EFEITOS              │
-│  - Custo: mana -= 20                │
-│  - Dano: goblin.hp -= 25            │
-│  - Chance de falha crítica?         │
-└─────────────────────────────────────┘
-         ↓
-┌─────────────────────────────────────┐
-│  3. GERAÇÃO DE NARRATIVA            │
-│  - Narrador descreve a cena         │
-│  - Goblin reage (diálogo)           │
-│  - Sistema informa mudanças         │
-└─────────────────────────────────────┘
-         ↓
-┌─────────────────────────────────────┐
-│  4. ATUALIZAÇÃO DE ESTADO           │
-│  - updatedCharacters com novos stats│
-│  - eventLog para histórico          │
-└─────────────────────────────────────┘
+  try {
+    const rawAvatarBase64 = await generateImage(
+      apiKey, prompt,
+      avatarPreset.imageSize,
+      avatarPreset.quality
+    );
+
+    // Resize to target dimensions (124x124)
+    const optimizedAvatar = await applyImagePresetToBase64(rawAvatarBase64, 'characterAvatar');
+    return optimizedAvatar;
+  } catch (e) {
+    console.error('Avatar generation failed:', e);
+    return undefined;
+  }
+};
 ```
 
-### Regras de Validação (do System Prompt)
+### Text-to-Speech com Tom Emocional
 
-```markdown
-ITEM VALIDATION:
+**Arquivo:** `services/ai/openaiClient.ts:369-400`
 
-- Se ação requer item, verificar inventário
-- Se item é consumível, remover após uso
-- Se item tem propriedade oculta (veneno), aplicar efeito
+```typescript
+const buildTTSInstructions = (
+  language: Language,
+  voiceTone: string | undefined,
+  voiceType: 'narrator' | 'player' | 'npc',
+): string => {
+  const languageDirective = getLanguageDirective(language);
 
-MAGIC VALIDATION:
+  // Instruções específicas para português brasileiro
+  const languageSpecificInstructions: Partial<Record<Language, string>> = {
+    pt: `[Brazilian Portuguese]
+You MUST speak in Brazilian Portuguese with an authentic Brazilian accent.
+- Open vowels typical of Brazilian speech
+- Soft 's' sounds (not 'sh' of European Portuguese)
+- Pronounce final 'e' as 'i' (e.g., "leite" → "leiti")
+- Pronounce 'd' and 't' before 'i' as 'dj' and 'tch'`,
+  };
 
-- Verificar se personagem tem mana suficiente
-- Deduzir custo do stat de mana
-- Falha se mana insuficiente
+  return `${languageDirective}\nTone: ${voiceTone || 'neutral'}`;
+};
+```
 
-COMBAT VALIDATION:
+### Speech-to-Text com Whisper
 
-- Verificar se alvo está na mesma localização
-- Verificar estado do alvo (não pode atacar morto)
-- Aplicar modificadores de arma/armadura
+**Arquivo:** `utils/ai.ts:194-220`
 
-SOCIAL VALIDATION:
+```typescript
+export const transcribeAudioWithWhisper = async (
+  apiKey: string,
+  audioBlob: Blob,
+  language: string,
+): Promise<string> => {
+  const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
-- Verificar relacionamento para persuasão
-- NPCs hostis rejeitam pedidos
-- Roubo requer check de habilidade
+  // Converter blob para File
+  const audioFile = new File([audioBlob], 'audio.webm', { type: 'audio/webm' });
+
+  const transcription = await client.audio.transcriptions.create({
+    file: audioFile,
+    model: 'whisper-1',
+    language: language, // Hint de idioma
+  });
+
+  return transcription.text;
+};
 ```
 
 ---
@@ -920,125 +907,446 @@ SOCIAL VALIDATION:
 
 ### Hook Principal: useGameEngine
 
+**Arquivo:** `hooks/useGameEngine.ts:177-800+`
+
 ```typescript
 export const useGameEngine = (): UseGameEngineReturn => {
-	// Estados principais
-	const [apiKey, setApiKey] = useState<string>('');
-	const [stories, setStories] = useState<GameState[]>([]);
-	const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
-	const [isProcessing, setIsProcessing] = useState(false);
+  // Estados principais
+  const [apiKey, setApiKey] = useState<string>('');
+  const [stories, setStories] = useState<GameState[]>([]);
+  const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [creationPhase, setCreationPhase] = useState<CreationPhase>(null);
+  const [processingPhase, setProcessingPhase] = useState<ProcessingPhase>(null);
 
-	// Ações expostas para a UI
-	return {
-		handleSendMessage, // Loop principal do jogo
-		handleCreateStory, // Criar nova história
-		handleDeleteStory, // Deletar história
-		handleSaveApiKey, // Salvar chave API
-		// ... outros
-	};
+  // Theme Colors Context
+  const { setColors, setIsGenerating: setIsGeneratingColors } = useThemeColors();
+
+  // Inicialização (linhas 237-258)
+  useEffect(() => {
+    const init = async () => {
+      const detected = getBrowserLanguage();
+      setLanguage(detected);
+
+      const savedApiKey = localStorage.getItem('infinitum_api_key');
+      if (savedApiKey) setApiKey(savedApiKey);
+      else setShowApiKeyModal(true);
+
+      // Load voice preference
+      const savedVoice = localStorage.getItem('infinitum_tts_voice');
+      if (savedVoice) setSelectedVoiceState(savedVoice);
+
+      const loadedStories = await dbService.loadGames();
+      setStories(loadedStories);
+    };
+    init();
+  }, []);
+
+  // Carregamento de história completa (linhas 261-331)
+  useEffect(() => {
+    const loadFullStory = async () => {
+      if (!currentStoryId) return;
+      if (loadedStoriesRef.current.has(currentStoryId)) return;
+
+      let fullStory = await dbService.loadGame(currentStoryId);
+
+      // Migração automática se necessário
+      if (fullStory && needsMigration(fullStory)) {
+        const { migrated, gameState } = migrateGameState(fullStory);
+        if (migrated) {
+          fullStory = gameState;
+          await dbService.saveGame(fullStory);
+        }
+      }
+
+      // Merge messages e sanitize
+      setStories(prev => prev.map(s => {
+        if (s.id !== currentStoryId) return s;
+        const mergedMessages = sanitizeMessages([...s.messages, ...fullStory.messages]);
+        return { ...fullStory, messages: mergedMessages };
+      }));
+    };
+    loadFullStory();
+  }, [currentStoryId]);
+
+  // Geração automática de background (linhas 346-410)
+  useEffect(() => {
+    const generateBackgroundIfNeeded = async () => {
+      const activeStory = stories.find(s => s.id === currentStoryId);
+      const currentLocation = activeStory?.locations[activeStory.currentLocationId];
+
+      if (!currentLocation?.backgroundImage) {
+        const backgroundImage = await generateLocationBackground(
+          apiKey,
+          currentLocation.name,
+          currentLocation.description,
+          activeStory.config.universeName,
+          activeStory.config.visualStyle
+        );
+        // Update and save...
+      }
+    };
+    generateBackgroundIfNeeded();
+  }, [currentStoryId, stories]);
+
+  return {
+    handleSendMessage,
+    handleCreateStory,
+    handleDeleteStory,
+    activeStory,
+    player,
+    // ...
+  };
 };
 ```
 
-### Padrão de Atualização Segura
+### Fases de Criação
+
+**Arquivo:** `hooks/useGameEngine.ts:14-29`
 
 ```typescript
-const safeUpdateStory = (updater: (s: GameState) => GameState) => {
-	setStories((prevStories) => {
-		const index = prevStories.findIndex((s) => s.id === currentStoryId);
-		if (index === -1) return prevStories;
+// Fases durante criação de história
+type CreationPhase =
+  | 'initializing'
+  | 'colors'      // Gerando paleta de cores
+  | 'world'       // Criando mundo
+  | 'characters'  // Criando personagens
+  | 'avatar'      // Gerando avatar do jogador
+  | 'finalizing'
+  | null;
 
-		const oldStory = prevStories[index];
-		const newStory = updater(oldStory);
-
-		// Persistência automática (fire-and-forget)
-		dbService.saveGame(newStory).catch(console.error);
-
-		return [...prevStories.slice(0, index), newStory, ...prevStories.slice(index + 1)];
-	});
-};
-```
-
-### Saneamento de Mensagens (v1.3.1)
-
-- Toda vez que um jogo é salvo ou carregado, a função `sanitizeMessages` remove duplicatas geradas por race conditions
-  ou replays do IndexedDB.
-- A deduplicação considera o `id` e também combinações `senderId + type + text` dentro de uma janela de 2 segundos,
-  garantindo que diálogos idênticos disparados apenas uma vez não apareçam repetidos ao reabrir a campanha.
-- O `dbService.loadGame` regrava automaticamente o snapshot limpo, evitando que o histórico volte a se corromper em
-  sessões futuras.
-
-### Transformação de Resposta da IA
-
-```typescript
-const transformRawResponse = (raw: any): GMResponse => {
-	// Arrays de stats → Objetos
-	// [{key: "hp", value: 100}] → {hp: 100}
-
-	// Arrays de relationships → Objetos
-	// [{targetId: "npc1", score: 75}] → {npc1: 75}
-
-	return normalized;
-};
+// Fases durante processamento de mensagem
+type ProcessingPhase =
+  | 'classifying'  // Classificando input
+  | 'generating'   // Gerando resposta
+  | 'updating'     // Atualizando contexto
+  | null;
 ```
 
 ---
 
-## Banco de Dados
+## Banco de Dados IndexedDB
 
-### Design: Normalização Relacional em IndexedDB
+### Schema (Versão 2)
 
-O app usa **padrão Data Mapper**: GameState é uma árvore que é **decomposta em tabelas relacionais** ao salvar e
-**reidratada ao carregar**.
-
-### Object Stores
+**Arquivo:** `services/db.ts:5-24`
 
 ```typescript
+const DB_NAME = 'InfinitumRPG_Core';
+const DB_VERSION = 2;
+
 const STORES = {
-	GAMES: 'games', // Metadados do jogo
-	CHARACTERS: 'characters', // Entidades com FK para gameId
-	LOCATIONS: 'locations', // Localizações com FK
-	MESSAGES: 'messages', // Histórico de chat
-	EVENTS: 'events', // Log de eventos
+  GAMES: 'games',          // Metadados do jogo
+  CHARACTERS: 'characters', // Entidades com FK para gameId
+  LOCATIONS: 'locations',   // Localizações com FK
+  MESSAGES: 'messages',     // Histórico de chat
+  EVENTS: 'events',         // Log de eventos
+};
+
+// Índices criados para queries eficientes
+charStore.createIndex('by_game_id', 'gameId', { unique: false });
+locStore.createIndex('by_game_id', 'gameId', { unique: false });
+msgStore.createIndex('by_game_id', 'gameId', { unique: false });
+evtStore.createIndex('by_game_id', 'gameId', { unique: false });
+```
+
+### Exportação e Importação
+
+**Arquivo:** `services/db.ts:265-380`
+
+```typescript
+// Exportar com versionamento
+exportGame: async (id: string): Promise<ExportedGameData | undefined> => {
+  const gameState = await dbService.loadGame(id);
+  return {
+    version: EXPORT_VERSION,
+    exportedAt: Date.now(),
+    game: gameState
+  };
+}
+
+// Validar antes de importar
+validateImport: (data: unknown): { valid: boolean; error?: string } => {
+  const exported = data as ExportedGameData;
+
+  // Check version - bloqueia versões futuras
+  if (!exported.version || exported.version > EXPORT_VERSION) {
+    return { valid: false, error: 'version' };
+  }
+
+  // Verificar campos obrigatórios
+  const requiredFields = ['id', 'title', 'config', 'playerCharacterId'];
+  for (const field of requiredFields) {
+    if (!(field in exported.game)) {
+      return { valid: false, error: `Missing: ${field}` };
+    }
+  }
+
+  return { valid: true };
+}
+
+// Importar com novo ID
+importGame: async (data: ExportedGameData): Promise<string> => {
+  const newId = crypto.randomUUID();
+  const newPlayerCharacterId = `player_${newId}`;
+
+  // Atualizar todas as referências
+  const updatedCharacters = Object.entries(data.game.characters).map(([key, char]) => {
+    const newCharId = key === data.game.playerCharacterId ? newPlayerCharacterId : key;
+    return { ...char, id: newCharId, gameId: newId };
+  });
+
+  // ... atualizar messages, locations, events
+
+  await dbService.saveGame(importedGame);
+  return newId;
+}
+```
+
+---
+
+## Sistema de Economia
+
+### Constantes Econômicas
+
+**Arquivo:** `constants/economy.ts:30-101`
+
+```typescript
+export const ECONOMY = {
+  SELL_MULTIPLIER: 0.5,    // Jogador recebe 50% do valor base
+  BUY_MULTIPLIER: 1.0,     // Jogador paga 100% do valor base
+
+  PRICE_RANGES: {
+    consumable: { min: 5, max: 50 },
+    weapon: { min: 20, max: 500 },
+    armor: { min: 30, max: 600 },
+    valuable: { min: 50, max: 1000 },
+    material: { min: 1, max: 20 },
+    quest: { min: 0, max: 0 },      // Não vendível
+    currency: { min: 1, max: 1000 },
+    misc: { min: 1, max: 50 },
+  },
+
+  STARTING_GOLD: {
+    fantasy: 50,
+    medieval: 50,
+    scifi: 100,
+    modern: 200,
+    cyberpunk: 150,
+    steampunk: 75,
+    horror: 30,
+    western: 40,
+    postapocalyptic: 20,
+  },
+
+  MAX_STACK_SIZE: 99,
+  DEFAULT_INVENTORY_LIMIT: 30,
+  MIN_GOLD: 0,
+
+  LOOT_GOLD_RANGES: {
+    trivial: { min: 1, max: 10 },
+    easy: { min: 5, max: 25 },
+    medium: { min: 15, max: 50 },
+    hard: { min: 40, max: 100 },
+    boss: { min: 100, max: 500 },
+  },
+};
+
+export const DEFAULT_PLAYER_STATS = {
+  hp: 100,
+  maxHp: 100,
+  gold: 50,
 };
 ```
 
-### Operações Principais
+### Funções de Economia
 
-#### Salvar Jogo
+**Arquivo:** `constants/economy.ts:117-250`
 
 ```typescript
-async saveGame(gameState: GameState) {
-  // 1. Abre transação atômica
-  // 2. Decompõe GameState:
-  //    - Metadados → GAMES
-  //    - Characters map → CHARACTERS (com gameId)
-  //    - Locations map → LOCATIONS (com gameId)
-  //    - Messages array → MESSAGES (com gameId)
-  //    - Events array → EVENTS (com gameId)
-  // 3. Commit atômico
+// Calcular preço de venda
+export function calculateSellPrice(baseValue: number): number {
+  return Math.floor(baseValue * ECONOMY.SELL_MULTIPLIER);
+}
+
+// Determinar gold inicial pelo nome do universo
+export function getStartingGold(universeName: string): number {
+  const lower = universeName.toLowerCase();
+
+  if (lower.includes('star wars') || lower.includes('sci-fi')) {
+    return ECONOMY.STARTING_GOLD.scifi;
+  }
+  if (lower.includes('cyberpunk') || lower.includes('blade runner')) {
+    return ECONOMY.STARTING_GOLD.cyberpunk;
+  }
+  if (lower.includes('horror') || lower.includes('lovecraft')) {
+    return ECONOMY.STARTING_GOLD.horror;
+  }
+  // ... outros tipos
+
+  return ECONOMY.STARTING_GOLD.fantasy; // Default
+}
+
+// Formatar regras para prompt da IA
+export function getEconomyRulesForGMPrompt(): string {
+  return `
+=== ECONOMY & TRADING RULES (MANDATORY) ===
+
+**BUYING FROM NPCs:**
+1. Verify the NPC has the item in their inventory
+2. Determine price based on item category
+3. Check player's stats.gold >= price
+4. If SUFFICIENT: deduct gold, add item
+5. If INSUFFICIENT: NPC refuses
+
+**SELLING TO NPCs:**
+1. NPCs buy at ${ECONOMY.SELL_MULTIPLIER * 100}% of base price
+2. Quest items CANNOT be sold
+3. Add gold to player stats
+4. Remove item from inventory
+`;
 }
 ```
 
-#### Carregar Jogo
+---
 
-```typescript
-async loadGame(id: string): Promise<GameState> {
-  // 1. Busca metadados
-  // 2. Query por índice by_game_id em cada store
-  // 3. Reconstrói árvore:
-  //    - Characters → Record<id, Character>
-  //    - Locations → Record<id, Location>
-  //    - Messages ordenados por timestamp
-  // 4. Retorna GameState hidratado
-}
+## Engenharia de Prompts
+
+### Estrutura Modular
+
+**Diretório:** `services/ai/prompts/`
+
+```
+prompts/
+├── index.ts                      # Exporta todos os prompts e schemas
+├── gameMaster.prompt.ts          # Loop principal (~400 linhas)
+├── storyInitialization.prompt.ts # Criação do estado inicial
+├── onboarding.prompt.ts          # Wizard de criação
+├── actionOptions.prompt.ts       # 5 sugestões de ação
+├── heavyContext.prompt.ts        # Memória narrativa
+├── universeContext.prompt.ts     # Contexto profundo
+├── characterAvatar.prompt.ts     # Geração de avatares
+├── locationBackground.prompt.ts  # Geração de cenários
+├── themeColors.prompt.ts         # Paleta de cores
+├── textClassification.prompt.ts  # ACTION vs SPEECH
+├── customActionAnalysis.prompt.ts # Análise de ação livre
+├── narrativeStyles.ts            # 15 gêneros narrativos
+├── narrativeQualityAnalysis.prompt.ts # Análise de qualidade
+└── helpers.ts                    # Funções auxiliares
 ```
 
-### Exportação, Importação e Versionamento
+### Padrão de Arquivo de Prompt
 
-- `dbService.exportGame(id)` embala o GameState completo + `version` + timestamp → usado pelo botão **Export Journey**.
-- `validateImport()` bloqueia arquivos com versão futura ou collections ausentes antes de tocar em IndexedDB.
-- `importGame()` gera novo `gameId`, duplica playerId e reescreve `senderId` das mensagens para evitar colisões.
-- A UI (`App.tsx`) valida e mostra toasts de sucesso/erro, além de selecionar automaticamente o save importado.
+**Exemplo:** `services/ai/prompts/gameMaster.prompt.ts:1-83`
+
+```typescript
+/**
+ * @fileoverview Prompt do Game Master - Motor de Lógica do RPG
+ * @module prompts/gameMaster
+ */
+
+export interface GameMasterPromptParams {
+  gameState: GameState;
+  playerInput: string;
+  language: Language;
+  fateResult?: FateResult;
+  genre?: NarrativeGenre;
+  useTone?: boolean;
+}
+
+export function buildGameMasterPrompt(params: GameMasterPromptParams): string {
+  const { gameState, playerInput, language, fateResult, genre, useTone } = params;
+
+  // Construir contexto do jogador
+  const player = gameState.characters[gameState.playerCharacterId];
+  const location = gameState.locations[gameState.currentLocationId];
+
+  // Gerar instruções narrativas baseadas no gênero
+  const narrativeInstructions = genre
+    ? generateNarrativeInstructions(genre, language)
+    : '';
+
+  return `
+You are the Game Master (GM) for an immersive RPG.
+
+=== CURRENT STATE ===
+Location: ${location.name} - ${location.description}
+Player: ${player.name}
+${formatStatsForPrompt(player.stats)}
+${formatInventoryForPrompt(player.inventory)}
+
+=== HEAVY CONTEXT ===
+${JSON.stringify(gameState.heavyContext || {})}
+
+=== NARRATIVE STYLE ===
+${narrativeInstructions}
+
+=== ECONOMY RULES ===
+${getEconomyRulesForGMPrompt()}
+
+=== PLAYER ACTION ===
+"${playerInput}"
+${fateResult ? `Fate Result: ${fateResult.type} - ${fateResult.hint}` : ''}
+
+Generate a response following the JSON schema provided.
+  `;
+}
+
+// Schema JSON para structured output
+export const gmResponseSchema = {
+  type: 'object',
+  properties: {
+    messages: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          type: { enum: ['narration', 'dialogue', 'system'] },
+          text: { type: 'string' },
+          characterName: { type: 'string' },
+          dialogue: { type: 'string' },
+          voiceTone: { type: 'string' },
+          newCharacterData: { /* ... */ },
+        },
+      },
+    },
+    stateUpdates: {
+      type: 'object',
+      properties: {
+        newLocations: { type: 'array' },
+        newCharacters: { type: 'array' },
+        updatedCharacters: { type: 'array' },
+        locationChange: { type: 'string' },
+        eventLog: { type: 'string' },
+      },
+    },
+  },
+};
+```
+
+### Heavy Context Updates
+
+**Arquivo:** `services/ai/prompts/heavyContext.prompt.ts`
+
+O sistema envia apenas diferenças incrementais:
+
+```json
+{
+  "shouldUpdate": true,
+  "changes": {
+    "mainMission": { "action": "set", "value": "Impedir que o império acorde o titã." },
+    "currentMission": { "action": "clear" },
+    "activeProblems": [
+      { "action": "remove", "value": "Tempestade acima" },
+      { "action": "add", "value": "Guardas do templo em alerta" }
+    ],
+    "importantNotes": [
+      { "action": "add", "value": "A runa reage à luz da lua" }
+    ]
+  }
+}
+```
 
 ---
 
@@ -1051,6 +1359,7 @@ async loadGame(id: string): Promise<GameState> {
 2. Carregar jogos do IndexedDB (apenas metadados)
 3. Detectar idioma do navegador
 4. Se não há API key → mostrar modal
+5. Carregar preferências de voz
 ```
 
 ### Criação de História
@@ -1058,33 +1367,32 @@ async loadGame(id: string): Promise<GameState> {
 ```
 1. Usuário clica "Nova História"
 2. Wizard pergunta: Universo Original ou Existente?
-3. Loop de onboarding:
-   - IA faz pergunta
-   - Usuário responde (texto ou select)
-   - IA processa e faz próxima pergunta
+3. Loop de onboarding (processOnboardingStep):
+   - IA faz pergunta → Usuário responde → IA processa
 4. Quando isComplete=true:
-   - Chamar initializeStory()
-   - Criar GameState com fallbacks
-   - Salvar no IndexedDB
-   - Navegar para o jogo
+   - Fase 'colors': generateThemeColors()
+   - Fase 'world': initializeStory()
+   - Fase 'avatar': generateCharacterAvatar()
+   - Fase 'finalizing': saveGame()
+5. Navegar para o jogo
 ```
 
 ### Loop Principal do Jogo
 
 ```
-1. Exibir opções de ação (5 sugestões + "Outro")
+1. Exibir opções de ação (generateActionOptions → 5 sugestões + "Outro")
 2. Jogador escolhe ação ou digita customizada
 3. handleSendMessage():
-   a. UI otimista: adiciona mensagem do jogador
-   b. Monta contexto para IA
-   c. Chama generateGameTurn()
+   a. Fase 'classifying': classifyAndProcessPlayerInput()
+   b. UI otimista: adiciona mensagem do jogador
+   c. Fase 'generating': generateGameTurn()
    d. Processa resposta:
       - Adiciona novas localizações
-      - Cria novos NPCs (gera avatares)
+      - Cria novos NPCs (gera avatares em paralelo)
       - Atualiza personagens existentes
       - Muda localização se necessário
-      - Adiciona mensagens da IA ao chat
-   e. Salva estado no IndexedDB
+   e. Fase 'updating': updateHeavyContext()
+   f. Salva estado no IndexedDB
 4. Gerar novas opções de ação
 5. Repetir
 ```
@@ -1093,84 +1401,34 @@ async loadGame(id: string): Promise<GameState> {
 
 ## Componentes de UI
 
-### ActionInput
+### StoryCard
 
-- Gera 5 opções de ação baseadas no contexto
-- Botões em grid responsivo (1/2/3 colunas)
-- Opção "Outro..." para ação customizada
-- Integração com VoiceInput
-- Respeita a paleta dinâmica do Theme Colors com contraste mínimo WCAG AA em botões, toggle mobile e textarea (sem
-  fundos brancos fixos)
-
-### Player Status Modal
-
-- Exibe estatísticas e inventário do personagem ativo
-- Inventário entende tanto Item[] estruturado quanto o legado string[] e mostra quantidade, categoria e descrição quando
-  disponível
-
-### ChatBubble
+**Arquivo:** `components/StoryCard/StoryCard.view.tsx`
 
 - Efeito typewriter para novas mensagens
+- Background blur com imagem de localização
 - Botão de play para TTS
-- Avatares gerados por IA
-- Estilos diferentes para Narrador/Jogador/NPC/Sistema
+- Navegação com swipe
 
-### StoryCreator
+### ActionInput
 
-- Wizard dinâmico com perguntas da IA
-- Suporta text input e select dropdown
-- Chat-like interface com histórico
+**Arquivo:** `components/ActionInput/ActionInput.tsx`
+
+- Grid de 5 opções geradas pela IA
+- Badges de probabilidade (goodChance/badChance)
+- Modo "Outro..." para ação customizada
+- Integração com VoiceInput
+- Cache de opções no localStorage
 
 ### ErrorModal
 
-- Trata erros de API específicos
-- Links diretos para billing da OpenAI
-- Mensagens amigáveis por tipo de erro
+**Arquivo:** `components/ErrorModal.tsx`
 
-### VoiceInput
-
-- Captura áudio (MediaRecorder) e envia blob direto para Whisper
-- Avisa quando não há API key ou permissão de microfone
-- Suporte a idiomas configurados (hint para Whisper)
-
-### VoiceSettings
-
-- Lista as vozes suportadas pelo gpt-4o-mini-tts com descrição
-- Permite preview em tempo real e persistência da escolha no localStorage
-- Usa generateSpeechWithTTS + playMP3Audio para testes rápidos
-
-### LogViewer
-
-- Hook `useConsoleLogs` intercepta `console.log/warn/error`
-- Viewer retro com auto-scroll e botão de wipe
-- Permite copiar mensagens estruturadas (JSON stringificado)
-
-### FateToast
-
-- Feedback visual para FateResult bom/ruim mostrado sobre o grid de ações
-- Fecha automaticamente em 4s ou manualmente
-- Ajuda o jogador a relacionar rolagem probabilística com a narrativa seguinte
-
----
-
-## Voz e Acessibilidade
-
-1. **Entrada de Voz (STT)**
-
-   - `VoiceInput` captura áudio WebM, o envia para `transcribeAudio()` que usa Whisper (`openaiClient.transcribeAudio`).
-   - Requer permissão de microfone no metadata (`metadata.json`) e valida presença da API key.
-   - O idioma ativo (en/pt/es/fr/ru/zh) é enviado como hint para o Whisper, garantindo que o microfone entenda qualquer
-     idioma suportado.
-
-2. **Saída de Voz (TTS)**
-
-   - Cada `ChatMessage` recebe `voiceTone` no GM response.
-   - `ChatBubble` e `StoryCard` chamam `generateSpeech(..., language)` que injeta instruções de idioma antes de delegar
-     para `generateSpeechWithTTS` (gpt-4o-mini-tts) → `playMP3Audio`, respeitando voz e idioma.
-
-3. **Configuração pelo usuário**
-   - `VoiceSettings` expõe preview das 11 vozes suportadas, escreve a preferência em `localStorage` e reutiliza no hook
-     principal.
+Trata erros específicos:
+- `insufficient_quota`: Link para billing da OpenAI
+- `invalid_key`: Modal para re-inserir key
+- `rate_limit`: Permite retry
+- `network`: Mensagem de conectividade
 
 ---
 
@@ -1178,56 +1436,51 @@ async loadGame(id: string): Promise<GameState> {
 
 ### Idiomas Suportados
 
-- English (en)
-- Português do Brasil (pt)
-- Español (es)
-- Français (fr)
-- Русский (ru)
-- 中文 (zh)
+**Arquivo:** `i18n/locales.ts`
 
-### Implementação
-
-```typescript
-// i18n/locales.ts
-export const supportedLanguages: Language[] = ['en', 'pt', 'es', 'fr', 'ru', 'zh'];
-
-export const translations: Record<Language, Translations> = {
-  en: { newStory: 'New Story', ... },
-  pt: { newStory: 'Nova História', ... },
-  es: { newStory: 'Nueva Historia', ... },
-  fr: { newStory: 'Nouvelle Histoire', ... },
-  ru: { newStory: 'Новая История', ... },
-  zh: { newStory: '新的冒险', ... }
-};
-
-// Uso
-const t = translations[language];
-<button>{t.newStory}</button>
-```
-
-- `languageInfo` alimenta o seletor/flags e reaproveita os mesmos códigos ISO para STT/TTS.
-- `VoiceInput`, `generateSpeech` e o motor narrativo consomem o mesmo tipo `Language`, mantendo UI, microfone e áudio
-  sempre alinhados.
+- 🇺🇸 English (en)
+- 🇧🇷 Português do Brasil (pt)
+- 🇪🇸 Español (es)
+- 🇫🇷 Français (fr)
+- 🇷🇺 Русский (ru)
+- 🇨🇳 中文 (zh)
 
 ### Detecção de Idioma
 
-1. Cookie `infinitum_lang` (persistido por 1 ano)
-2. `navigator.language` do navegador
-3. Fallback para 'en'
+```typescript
+export function getBrowserLanguage(): Language {
+  // 1. Cookie 'infinitum_lang'
+  const cookie = document.cookie.match(/infinitum_lang=(\w+)/);
+  if (cookie && supportedLanguages.includes(cookie[1])) {
+    return cookie[1] as Language;
+  }
+
+  // 2. navigator.language
+  const browserLang = navigator.language.split('-')[0];
+  if (supportedLanguages.includes(browserLang)) {
+    return browserLang as Language;
+  }
+
+  // 3. Fallback
+  return 'en';
+}
+```
 
 ---
 
 ## Tratamento de Erros
 
-### Classificação de Erros
+### Classificação
+
+**Arquivo:** `utils/errorHandler.ts`
 
 ```typescript
 type ErrorType =
-	| 'insufficient_quota' // Conta sem créditos
-	| 'invalid_key' // API key inválida
-	| 'rate_limit' // Muitas requisições
-	| 'network' // Problemas de conexão
-	| 'generic'; // Outros erros
+  | 'insufficient_quota'  // Conta sem créditos
+  | 'invalid_key'         // API key inválida
+  | 'rate_limit'          // Muitas requisições
+  | 'network'             // Problemas de conexão
+  | 'generic';            // Outros erros
 ```
 
 ### Estratégias de Recuperação
@@ -1246,28 +1499,26 @@ type ErrorType =
 
 | Camada         | Tecnologia                |
 | -------------- | ------------------------- |
-| Frontend       | React 19, TypeScript      |
-| Estilização    | Tailwind CSS              |
-| Ícones         | Lucide React              |
-| Build          | Vite 6                    |
+| Frontend       | React 19.2, TypeScript 5.8 |
+| Build          | Vite 6.2                  |
+| Ícones         | Lucide React 0.560        |
 | IA - LLM       | OpenAI GPT-4.1            |
 | IA - Imagem    | gpt-image-1-mini          |
 | IA - Voz       | Whisper + gpt-4o-mini-tts |
 | Banco de Dados | IndexedDB + localStorage  |
 | Testes         | Jest 29 + Testing Library |
+| Git Hooks      | Husky 9                   |
 
 ### Scripts npm
 
-- `npm run dev` → servidor Vite com HMR.
-- `npm run build` → build de produção + type checking via Vite.
-- `npm run preview` → serve o build para QA.
-- `npm test` / `npm run test:watch` / `npm run test:coverage` → suíte Jest configurada com jsdom e ts-jest.
-
-### Testes Automatizados
-
-- Cobrem hooks (ex.: `useGameEngine`, `useMessageQueue`), serviços (OpenAI, DB), i18n e componentes críticos.
-- Use `fake-indexeddb` para simular IndexedDB dentro do Jest.
-- Coverage report é emitido em `coverage/` e garante que regressões em prompts/serializadores sejam detectadas.
+```bash
+npm run dev          # Servidor Vite com HMR
+npm run build        # Build de produção
+npm run preview      # Preview do build
+npm test             # Executar testes
+npm run test:watch   # Testes em modo watch
+npm run test:coverage # Relatório de cobertura
+```
 
 ---
 
@@ -1283,7 +1534,7 @@ type ErrorType =
 ```bash
 # Clone o repositório
 git clone <repo-url>
-cd infinity_stories
+cd storywell.games
 
 # Instale dependências
 npm install
@@ -1301,11 +1552,10 @@ npm run preview
 
 ### Configuração
 
-1. Acesse a aplicação no navegador (Vite levanta em `http://localhost:5173`).
-2. Insira sua chave OpenAI (é salva apenas em `localStorage@infinitum_api_key` e pode ser removida via botão **End
-   Session**).
-3. Garanta permissão de microfone caso queira usar VoiceInput.
-4. Inicie uma nova história pelo wizard ou importe um save `.json` compatível.
+1. Acesse `http://localhost:5173`
+2. Insira sua chave OpenAI
+3. Garanta permissão de microfone (opcional)
+4. Inicie uma nova história ou importe um save
 
 ---
 
@@ -1315,32 +1565,17 @@ npm run preview
 
 > **IMPORTANTE:** Ao fazer qualquer alteração no código, **SEMPRE atualize a versão** no `package.json`.
 
-```json
-{
-	"version": "X.Y.Z"
-}
-```
-
 Seguimos [Semantic Versioning](https://semver.org/):
 
 - **MAJOR (X):** Mudanças incompatíveis na API
 - **MINOR (Y):** Novas funcionalidades compatíveis
 - **PATCH (Z):** Correções de bugs
 
-### Exemplos de Versionamento
-
-| Alteração                     | Versão Anterior | Nova Versão |
-| ----------------------------- | --------------- | ----------- |
-| Correção de bug no typewriter | 1.0.0           | 1.0.1       |
-| Nova feature de export        | 1.0.1           | 1.1.0       |
-| Refatoração total da IA       | 1.1.0           | 2.0.0       |
-
 ### Checklist de Contribuição
 
 - [ ] Código segue os padrões existentes
 - [ ] **Versão atualizada no `package.json`**
-- [ ] Testes manuais realizados
-- [ ] Apenas finalize a task após o hook `pre-push` (Husky) encerrar e o `npm run test` passar
+- [ ] Testes passando (`npm test`)
 - [ ] README atualizado se necessário
 - [ ] Commit message descritiva
 
@@ -1360,17 +1595,16 @@ Tipos: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
 
 #### Views vs Logic
 
-- **Views** devem ser "burras" - apenas renderizam o que recebem
+- **Views** devem ser "burras" - apenas renderizam props
 - **Logic** (Hooks/Services) cuida do _como_ e _quando_
 
 #### Abstração de IA
 
-Não instancie `new OpenAI()` diretamente em serviços ou componentes. Todas as chamadas de IA devem passar por
-`utils/ai.ts`.
+Todas as chamadas de IA devem passar por `utils/ai.ts` - nunca instancie `new OpenAI()` diretamente.
 
 #### Documentação
 
-Todas as funções exportadas devem ter documentação TSDoc:
+Funções exportadas devem ter TSDoc:
 
 ```typescript
 /**
@@ -1388,4 +1622,4 @@ Este projeto é privado e de uso restrito.
 
 ---
 
-**Desenvolvido com IA** | storywell.games v1.4.0
+**Desenvolvido com IA** | storywell.games v1.4.2
