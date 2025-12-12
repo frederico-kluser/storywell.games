@@ -32,6 +32,7 @@ import {
 	Volume2,
 	Palette,
 	ImageIcon,
+	ChevronsRight,
 } from 'lucide-react';
 import { version } from './package.json';
 
@@ -159,6 +160,7 @@ const App: React.FC = () => {
 		setCurrentIndex: setCurrentCardIndex,
 		goToNext,
 		goToPrevious,
+		goToLast,
 		canGoNext,
 		canGoPrevious,
 		touchHandlers,
@@ -170,6 +172,8 @@ const App: React.FC = () => {
 
 	const pendingCardIndexRef = useRef<number | null>(null);
 	const previousLengthRef = useRef(0);
+	const userJustSentRef = useRef(false);
+	const [newCardsCount, setNewCardsCount] = useState(0);
 
 	useEffect(() => {
 		if (!currentStoryId) {
@@ -215,17 +219,48 @@ const App: React.FC = () => {
 
 	useEffect(() => {
 		const previousLength = previousLengthRef.current;
-		if (
-			pendingCardIndexRef.current === null &&
-			totalCards > previousLength &&
-			(previousLength === 0 || currentCardIndex >= previousLength - 1)
-		) {
-			setCurrentCardIndex(Math.max(0, totalCards - 1));
+		const newCardsAdded = totalCards - previousLength;
+
+		if (pendingCardIndexRef.current === null && newCardsAdded > 0) {
+			// Only auto-advance when user just sent a message (to show their message)
+			if (userJustSentRef.current) {
+				// Advance only by 1 to show the user's message, not all responses
+				setCurrentCardIndex(Math.min(currentCardIndex + 1, totalCards - 1));
+				userJustSentRef.current = false;
+				// Update new cards count (responses that came after user's message)
+				const remainingNewCards = totalCards - 1 - (currentCardIndex + 1);
+				if (remainingNewCards > 0) {
+					setNewCardsCount(remainingNewCards);
+				}
+			} else if (previousLength > 0) {
+				// AI responses arrived - don't auto-advance, just update the count
+				const cardsAhead = totalCards - 1 - currentCardIndex;
+				if (cardsAhead > 0) {
+					setNewCardsCount(cardsAhead);
+				}
+			} else {
+				// First load - go to last card
+				setCurrentCardIndex(Math.max(0, totalCards - 1));
+			}
 		}
 		previousLengthRef.current = totalCards;
 	}, [totalCards, currentCardIndex, setCurrentCardIndex]);
 
 	const isOnLastCard = totalCards === 0 || currentCardIndex >= totalCards - 1;
+
+	// Reset new cards count when user reaches the last card
+	useEffect(() => {
+		if (isOnLastCard && newCardsCount > 0) {
+			setNewCardsCount(0);
+		}
+	}, [isOnLastCard, newCardsCount]);
+
+	// Wrapper for handleSendMessage to track user-initiated messages
+	const handleSendMessageWithTracking = async (message: string) => {
+		userJustSentRef.current = true;
+		setNewCardsCount(0); // Reset count when user sends a new message
+		return handleSendMessage(message);
+	};
 
 	// Handle file import
 	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -642,6 +677,26 @@ const App: React.FC = () => {
 									<ProcessingIndicator phase={processingPhase} language={activeStory.config?.language || language} />
 								</div>
 							)}
+
+							{/* New Cards Indicator */}
+							{newCardsCount > 0 && !isProcessing && (
+								<button
+									onClick={() => {
+										goToLast();
+										setNewCardsCount(0);
+									}}
+									className="absolute bottom-4 right-4 z-30 flex items-center gap-2 px-4 py-3 font-bold uppercase tracking-wider text-sm transition-all hover:scale-105 active:scale-95 animate-pulse border-2"
+									style={{
+										backgroundColor: colors.buttonPrimary,
+										color: colors.buttonPrimaryText,
+										borderColor: colors.borderStrong,
+										boxShadow: `4px 4px 0px ${colors.shadow}`,
+									}}
+								>
+									<span>{newCardsCount} {t.newCards || 'new'}</span>
+									<ChevronsRight className="w-5 h-5" />
+								</button>
+							)}
 						</div>
 					</div>
 
@@ -654,7 +709,7 @@ const App: React.FC = () => {
 							setInputValue={setInputValue}
 							isProcessing={isProcessing}
 							isUpdatingContext={isUpdatingContext}
-							onSendMessage={handleSendMessage}
+							onSendMessage={handleSendMessageWithTracking}
 							onVoiceTranscription={handleVoiceTranscription}
 							t={t}
 						/>

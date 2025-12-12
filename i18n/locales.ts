@@ -112,6 +112,7 @@ export const translations: Record<Language, Translations> = {
 		showOptions: 'Show',
 		hideOptions: 'Hide',
 		lastCardReminder: 'Navigate to the latest card to unlock your next move.',
+		newCards: 'new',
 		// Custom action confirmation
 		analyzingAction: 'Analyzing action...',
 		confirmAction: 'Confirm Action',
@@ -270,6 +271,7 @@ export const translations: Record<Language, Translations> = {
 		showOptions: 'Mostrar',
 		hideOptions: 'Ocultar',
 		lastCardReminder: 'Vá até o último card para liberar sua próxima ação.',
+		newCards: 'novos',
 		// Custom action confirmation
 		analyzingAction: 'Analisando ação...',
 		confirmAction: 'Confirmar Ação',
@@ -428,6 +430,7 @@ export const translations: Record<Language, Translations> = {
 		showOptions: 'Mostrar',
 		hideOptions: 'Ocultar',
 		lastCardReminder: 'Ve a la última carta para desbloquear tu siguiente movimiento.',
+		newCards: 'nuevos',
 		// Custom action confirmation
 		analyzingAction: 'Analizando acción...',
 		confirmAction: 'Confirmar Acción',
@@ -587,6 +590,7 @@ export const translations: Record<Language, Translations> = {
 		showOptions: 'Afficher',
 		hideOptions: 'Masquer',
 		lastCardReminder: 'Accédez à la dernière carte pour débloquer votre prochaine action.',
+		newCards: 'nouveaux',
 		// Custom action confirmation
 		analyzingAction: "Analyse de l'action...",
 		confirmAction: "Confirmer l'Action",
@@ -749,6 +753,7 @@ export const translations: Record<Language, Translations> = {
 		showOptions: 'Показать',
 		hideOptions: 'Скрыть',
 		lastCardReminder: 'Перейдите к последней карточке, чтобы открыть следующий ход.',
+		newCards: 'новых',
 		// Custom action confirmation
 		analyzingAction: 'Анализ действия...',
 		confirmAction: 'Подтвердить Действие',
@@ -910,6 +915,7 @@ export const translations: Record<Language, Translations> = {
 		showOptions: '显示',
 		hideOptions: '隐藏',
 		lastCardReminder: '前往最后一张卡片以解锁下一步行动。',
+		newCards: '新的',
 		// Custom action confirmation
 		analyzingAction: '分析行动中...',
 		confirmAction: '确认行动',
