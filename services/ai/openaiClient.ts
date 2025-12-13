@@ -15,6 +15,7 @@ import {
 	NarrativeGenre,
 	GridSnapshot,
 	GridCharacterPosition,
+	GridPosition,
 	GridUpdateResponse,
 } from '../../types';
 import { THEMED_FONTS, getFontByFamily } from '../../constants/fonts';
@@ -1570,6 +1571,44 @@ export const updateGridPositions = async (
 		? gameState.gridSnapshots[gameState.gridSnapshots.length - 1].characterPositions
 		: undefined;
 
+	const charactersAtLocation: Character[] = Object.values(gameState.characters).filter(
+		(c) => c.locationId === gameState.currentLocationId
+	);
+	const playerCharacter = gameState.characters[gameState.playerCharacterId];
+	if (playerCharacter && !charactersAtLocation.some((c) => c.id === playerCharacter.id)) {
+		charactersAtLocation.push(playerCharacter);
+	}
+	const charactersAtLocationSet = new Set(charactersAtLocation.map((c) => c.id));
+
+	const clampCoordinate = (value?: number): number => {
+		if (typeof value !== 'number' || Number.isNaN(value)) return 0;
+		return Math.max(0, Math.min(9, Math.round(value)));
+	};
+
+	const getPositionKey = (position: GridPosition): string => `${position.x},${position.y}`;
+
+	const findNearestAvailablePosition = (origin: GridPosition, occupied: Set<string>): GridPosition => {
+		let fallback: GridPosition = origin;
+		let bestDistance = Number.POSITIVE_INFINITY;
+		for (let y = 0; y < 10; y++) {
+			for (let x = 0; x < 10; x++) {
+				const key = `${x},${y}`;
+				if (occupied.has(key)) {
+					continue;
+				}
+				const distance = Math.abs(x - origin.x) + Math.abs(y - origin.y);
+				if (distance < bestDistance) {
+					bestDistance = distance;
+					fallback = { x, y };
+					if (distance === 0) {
+						return fallback;
+					}
+				}
+			}
+		}
+		return fallback;
+	};
+
 	// Format messages for the prompt
 	const messagesForContext = (recentResponse.messages || []).map((msg: GMResponseMessage) => {
 		if (msg.type === 'dialogue') {
@@ -1599,7 +1638,10 @@ export const updateGridPositions = async (
 		language,
 	});
 
-	const schemaInstruction = `\n\nYou MUST respond with a valid JSON object following this exact schema:\n${JSON.stringify(
+	const schemaInstruction = `
+
+You MUST respond with a valid JSON object following this exact schema:
+${JSON.stringify(
 		gridUpdateSchema,
 		null,
 		2,
@@ -1633,22 +1675,129 @@ export const updateGridPositions = async (
 			return { updated: false };
 		}
 
-		// Get current location info
 		const currentLocation = gameState.locations[gameState.currentLocationId];
 
-		// Get character avatars for display
-		const characterPositions: GridCharacterPosition[] = parsed.characterPositions.map((pos) => {
-			const character = gameState.characters[pos.characterId];
-			return {
-				characterId: pos.characterId,
-				characterName: pos.characterName,
-				position: { x: pos.x, y: pos.y },
-				isPlayer: pos.isPlayer,
-				avatarBase64: character?.avatarBase64,
-			};
+		const previousPositions = new Map<string, GridCharacterPosition>();
+		(currentGridPositions || []).forEach((pos) => {
+			previousPositions.set(pos.characterId, pos);
 		});
 
-		// Create the new snapshot
+		const providedPositions = new Map<string, GridCharacterPosition>();
+		parsed.characterPositions.forEach((pos) => {
+			if (!charactersAtLocationSet.has(pos.characterId)) {
+				return;
+			}
+			const character = gameState.characters[pos.characterId];
+			const normalizedPosition: GridPosition = {
+				x: clampCoordinate(pos.x),
+				y: clampCoordinate(pos.y),
+			};
+			providedPositions.set(pos.characterId, {
+				characterId: pos.characterId,
+				characterName: pos.characterName,
+				position: normalizedPosition,
+				isPlayer: !!pos.isPlayer,
+				avatarBase64: character?.avatarBase64 || previousPositions.get(pos.characterId)?.avatarBase64,
+			});
+		});
+
+		const occupiedCells = new Set<string>();
+		providedPositions.forEach((value) => {
+			occupiedCells.add(getPositionKey(value.position));
+		});
+
+		let playerPosition: GridPosition | null = null;
+		if (playerCharacter) {
+			const providedPlayer = providedPositions.get(playerCharacter.id);
+			const previousPlayer = previousPositions.get(playerCharacter.id);
+			if (providedPlayer) {
+				playerPosition = providedPlayer.position;
+				providedPositions.set(playerCharacter.id, {
+					...providedPlayer,
+					isPlayer: true,
+					avatarBase64: providedPlayer.avatarBase64 || playerCharacter.avatarBase64 || previousPlayer?.avatarBase64,
+				});
+				occupiedCells.add(getPositionKey(providedPlayer.position));
+			} else if (previousPlayer) {
+				playerPosition = {
+					x: clampCoordinate(previousPlayer.position.x),
+					y: clampCoordinate(previousPlayer.position.y),
+				};
+				providedPositions.set(playerCharacter.id, {
+					characterId: playerCharacter.id,
+					characterName: playerCharacter.name,
+					position: playerPosition,
+					isPlayer: true,
+					avatarBase64: previousPlayer.avatarBase64 || playerCharacter.avatarBase64,
+				});
+				occupiedCells.add(getPositionKey(playerPosition));
+			}
+		}
+
+		if (!playerPosition) {
+			playerPosition = { x: 5, y: 5 };
+			if (playerCharacter) {
+				providedPositions.set(playerCharacter.id, {
+					characterId: playerCharacter.id,
+					characterName: playerCharacter.name,
+					position: playerPosition,
+					isPlayer: true,
+					avatarBase64: playerCharacter.avatarBase64,
+				});
+			}
+			occupiedCells.add(getPositionKey(playerPosition));
+		}
+
+		const ensurePositionForCharacter = (char: Character) => {
+			const existing = providedPositions.get(char.id);
+			if (existing) {
+				if (!existing.avatarBase64 && char.avatarBase64) {
+					providedPositions.set(char.id, {
+						...existing,
+						avatarBase64: char.avatarBase64,
+					});
+				}
+				return;
+			}
+
+			const previous = previousPositions.get(char.id);
+			if (previous) {
+				const normalizedPrevPosition: GridPosition = {
+					x: clampCoordinate(previous.position.x),
+					y: clampCoordinate(previous.position.y),
+				};
+				providedPositions.set(char.id, {
+					characterId: char.id,
+					characterName: previous.characterName || char.name,
+					position: normalizedPrevPosition,
+					isPlayer: char.isPlayer,
+					avatarBase64: previous.avatarBase64 || char.avatarBase64,
+				});
+				occupiedCells.add(getPositionKey(normalizedPrevPosition));
+				return;
+			}
+
+			const spawnPosition = findNearestAvailablePosition(playerPosition as GridPosition, occupiedCells);
+			occupiedCells.add(getPositionKey(spawnPosition));
+			providedPositions.set(char.id, {
+				characterId: char.id,
+				characterName: char.name,
+				position: spawnPosition,
+				isPlayer: char.isPlayer,
+				avatarBase64: char.avatarBase64,
+			});
+		};
+
+		charactersAtLocation.forEach((char) => ensurePositionForCharacter(char));
+
+		const characterPositions: GridCharacterPosition[] = charactersAtLocation
+			.map((char) => providedPositions.get(char.id))
+			.filter((pos): pos is GridCharacterPosition => Boolean(pos));
+
+		if (characterPositions.length === 0) {
+			return { updated: false };
+		}
+
 		const snapshot: GridSnapshot = {
 			id: `grid_${gameState.id}_${Date.now()}`,
 			gameId: gameState.id,
@@ -1671,14 +1820,6 @@ export const updateGridPositions = async (
 	}
 };
 
-/**
- * Creates an initial grid snapshot for a new game or location change.
- * Places characters in default positions.
- *
- * @param gameState - Current game state.
- * @param messageNumber - The message number for the snapshot.
- * @returns Initial grid snapshot.
- */
 export const createInitialGridSnapshot = (
 	gameState: GameState,
 	messageNumber: number,

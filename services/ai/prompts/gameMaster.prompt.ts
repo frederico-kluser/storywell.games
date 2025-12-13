@@ -373,6 +373,10 @@ export function buildGameMasterPrompt({
     Characters' current positions on the map (coordinates 0-9):
     ${gridPositions}
 
+    Narration requirements:
+    - Explicitly describe where key NPCs are relative to the player whenever their placement matters (e.g., "Lyra lingers two cells to your right").
+    - When movement happens, mention how the distance/direction between the player and the moving character changes.
+
     Consider spatial positioning when:
     - Determining if characters can interact directly (same or adjacent cells)
     - Describing movement ("approaches", "moves away", "crosses the room")
