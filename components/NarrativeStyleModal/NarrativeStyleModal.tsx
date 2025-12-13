@@ -257,14 +257,14 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 							onClick={() => setMode('custom')}
 							className={`p-4 border-3 text-left transition-all ${
 								mode === 'custom'
-									? 'bg-amber-500 text-white border-amber-600 shadow-[4px_4px_0px_rgba(0,0,0,0.3)]'
-									: 'bg-stone-100 text-stone-700 border-stone-300 hover:border-amber-500'
+									? 'bg-stone-700 text-white border-stone-800 shadow-[4px_4px_0px_rgba(0,0,0,0.3)]'
+									: 'bg-stone-100 text-stone-700 border-stone-300 hover:border-stone-700'
 							}`}
 						>
 							<h3 className="font-black uppercase text-sm">
 								{t.narrativeStyleCustomTitle || 'Custom Style'}
 							</h3>
-							<p className={`text-xs mt-1 ${mode === 'custom' ? 'text-amber-100' : 'text-stone-500'}`}>
+							<p className={`text-xs mt-1 ${mode === 'custom' ? 'text-stone-300' : 'text-stone-500'}`}>
 								{t.narrativeStyleCustomDesc || 'Define your preferred writing style'}
 							</p>
 						</button>
@@ -276,13 +276,13 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 							{/* Initial Description Input (before refinement) */}
 							{!isRefining && (
 								<>
-									<div className="flex gap-3 bg-amber-50 border-2 border-amber-200 p-3">
-										<Info className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+									<div className="flex gap-3 bg-stone-100 border-2 border-stone-300 p-3">
+										<Info className="w-5 h-5 text-stone-500 flex-shrink-0 mt-0.5" />
 										<div>
-											<p className="text-xs font-bold uppercase tracking-wide text-amber-700">
+											<p className="text-xs font-bold uppercase tracking-wide text-stone-600">
 												{t.narrativeStyleInfoTitle || 'How to describe your style'}
 											</p>
-											<p className="text-xs text-amber-800 mt-1 leading-relaxed">
+											<p className="text-xs text-stone-600 mt-1 leading-relaxed">
 												{t.narrativeStyleInfoBody ||
 													'Describe how you want the story to be told: detail level, pacing, tone, or reference authors/works you like.'}
 											</p>
@@ -296,7 +296,7 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 												setInitialDescription(e.target.value);
 												if (error) setError(null);
 											}}
-											className="w-full bg-stone-50 border-3 border-stone-300 p-4 pr-12 text-sm text-stone-900 focus:border-amber-500 outline-none min-h-[120px] font-medium"
+											className="w-full bg-stone-50 border-3 border-stone-300 p-4 pr-12 text-sm text-stone-900 focus:border-stone-600 outline-none min-h-[120px] font-medium"
 											placeholder={
 												t.narrativeStylePlaceholder ||
 												'e.g., "Short sentences, fast pacing, minimal descriptions" or "Like Game of Thrones - dark and political"'
@@ -307,7 +307,7 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 												apiKey={apiKey}
 												language={language}
 												onTranscription={handleVoiceTranscription}
-												className="text-stone-400 hover:text-amber-600"
+												className="text-stone-400 hover:text-stone-600"
 											/>
 										</div>
 									</div>
@@ -315,7 +315,7 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 									<button
 										onClick={handleStartRefinement}
 										disabled={!initialDescription.trim() || isLoading}
-										className="w-full py-3 bg-amber-500 text-white font-black uppercase tracking-wide hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-amber-600 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]"
+										className="w-full py-3 bg-stone-800 text-white font-black uppercase tracking-wide hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-stone-900 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]"
 									>
 										{isLoading ? (
 											<Loader2 className="w-5 h-5 animate-spin" />
@@ -329,10 +329,10 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 
 							{/* Refinement Flow */}
 							{isRefining && (
-								<div className="border-3 border-amber-400 bg-amber-50 p-4 space-y-4">
+								<div className="border-3 border-stone-400 bg-stone-50 p-4 space-y-4">
 									{/* Header with Reset */}
 									<div className="flex items-center justify-between">
-										<div className="flex items-center gap-2 text-amber-800">
+										<div className="flex items-center gap-2 text-stone-700">
 											<Sparkles className="w-5 h-5" />
 											<span className="font-black uppercase text-sm">
 												{t.narrativeStyleRefiningTitle || 'Refining Your Style'}
@@ -340,7 +340,7 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 										</div>
 										<button
 											onClick={handleReset}
-											className="flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800 font-bold uppercase"
+											className="flex items-center gap-1 text-xs text-stone-500 hover:text-stone-700 font-bold uppercase"
 										>
 											<RotateCcw className="w-3 h-3" />
 											{t.reset || 'Reset'}
@@ -348,8 +348,8 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 									</div>
 
 									{/* Original Description */}
-									<div className="bg-white border-2 border-amber-200 p-3">
-										<span className="text-[10px] font-bold uppercase text-amber-600 block mb-1">
+									<div className="bg-white border-2 border-stone-300 p-3">
+										<span className="text-[10px] font-bold uppercase text-stone-500 block mb-1">
 											{t.narrativeStyleYourDescription || 'Your description'}
 										</span>
 										<p className="text-sm text-stone-700">{initialDescription}</p>
@@ -359,15 +359,15 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 									{history.map((item, idx) => (
 										<div key={idx} className="space-y-2">
 											<div className="flex gap-2">
-												<div className="w-7 h-7 bg-amber-200 border-2 border-amber-400 flex items-center justify-center flex-shrink-0">
-													<MessageSquare className="w-4 h-4 text-amber-700" />
+												<div className="w-7 h-7 bg-stone-200 border-2 border-stone-400 flex items-center justify-center flex-shrink-0">
+													<MessageSquare className="w-4 h-4 text-stone-600" />
 												</div>
-												<div className="bg-white border-2 border-amber-200 p-3 text-sm text-stone-700 flex-1">
+												<div className="bg-white border-2 border-stone-300 p-3 text-sm text-stone-700 flex-1">
 													{item.question}
 												</div>
 											</div>
 											<div className="flex gap-2 justify-end">
-												<div className="bg-amber-600 text-white p-3 text-sm font-bold max-w-[80%]">
+												<div className="bg-stone-700 text-white p-3 text-sm font-bold max-w-[80%]">
 													{item.answer}
 												</div>
 											</div>
@@ -377,10 +377,10 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 									{/* Current Question */}
 									{currentStep && !currentStep.isComplete && (
 										<div className="flex gap-2">
-											<div className="w-7 h-7 bg-amber-600 border-2 border-amber-700 flex items-center justify-center flex-shrink-0 text-white">
+											<div className="w-7 h-7 bg-stone-700 border-2 border-stone-800 flex items-center justify-center flex-shrink-0 text-white">
 												<Sparkles className="w-4 h-4" />
 											</div>
-											<div className="bg-white border-3 border-amber-600 p-3 text-stone-900 font-bold flex-1">
+											<div className="bg-white border-3 border-stone-600 p-3 text-stone-900 font-bold flex-1">
 												{currentStep.question}
 											</div>
 										</div>
@@ -389,10 +389,10 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 									{/* Loading */}
 									{isLoading && (
 										<div className="flex gap-2 items-center">
-											<div className="w-7 h-7 bg-amber-200 border-2 border-amber-400 flex items-center justify-center flex-shrink-0">
-												<Loader2 className="w-4 h-4 animate-spin text-amber-600" />
+											<div className="w-7 h-7 bg-stone-200 border-2 border-stone-400 flex items-center justify-center flex-shrink-0">
+												<Loader2 className="w-4 h-4 animate-spin text-stone-600" />
 											</div>
-											<span className="text-amber-600 italic text-sm">
+											<span className="text-stone-500 italic text-sm">
 												{t.narrativeStyleAnalyzing || 'Analyzing your style...'}
 											</span>
 										</div>
@@ -423,7 +423,7 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 															key={idx}
 															onClick={() => handleAnswer(opt)}
 															disabled={isLoading}
-															className="p-3 border-2 border-amber-300 bg-white hover:border-amber-600 hover:bg-amber-50 text-left font-bold text-sm transition-all disabled:opacity-50"
+															className="p-3 border-2 border-stone-300 bg-white hover:border-stone-600 hover:bg-stone-50 text-left font-bold text-sm transition-all disabled:opacity-50"
 														>
 															{opt}
 														</button>
@@ -431,7 +431,7 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 													<button
 														onClick={() => setCustomInputMode(true)}
 														disabled={isLoading}
-														className="p-3 border-2 border-dashed border-amber-400 bg-white hover:border-amber-600 text-left font-bold text-sm flex items-center gap-2 text-amber-700"
+														className="p-3 border-2 border-dashed border-stone-400 bg-white hover:border-stone-600 text-left font-bold text-sm flex items-center gap-2 text-stone-600"
 													>
 														<Edit3 className="w-4 h-4" />
 														{t.otherOption || 'Other...'}
@@ -444,7 +444,7 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 															setCustomInputMode(false);
 															setCustomInputValue('');
 														}}
-														className="flex items-center gap-2 text-amber-600 hover:text-amber-800 text-xs font-bold uppercase"
+														className="flex items-center gap-2 text-stone-500 hover:text-stone-700 text-xs font-bold uppercase"
 													>
 														<ArrowLeft className="w-3 h-3" />
 														{t.backToOptions || 'Back to options'}
@@ -461,7 +461,7 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 																		handleAnswer(customInputValue);
 																	}
 																}}
-																className="w-full bg-white border-2 border-amber-400 p-3 pr-10 text-sm text-stone-900 focus:border-amber-600 outline-none"
+																className="w-full bg-white border-2 border-stone-400 p-3 pr-10 text-sm text-stone-900 focus:border-stone-600 outline-none"
 																placeholder={t.typeYourAnswer || 'Type your answer...'}
 																disabled={isLoading}
 																autoFocus
@@ -471,14 +471,14 @@ export const NarrativeStyleModal: React.FC<NarrativeStyleModalProps> = ({
 																	apiKey={apiKey}
 																	language={language}
 																	onTranscription={handleVoiceTranscription}
-																	className="text-amber-400 hover:text-amber-600"
+																	className="text-stone-400 hover:text-stone-600"
 																/>
 															</div>
 														</div>
 														<button
 															onClick={() => handleAnswer(customInputValue)}
 															disabled={!customInputValue.trim() || isLoading}
-															className="bg-amber-600 text-white px-4 font-bold disabled:opacity-50 hover:bg-amber-700 transition-colors"
+															className="bg-stone-700 text-white px-4 font-bold disabled:opacity-50 hover:bg-stone-600 transition-colors"
 														>
 															<ArrowRight className="w-5 h-5" />
 														</button>

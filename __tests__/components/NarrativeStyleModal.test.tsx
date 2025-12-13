@@ -129,7 +129,7 @@ describe('NarrativeStyleModal', () => {
       render(<NarrativeStyleModal {...props} />);
 
       const customButton = screen.getByText('Custom Style').closest('button');
-      expect(customButton).toHaveClass('bg-amber-500');
+      expect(customButton).toHaveClass('bg-stone-700');
     });
 
     it('should switch to custom mode when clicked', () => {

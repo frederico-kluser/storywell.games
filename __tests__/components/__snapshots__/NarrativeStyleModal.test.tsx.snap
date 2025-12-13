@@ -52,7 +52,7 @@ exports[`NarrativeStyleModal rendering should match snapshot when open in auto m
             </p>
           </button>
           <button
-            class="p-4 border-3 text-left transition-all bg-stone-100 text-stone-700 border-stone-300 hover:border-amber-500"
+            class="p-4 border-3 text-left transition-all bg-stone-100 text-stone-700 border-stone-300 hover:border-stone-700"
           >
             <h3
               class="font-black uppercase text-sm"
@@ -138,7 +138,7 @@ exports[`NarrativeStyleModal rendering should match snapshot when open in custom
             </p>
           </button>
           <button
-            class="p-4 border-3 text-left transition-all bg-amber-500 text-white border-amber-600 shadow-[4px_4px_0px_rgba(0,0,0,0.3)]"
+            class="p-4 border-3 text-left transition-all bg-stone-700 text-white border-stone-800 shadow-[4px_4px_0px_rgba(0,0,0,0.3)]"
           >
             <h3
               class="font-black uppercase text-sm"
@@ -146,7 +146,7 @@ exports[`NarrativeStyleModal rendering should match snapshot when open in custom
               Custom Style
             </h3>
             <p
-              class="text-xs mt-1 text-amber-100"
+              class="text-xs mt-1 text-stone-300"
             >
               Define your preferred writing style
             </p>
@@ -156,7 +156,7 @@ exports[`NarrativeStyleModal rendering should match snapshot when open in custom
           class="space-y-4"
         >
           <div
-            class="flex gap-3 bg-amber-50 border-2 border-amber-200 p-3"
+            class="flex gap-3 bg-stone-100 border-2 border-stone-300 p-3"
           >
             <span
               data-testid="info-icon"
@@ -165,12 +165,12 @@ exports[`NarrativeStyleModal rendering should match snapshot when open in custom
             </span>
             <div>
               <p
-                class="text-xs font-bold uppercase tracking-wide text-amber-700"
+                class="text-xs font-bold uppercase tracking-wide text-stone-600"
               >
                 How to describe your style
               </p>
               <p
-                class="text-xs text-amber-800 mt-1 leading-relaxed"
+                class="text-xs text-stone-600 mt-1 leading-relaxed"
               >
                 Describe how you want the story to be told.
               </p>
@@ -180,7 +180,7 @@ exports[`NarrativeStyleModal rendering should match snapshot when open in custom
             class="relative"
           >
             <textarea
-              class="w-full bg-stone-50 border-3 border-stone-300 p-4 pr-12 text-sm text-stone-900 focus:border-amber-500 outline-none min-h-[120px] font-medium"
+              class="w-full bg-stone-50 border-3 border-stone-300 p-4 pr-12 text-sm text-stone-900 focus:border-stone-600 outline-none min-h-[120px] font-medium"
               placeholder="Describe your narrative style..."
             />
             <div
@@ -188,7 +188,7 @@ exports[`NarrativeStyleModal rendering should match snapshot when open in custom
             />
           </div>
           <button
-            class="w-full py-3 bg-amber-500 text-white font-black uppercase tracking-wide hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-amber-600 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]"
+            class="w-full py-3 bg-stone-800 text-white font-black uppercase tracking-wide hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-stone-900 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]"
             disabled=""
           >
             <span
@@ -272,7 +272,7 @@ exports[`NarrativeStyleModal rendering should match snapshot with custom style t
             </p>
           </button>
           <button
-            class="p-4 border-3 text-left transition-all bg-amber-500 text-white border-amber-600 shadow-[4px_4px_0px_rgba(0,0,0,0.3)]"
+            class="p-4 border-3 text-left transition-all bg-stone-700 text-white border-stone-800 shadow-[4px_4px_0px_rgba(0,0,0,0.3)]"
           >
             <h3
               class="font-black uppercase text-sm"
@@ -280,7 +280,7 @@ exports[`NarrativeStyleModal rendering should match snapshot with custom style t
               Custom Style
             </h3>
             <p
-              class="text-xs mt-1 text-amber-100"
+              class="text-xs mt-1 text-stone-300"
             >
               Define your preferred writing style
             </p>
@@ -290,7 +290,7 @@ exports[`NarrativeStyleModal rendering should match snapshot with custom style t
           class="space-y-4"
         >
           <div
-            class="flex gap-3 bg-amber-50 border-2 border-amber-200 p-3"
+            class="flex gap-3 bg-stone-100 border-2 border-stone-300 p-3"
           >
             <span
               data-testid="info-icon"
@@ -299,12 +299,12 @@ exports[`NarrativeStyleModal rendering should match snapshot with custom style t
             </span>
             <div>
               <p
-                class="text-xs font-bold uppercase tracking-wide text-amber-700"
+                class="text-xs font-bold uppercase tracking-wide text-stone-600"
               >
                 How to describe your style
               </p>
               <p
-                class="text-xs text-amber-800 mt-1 leading-relaxed"
+                class="text-xs text-stone-600 mt-1 leading-relaxed"
               >
                 Describe how you want the story to be told.
               </p>
@@ -314,7 +314,7 @@ exports[`NarrativeStyleModal rendering should match snapshot with custom style t
             class="relative"
           >
             <textarea
-              class="w-full bg-stone-50 border-3 border-stone-300 p-4 pr-12 text-sm text-stone-900 focus:border-amber-500 outline-none min-h-[120px] font-medium"
+              class="w-full bg-stone-50 border-3 border-stone-300 p-4 pr-12 text-sm text-stone-900 focus:border-stone-600 outline-none min-h-[120px] font-medium"
               placeholder="Describe your narrative style..."
             >
               Present tense, cinematic style, focus on dialogue.
@@ -324,7 +324,7 @@ exports[`NarrativeStyleModal rendering should match snapshot with custom style t
             />
           </div>
           <button
-            class="w-full py-3 bg-amber-500 text-white font-black uppercase tracking-wide hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-amber-600 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]"
+            class="w-full py-3 bg-stone-800 text-white font-black uppercase tracking-wide hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 border-2 border-stone-900 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]"
           >
             <span
               data-testid="sparkles-icon"
