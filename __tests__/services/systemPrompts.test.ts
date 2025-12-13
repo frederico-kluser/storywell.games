@@ -213,9 +213,9 @@ describe('systemPrompts', () => {
         };
         const prompt = buildSystemPrompt({ gameState, playerInput: 'search', language: 'en', fateResult });
 
-        expect(prompt).toContain('FATE EVENT: FORTUNATE OCCURRENCE');
+        expect(prompt).toContain('FATE EVENT: CRITICAL SUCCESS (ACTION MUST TRIUMPH)');
         expect(prompt).toContain('Find hidden treasure');
-        expect(prompt).toContain('GOOD must happen');
+        expect(prompt).toContain('MUST succeed completely');
       });
 
       it('should include bad fate instruction when fate is bad', () => {
@@ -226,9 +226,9 @@ describe('systemPrompts', () => {
         };
         const prompt = buildSystemPrompt({ gameState, playerInput: 'open chest', language: 'en', fateResult });
 
-        expect(prompt).toContain('FATE EVENT: MISFORTUNE STRIKES');
+        expect(prompt).toContain('FATE EVENT: CRITICAL FAILURE (ACTION MUST COLLAPSE)');
         expect(prompt).toContain('Trigger a trap');
-        expect(prompt).toContain('BAD must happen');
+        expect(prompt).toContain('MUST FAIL or BACKFIRE');
       });
 
       it('should not include fate instruction when fate is neutral', () => {

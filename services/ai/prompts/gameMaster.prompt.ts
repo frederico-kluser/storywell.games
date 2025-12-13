@@ -438,35 +438,31 @@ export function buildGameMasterPrompt({
 	if (fateResult && fateResult.type !== 'neutral') {
 		if (fateResult.type === 'good') {
 			fateInstruction = `
-    === FATE EVENT: FORTUNATE OCCURRENCE ===
-    The dice of fate have favored the player! Something GOOD must happen during this action.
-    Hint about what should happen: "${fateResult.hint || 'An unexpected benefit or advantage'}"
+    === FATE EVENT: CRITICAL SUCCESS (ACTION MUST TRIUMPH) ===
+    The fate dice have GUARANTEED that the player's intended action WORKS exactly as planned and produces an EXTRA BENEFIT.
+    Hint about the amplified payoff: "${fateResult.hint || 'An unexpected benefit or advantage'}"
 
-    INCORPORATE THIS POSITIVE EVENT naturally into the narrative:
-    - The player might find something useful
-    - An NPC might offer unexpected help
-    - A danger is avoided by luck
-    - The player discovers a hidden opportunity
-    - Something makes the situation easier than expected
+    You MUST narrate the player accomplishing their goal and layer on top a boon that matches the hint. Treat it like a cinematic critical success:
+    - The intended objective is completed cleanly and decisively (no partial success wording)
+    - Add an additional boon: discovery, ally aid, bonus loot, positional advantage, etc.
+    - Show how luck tilts the scene in the player's favor (enemies slip, mechanisms click, weather helps, etc.)
+    - Update stats/inventory/relationships to reflect the hard benefit (not just flavor text)
 
-    Make this feel organic to the story, not forced. The benefit should match the hint provided.
-    Update stats/inventory accordingly if the player gains something.
+    This CRITICAL SUCCESS overrides other cautionary rules. Make the payoff feel dramatic yet coherent with the current context.
 `;
 		} else {
 			fateInstruction = `
-    === FATE EVENT: MISFORTUNE STRIKES ===
-    The dice of fate have turned against the player! Something BAD must happen during this action.
-    Hint about what should happen: "${fateResult.hint || 'An unexpected complication or danger'}"
+    === FATE EVENT: CRITICAL FAILURE (ACTION MUST COLLAPSE) ===
+    The fate dice have DOOMED the player's intended action. It MUST FAIL or BACKFIRE spectacularly.
+    Hint about the setback: "${fateResult.hint || 'An unexpected complication or danger'}"
 
-    INCORPORATE THIS NEGATIVE EVENT naturally into the narrative:
-    - The player might trigger a trap or alarm
-    - An NPC becomes hostile or suspicious
-    - Something valuable is lost or damaged
-    - An unexpected enemy appears
-    - The situation becomes more complicated
+    You MUST deny the player's desired outcome. Portray the failure as catastrophic and use the hint to decide the punishment:
+    - The key objective is blocked, undone, or produces the opposite effect
+    - Introduce lasting harm: damage, item loss, alerted enemies, broken tools, captured allies, etc.
+    - Ensure any progress that would have stemmed from the action is halted or inverted
+    - Update stats/inventory/relationships to reflect the negative consequence (not just narration)
 
-    Make this feel organic to the story, not forced. The setback should match the hint provided.
-    Update stats/inventory accordingly if the player loses something or takes damage.
+    This CRITICAL FAILURE overrides any other logic. Make it clear the attempt backfired and the player must recover in future turns.
 `;
 		}
 	}
@@ -612,6 +608,12 @@ ${
 `
 		: ''
 }
+    === ABSOLUTE FATE OUTCOME DIRECTIVE (OVERRIDES EVERYTHING ELSE) ===
+    - If fateResult?.type === 'good': Treat it as a CRITICAL SUCCESS. The player's intention MUST succeed completely, and you must apply an extra advantage aligned with the hint.
+    - If fateResult?.type === 'bad': Treat it as a CRITICAL FAILURE. The player's intention MUST fail or backfire, and you must apply a concrete punishment aligned with the hint.
+    - If no fateResult is provided or the type is 'neutral': Resolve the action normally using feasibility and context checks.
+    NEVER undermine this directive with soft wording. Make the success/failure unmistakable and reflect the outcome in state updates.
+
     CRITICAL: All narrative text must be in ${langName} (${language}).
   `;
 }
