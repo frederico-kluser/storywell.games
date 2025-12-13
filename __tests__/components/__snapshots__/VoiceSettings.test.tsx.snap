@@ -80,7 +80,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
           class="grid gap-3"
         >
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
           >
             <div
               class="flex items-center justify-between"
@@ -123,7 +123,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -157,7 +157,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -191,7 +191,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -225,7 +225,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -259,7 +259,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -293,7 +293,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -327,7 +327,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -361,7 +361,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -395,7 +395,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -429,7 +429,7 @@ exports[`VoiceSettings rendering should match snapshot when open 1`] = `
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -568,7 +568,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
           class="grid gap-3"
         >
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -602,7 +602,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -636,7 +636,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -670,7 +670,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -704,7 +704,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -738,7 +738,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -772,7 +772,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
           >
             <div
               class="flex items-center justify-between"
@@ -815,7 +815,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -849,7 +849,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -883,7 +883,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -917,7 +917,7 @@ exports[`VoiceSettings rendering should match snapshot with different selected v
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1056,7 +1056,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
           class="grid gap-3"
         >
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
           >
             <div
               class="flex items-center justify-between"
@@ -1099,7 +1099,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1133,7 +1133,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1167,7 +1167,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1201,7 +1201,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1235,7 +1235,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1269,7 +1269,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1303,7 +1303,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1337,7 +1337,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1371,7 +1371,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"
@@ -1405,7 +1405,7 @@ exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`]
             </div>
           </div>
           <div
-            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+            class="p-4 border-2 transition-all cursor-pointer clickable click-card bg-white border-stone-300 hover:border-stone-900 text-stone-700"
           >
             <div
               class="flex items-center justify-between"

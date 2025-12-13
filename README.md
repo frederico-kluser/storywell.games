@@ -108,6 +108,68 @@ Diferenciais:
 - **Backgrounds:** `locationBackground.prompt.ts` gera cenas únicas por localização.
 - **TTS/STT:** Botões de voz chamam `gpt-4o-mini-tts` e `Whisper`; resultados são armazenados no estado local, sem backend.
 
+### Sistema de Som de Interface (UI Click Sound)
+
+O sistema de som de clique fornece feedback sonoro instantâneo para todos os elementos interativos da interface.
+
+**Características técnicas:**
+
+| Aspecto | Implementação |
+| --- | --- |
+| **API** | Web Audio API com `AudioContext` e `AudioBuffer` |
+| **Latência** | ~0ms (áudio pré-carregado na memória) |
+| **Comportamento** | Clique rápido interrompe som anterior |
+| **Suporte touch** | Pointer Events (unifica mouse + touch) |
+| **Event delegation** | Captura global no document |
+
+**Arquitetura:**
+
+```
+services/sound.ts         # Serviço singleton de áudio (Web Audio API)
+hooks/useClickSound.tsx   # Provider + Context + Hook
+public/assets/*.wav       # Arquivos de áudio
+```
+
+**Elementos com som automático:**
+- `<button>`, `<a href>`, `<input type="button|submit|checkbox|radio">`
+- Elementos com `role="button|link|menuitem|tab|option"`
+- Elementos com `tabindex` (exceto `-1`)
+- Elementos com `cursor: pointer`
+
+**Por que Web Audio API:**
+1. **Sem delay:** Buffer decodificado na memória, reprodução instantânea
+2. **Interrupção:** Novo clique para o som anterior (evita sobreposição)
+3. **Cross-browser:** Funciona em todos os navegadores modernos
+4. **Touch-friendly:** Pointer Events funcionam com mouse, touch e stylus
+
+**Uso programático:**
+
+```tsx
+import { useClickSound } from './hooks/useClickSound';
+
+function MyComponent() {
+  const { enabled, setEnabled, playClickSound } = useClickSound();
+
+  return (
+    <button onClick={() => setEnabled(!enabled)}>
+      {enabled ? 'Desativar' : 'Ativar'} som de clique
+    </button>
+  );
+}
+```
+
+**Configuração:**
+- Preferência salva em `localStorage` (chave: `storywell.clickSoundEnabled`)
+- Volume padrão: 25%
+- Inicialização lazy: aguarda primeira interação do usuário (política de autoplay dos navegadores)
+
+**Efeitos visuais de clique:**
+- Todos os elementos interativos têm efeito visual de "press" (`transform: scale(0.96)`)
+- Cards clicáveis: usar classe `clickable click-card`
+- Botões ícone: usar classe `icon-btn`
+- Efeito retro especial para `.retro-btn` (translate + scale)
+- Feedback tátil aprimorado em dispositivos touch
+
 ## Internacionalização e acessibilidade
 
 - Idiomas suportados: EN, PT, ES, FR, RU, ZH. O idioma define prompts, UI e hints do Fate.

@@ -148,7 +148,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
               return (
                 <div
                   key={voice}
-                  className={`p-4 border-2 transition-all cursor-pointer ${
+                  className={`p-4 border-2 transition-all cursor-pointer clickable click-card ${
                     isSelected
                       ? 'bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]'
                       : 'bg-white border-stone-300 hover:border-stone-900 text-stone-700'

@@ -450,7 +450,7 @@ const App: React.FC = () => {
 						<div
 							key={story.id}
 							onClick={() => setCurrentStoryId(story.id)}
-							className="p-4 cursor-pointer transition-all border-2 relative group"
+							className="p-4 cursor-pointer transition-all border-2 relative group clickable click-card"
 							style={{
 								backgroundColor: currentStoryId === story.id ? colors.buttonPrimary : colors.backgroundSecondary,
 								borderColor: currentStoryId === story.id ? colors.buttonPrimary : colors.border,

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { ThemeColorsProvider } from './hooks/useThemeColors';
+import { ClickSoundProvider } from './hooks/useClickSound';
 import { version } from './package.json';
 
 // Set document title with version
@@ -16,7 +17,9 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <ThemeColorsProvider>
-      <App />
+      <ClickSoundProvider>
+        <App />
+      </ClickSoundProvider>
     </ThemeColorsProvider>
   </React.StrictMode>
 );

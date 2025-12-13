@@ -238,7 +238,7 @@ export const ChatBubbleView: React.FC<ChatBubbleProps> = ({
 					onClick={avatarSrc ? handleAvatarClick : undefined}
 					className={`h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative ${
 						isPlayer ? 'bg-stone-200' : 'bg-white'
-					} ${avatarSrc ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+					} ${avatarSrc ? 'cursor-pointer hover:opacity-80 transition-opacity clickable' : ''}`}
 				>
 					{avatarSrc ? (
 						<img src={avatarSrc} alt={senderName} className="w-full h-full object-cover" />
