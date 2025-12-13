@@ -174,6 +174,12 @@ const App: React.FC = () => {
 	// State for pulse animation on Next button (shows when new content is available)
 	const [showNextPulse, setShowNextPulse] = useState(false);
 
+	// State for actions menu collapse (controlled from navigation bar on mobile)
+	const [isActionsCollapsed, setIsActionsCollapsed] = useState(true);
+
+	// State for actions count (for pulse animation on mobile actions button)
+	const [actionsCount, setActionsCount] = useState(0);
+
 	// Callback to stop pulse animation and decrement new cards count when user navigates
 	const handleNavigate = useCallback(() => {
 		setShowNextPulse(false);
@@ -550,17 +556,6 @@ const App: React.FC = () => {
 								<Download className="w-4 h-4 md:w-5 md:h-5" />
 							</button>
 							<button
-								onClick={() => setShowStatus(true)}
-								className="p-1.5 md:p-2 border-2 transition-colors hover:opacity-80"
-								style={{
-									backgroundColor: colors.buttonSecondary,
-									borderColor: colors.border,
-									color: colors.buttonSecondaryText,
-								}}
-							>
-								<Backpack className="w-4 h-4 md:w-5 md:h-5" />
-							</button>
-							<button
 								onClick={() => setShowSettings(true)}
 								className="md:hidden p-1.5 border-2 transition-colors hover:opacity-80"
 								style={{
@@ -710,6 +705,10 @@ const App: React.FC = () => {
 												characterAvatars={Object.fromEntries(
 													Object.entries(activeStory.characters).map(([id, char]) => [id, char.avatarBase64]),
 												)}
+												isActionsCollapsed={isActionsCollapsed}
+												setIsActionsCollapsed={setIsActionsCollapsed}
+												onShowCharacterSheet={() => setShowStatus(true)}
+												actionsCount={actionsCount}
 											/>
 										</div>
 									);
@@ -745,6 +744,9 @@ const App: React.FC = () => {
 							onSendMessage={handleSendMessageWithTracking}
 							onVoiceTranscription={handleVoiceTranscription}
 							t={t}
+							isCollapsed={isActionsCollapsed}
+							setIsCollapsed={setIsActionsCollapsed}
+							onActionsCountChange={setActionsCount}
 						/>
 					) : (
 						<div

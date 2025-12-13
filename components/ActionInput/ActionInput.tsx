@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Loader2, MoreHorizontal, Sparkles, AlertTriangle, ChevronUp, ChevronDown, X, Check } from 'lucide-react';
+import { Send, Loader2, MoreHorizontal, Sparkles, AlertTriangle, X, Check } from 'lucide-react';
 import { VoiceInput } from '../VoiceInput';
 import { FateToast } from '../FateToast';
 import { GameState, Language, ActionOption, FateResult } from '../../types';
@@ -23,6 +23,9 @@ interface ActionInputProps {
 	onSendMessage: (directMessage?: string, fateResult?: FateResult) => Promise<void>;
 	onVoiceTranscription: (text: string) => void;
 	t: Record<string, string>;
+	isCollapsed: boolean; // Controlled from parent for mobile collapse state
+	setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+	onActionsCountChange?: (count: number) => void; // Notify parent of actions count for pulse animation
 }
 
 export const ActionInput: React.FC<ActionInputProps> = ({
@@ -36,6 +39,9 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 	onSendMessage,
 	onVoiceTranscription,
 	t,
+	isCollapsed,
+	setIsCollapsed,
+	onActionsCountChange,
 }) => {
 	const { colors } = useThemeColors();
 	const isBlocked = isProcessing;
@@ -46,7 +52,6 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 	const [lastMessageCount, setLastMessageCount] = useState(0);
 	const [lastFateResult, setLastFateResult] = useState<FateResult | null>(null);
 	const [showFateToast, setShowFateToast] = useState<FateResult | null>(null);
-	const [isCollapsed, setIsCollapsed] = useState(true); // Default collapsed - user must click to expand
 
 	// Custom action confirmation states
 	const [isAnalyzingAction, setIsAnalyzingAction] = useState(false);
@@ -76,6 +81,13 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 			loadOptions();
 		}
 	}, [activeStory.messages.length, isProcessing, activeStory.id]);
+
+	// Notify parent of actions count changes
+	useEffect(() => {
+		if (onActionsCountChange) {
+			onActionsCountChange(options.length + 1); // +1 for custom action
+		}
+	}, [options.length, onActionsCountChange]);
 
 	const loadOptions = async () => {
 		if (!apiKey || isLoadingOptions) return;
@@ -579,30 +591,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 				className="border-t-2 w-full max-w-full overflow-hidden"
 				style={{ backgroundColor: colors.backgroundSecondary, borderTopColor: colors.border }}
 			>
-				{/* Mobile collapse toggle - only visible on mobile */}
-				<button
-					onClick={() => setIsCollapsed(!isCollapsed)}
-					className={`md:hidden w-full p-2.5 flex items-center justify-between transition-colors ${
-						isCollapsed && options.length > 0 ? 'animate-pulse-glow' : ''
-					}`}
-					style={{ backgroundColor: colors.backgroundAccent, borderBottom: `1px solid ${colors.border}` }}
-				>
-					<span className="text-xs font-bold uppercase flex items-center gap-1.5" style={{ color: colors.text }}>
-						{t.actions || 'Actions'}
-						<span
-							className="text-[10px] px-1.5 py-0.5 rounded-full"
-							style={{ backgroundColor: colors.text, color: colors.background }}
-						>
-							{options.length + 1}
-						</span>
-					</span>
-					<span className="flex items-center gap-1 text-[10px]" style={{ color: colors.textSecondary }}>
-						{isCollapsed ? t.showOptions || 'Show' : t.hideOptions || 'Hide'}
-						{isCollapsed ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-					</span>
-				</button>
-
-				{/* Options container - collapsible on mobile */}
+				{/* Options container - collapsible on mobile (toggle button moved to navigation bar) */}
 				<div className={`p-1.5 md:p-6 max-h-[50vh] md:max-h-none overflow-y-auto ${isCollapsed ? 'hidden md:block' : 'block'}`}>
 					<div className="max-w-full md:max-w-5xl mx-auto">
 						{renderContextSyncBadge()}
