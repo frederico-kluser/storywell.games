@@ -502,6 +502,14 @@ ${elementsSection}
 		)
 		.join('\n    ');
 
+	// Build list of ALL known locations in the game (for location reuse)
+	const allLocations = Object.values(gameState.locations);
+	const knownLocationsList = allLocations
+		.map(
+			(loc) => `- "${loc.name}" (ID: ${loc.id}) - ${loc.description.substring(0, 80)}${loc.description.length > 80 ? '...' : ''}`,
+		)
+		.join('\n    ');
+
 	return `
     You are the Game Master (GM), Physics Engine, and Logic Core for a text-based RPG.
 
@@ -521,6 +529,10 @@ ${elementsSection}
     === KNOWN_CHARACTERS (ALL NPCs IN THE GAME) ===
     These characters ALREADY EXIST in the game. When they speak, use their exact name.
     ${knownCharactersList || '(No NPCs introduced yet)'}
+
+    === KNOWN_LOCATIONS (ALL LOCATIONS IN THE GAME) ===
+    These locations ALREADY EXIST in the game. When the player travels to one of these, use its EXACT ID.
+    ${knownLocationsList || '(No locations yet)'}
 
 ${universeContextSection}${heavyContextSection}${gridContextSection}${fateInstruction}${narrativeStyleSection}
 ${getEconomyRulesForGMPrompt()}
@@ -600,6 +612,41 @@ ${getEconomyRulesForGMPrompt()}
     - When the player seeks someone specific, create that character
     - Each new NPC should have a unique personality and appearance
     - Don't be afraid to introduce merchants, guards, travelers, etc.
+
+    === LOCATION CHANGE RULES (CRITICAL) ===
+    When the player moves to a different location:
+
+    **STEP 1: Check KNOWN_LOCATIONS list above**
+    - If the destination matches a location in KNOWN_LOCATIONS, use its EXACT ID in "locationChange"
+    - Match by semantic meaning, not exact name (e.g., "tavern", "the inn", "bar" = same location if context fits)
+
+    **STEP 2: Only create new location if truly new**
+    - If the player goes somewhere NOT in KNOWN_LOCATIONS, create it via "newLocations"
+    - Format: { "id": "loc_[turnNumber]_[shortname]_[random4digits]", "name": "...", "description": "..." }
+
+    **EXAMPLE - Returning to existing location:**
+    Player says: "I go back to the tavern"
+    KNOWN_LOCATIONS includes: "Dragon's Breath Tavern" (ID: loc_1_tavern_2847)
+    CORRECT:
+    "stateUpdates": {
+      "locationChange": "loc_1_tavern_2847",
+      "eventLog": "Player returned to the tavern"
+    }
+    WRONG (creates duplicate):
+    "stateUpdates": {
+      "newLocations": [{ "id": "loc_5_tavern_9999", "name": "Dragon's Breath Tavern", ... }],
+      "locationChange": "loc_5_tavern_9999"
+    }
+
+    **EXAMPLE - Discovering new location:**
+    Player says: "I enter the mysterious cave"
+    KNOWN_LOCATIONS has no caves.
+    CORRECT:
+    "stateUpdates": {
+      "newLocations": [{ "id": "loc_${gameState.turnCount}_cave_4521", "name": "Mysterious Cave", "description": "A dark cavern..." }],
+      "locationChange": "loc_${gameState.turnCount}_cave_4521",
+      "eventLog": "Player discovered a mysterious cave"
+    }
 
     === PLAYER AGENCY RULES (CRITICAL) ===
     The human player is the only one who decides what "${playerNameForPrompt}" says, thinks, or feels.

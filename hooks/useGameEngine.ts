@@ -1069,7 +1069,14 @@ export const useGameEngine = (): UseGameEngineReturn => {
 				next.lastPlayed = Date.now();
 
 				if (response.stateUpdates.newLocations) {
-					response.stateUpdates.newLocations.forEach((l) => (next.locations[l.id] = l));
+					response.stateUpdates.newLocations.forEach((l) => {
+						const existingLocation = next.locations[l.id];
+						// Preserve existing backgroundImage when updating a location
+						next.locations[l.id] = {
+							...l,
+							backgroundImage: existingLocation?.backgroundImage || l.backgroundImage,
+						};
+					});
 				}
 
 				if (response.stateUpdates.newCharacters) {
