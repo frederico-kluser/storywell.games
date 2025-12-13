@@ -99,14 +99,14 @@ export interface OnboardingFinalConfig {
  *
  * @interface OnboardingResponse
  * @property {string} question - A próxima pergunta a ser feita ao usuário
- * @property {'text' | 'select' | 'finish'} controlType - Tipo de controle de UI a ser usado
- * @property {string[]} [options] - Opções disponíveis se controlType for 'select'
+ * @property {'select' | 'finish'} controlType - Tipo de controle de UI a ser usado (sempre 'select' com opções, UI tem botão 'outro' separado)
+ * @property {string[]} options - Opções disponíveis para o usuário escolher (sempre presente quando controlType é 'select')
  * @property {boolean} isComplete - Indica se todas as informações foram coletadas
  * @property {OnboardingFinalConfig} [finalConfig] - Configuração final quando isComplete é true
  */
 export interface OnboardingResponse {
   question: string;
-  controlType: 'text' | 'select' | 'finish';
+  controlType: 'select' | 'finish';
   options?: string[];
   isComplete: boolean;
   finalConfig?: OnboardingFinalConfig;
@@ -182,21 +182,29 @@ export function buildOnboardingPrompt({
     INSTRUCTIONS:
     1. Analyze the history to see what we already know.
     2. Formulate the NEXT logical question. Do not ask for everything at once.
-    3. If the universe is known (e.g., Star Wars, Harry Potter), use your internal knowledge to provide 'select' options for Era or Location.
-    4. If the universe is 'original', use 'text' input mostly, but offer creative suggestions if helpful.
-    5. For Visual Style Reference, always provide 'select' options with relevant artistic references that match the universe (e.g., for Star Wars: "Ralph McQuarrie concept art", "Clone Wars animated style", "Realistic movie style"; for fantasy: "Studio Ghibli", "Dark Souls", "D&D official art").
-    6. When ALL required data points (including Visual Style) are gathered with sufficient detail, set 'isComplete' to true and fill 'finalConfig'.
-    7. The 'startSituation' in finalConfig should combine Location and immediate context.
-    8. The 'visualStyle' in finalConfig should be the exact artistic reference chosen by the user.
+    3. ALWAYS provide 'select' controlType with 4-6 creative options for EVERY question. The user has a separate "Other" button to type custom answers if they want.
+    4. For existing universes (Star Wars, Harry Potter, etc.), use your internal knowledge to provide relevant canon-accurate options for Era, Location, Character types, etc.
+    5. For original universes, provide creative and inspiring suggestions as options (e.g., for theme: "Dark Fantasy", "Cyberpunk Noir", "Steampunk Adventure", "Post-Apocalyptic Survival", "Magical Realism").
+    6. For Visual Style Reference, provide artistic references that match the universe (e.g., for Star Wars: "Ralph McQuarrie concept art", "Clone Wars animated style", "Realistic movie style"; for fantasy: "Studio Ghibli", "Dark Souls", "D&D official art").
+    7. For Character Name, provide thematic name suggestions that fit the universe (e.g., for Star Wars: "Kira Vex", "Zander Krell", "Mira Solaris"; for fantasy: "Aldric", "Seraphina", "Thorne").
+    8. For Character Appearance, provide archetypes and visual styles (e.g., "Battle-scarred warrior with silver hair", "Mysterious hooded figure", "Young prodigy with bright eyes").
+    9. For Character Background, provide role archetypes (e.g., "Exiled noble seeking redemption", "Street-smart smuggler", "Former soldier turned mercenary", "Scholar uncovering ancient secrets").
+    10. For Starting Location, provide iconic or atmospheric places (e.g., "Bustling port city", "Ancient ruins", "Underground resistance hideout", "Royal court").
+    11. For Character Memories, provide narrative hooks (e.g., "Lost a loved one to the enemy", "Witnessed a great betrayal", "Discovered a family secret", "Survived a catastrophe").
+    12. When ALL required data points (including Visual Style) are gathered with sufficient detail, set 'isComplete' to true and fill 'finalConfig'.
+    13. The 'startSituation' in finalConfig should combine Location and immediate context.
+    14. The 'visualStyle' in finalConfig should be the exact artistic reference chosen by the user.
 
     CRITICAL ANTI-LOOP RULES:
-    9. NEVER ask the same question twice. If a question appears in the history, that topic is CLOSED.
-    10. When a user answers with negation ("no", "não", "nenhum", "none", "nothing", "sem", etc.), ACCEPT IT IMMEDIATELY and move to the next topic or complete the onboarding.
-    11. If a user refuses to add more details (e.g., "no special features", "nothing else"), DO NOT insist. Use what you have.
-    12. Brief/minimal answers are VALID. "Clone of Madara" is sufficient for appearance - infer visual details from known characters.
-    13. "No memories" or "without memories" is a valid answer for memories - the character has amnesia or is newly created.
-    14. After asking about ALL 8 data points, if you have ANY answer for each, set isComplete to true. Do not ask for elaboration.
-    15. Count the topics covered in history. If you have answers for: Universe, Era, Visual Style, Name, Appearance, Background, Location, and Memories - you are DONE.
+    15. NEVER ask the same question twice. If a question appears in the history, that topic is CLOSED.
+    16. When a user answers with negation ("no", "não", "nenhum", "none", "nothing", "sem", etc.), ACCEPT IT IMMEDIATELY and move to the next topic or complete the onboarding.
+    17. If a user refuses to add more details (e.g., "no special features", "nothing else"), DO NOT insist. Use what you have.
+    18. Brief/minimal answers are VALID. "Clone of Madara" is sufficient for appearance - infer visual details from known characters.
+    19. "No memories" or "without memories" is a valid answer for memories - the character has amnesia or is newly created.
+    20. After asking about ALL 8 data points, if you have ANY answer for each, set isComplete to true. Do not ask for elaboration.
+    21. Count the topics covered in history. If you have answers for: Universe, Era, Visual Style, Name, Appearance, Background, Location, and Memories - you are DONE.
+
+    IMPORTANT: controlType should ALWAYS be 'select' with options array, NEVER 'text'. The UI has a built-in "Other" button for custom input.
   `;
 }
 
@@ -217,13 +225,13 @@ export const onboardingSchema = {
     },
     controlType: {
       type: 'string',
-      enum: ['text', 'select', 'finish'],
-      description: 'The type of UI input to present to the user.',
+      enum: ['select', 'finish'],
+      description: "ALWAYS use 'select' for questions. Use 'finish' only when complete. NEVER use 'text' - the UI has a built-in 'Other' button for custom input.",
     },
     options: {
       type: 'array',
       items: { type: 'string' },
-      description: "If controlType is 'select', provide 3-5 relevant options.",
+      description: "REQUIRED: Always provide 4-6 creative and relevant options for the user to choose from. The UI has a separate 'Other' button if they want to type custom input.",
     },
     isComplete: {
       type: 'boolean',

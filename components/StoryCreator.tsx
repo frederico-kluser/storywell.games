@@ -26,7 +26,7 @@ interface StoryCreatorProps {
 
 interface OnboardingStep {
 	question: string;
-	controlType: 'text' | 'select' | 'finish';
+	controlType: 'select' | 'finish';
 	options?: string[];
 	isComplete: boolean;
 	finalConfig?: any;
@@ -70,7 +70,7 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 		setStarted(true);
 
 		if (type === 'existing') {
-			// For existing universes, do NOT query AI first. Ask manually.
+			// For existing universes, provide popular universe options
 			const manualQuestion =
 				language === 'pt'
 					? 'Qual é o nome do Universo onde você quer jogar?'
@@ -78,9 +78,20 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 					? '¿Cuál es el nombre del universo donde quieres jugar?'
 					: 'What is the name of the Universe you want to play in?';
 
+			// Popular universes with broad appeal
+			const popularUniverses = [
+				'Star Wars',
+				'Harry Potter',
+				'The Lord of the Rings',
+				'Game of Thrones',
+				'Marvel Universe',
+				'The Witcher',
+			];
+
 			setCurrentStep({
 				question: manualQuestion,
-				controlType: 'text',
+				controlType: 'select',
+				options: popularUniverses,
 				isComplete: false,
 			});
 		} else {

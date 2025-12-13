@@ -121,9 +121,9 @@ describe('systemPrompts', () => {
 
     it('should define controlType enum values', () => {
       const controlTypeEnum = onboardingSchema.properties.controlType.enum;
-      expect(controlTypeEnum).toContain('text');
       expect(controlTypeEnum).toContain('select');
       expect(controlTypeEnum).toContain('finish');
+      // 'text' removed - UI has built-in "Other" button for custom input
     });
 
     it('should define options as array', () => {

@@ -615,7 +615,8 @@ describe('openaiClient API functions', () => {
 			(queryLLM as jest.Mock).mockResolvedValueOnce({
 				text: JSON.stringify({
 					question: 'What is your character name?',
-					controlType: 'text',
+					controlType: 'select',
+					options: ['Aldric', 'Seraphina', 'Thorne', 'Elena', 'Marcus'],
 					isComplete: false,
 				}),
 			});
@@ -625,7 +626,8 @@ describe('openaiClient API functions', () => {
 			const result = await processOnboardingStep('test-key', [], 'original', 'en');
 
 			expect(result.question).toBeDefined();
-			expect(result.controlType).toBeDefined();
+			expect(result.controlType).toBe('select');
+			expect(result.options).toBeDefined();
 			expect(result.isComplete).toBeDefined();
 		});
 	});
