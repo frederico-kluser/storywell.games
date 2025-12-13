@@ -16,6 +16,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { GridSnapshot, GridCharacterPosition, ThemeColors } from '../../types';
 
+const getAvatarSrc = (avatarBase64?: string) => {
+  if (!avatarBase64) return undefined;
+  return avatarBase64.startsWith('data:') ? avatarBase64 : `data:image/png;base64,${avatarBase64}`;
+};
+
 interface GridMapProps {
   /** Array of all grid snapshots for the story */
   gridSnapshots: GridSnapshot[];
@@ -80,6 +85,8 @@ const GridCell: React.FC<{
   const hasPlayer = charsAtPosition.some((c) => c.isPlayer);
   const playerChar = charsAtPosition.find((c) => c.isPlayer);
   const npcChars = charsAtPosition.filter((c) => !c.isPlayer);
+  const playerAvatarSrc = playerChar ? getAvatarSrc(playerChar.avatarBase64) : undefined;
+  const firstNpcAvatarSrc = npcChars.length > 0 ? getAvatarSrc(npcChars[0].avatarBase64) : undefined;
 
   // Blinking effect for player
   useEffect(() => {
@@ -124,10 +131,10 @@ const GridCell: React.FC<{
       }
     >
       {/* Player avatar */}
-      {playerChar && playerChar.avatarBase64 && (
+      {playerAvatarSrc && (
         <img
-          src={`data:image/png;base64,${playerChar.avatarBase64}`}
-          alt={playerChar.characterName}
+          src={playerAvatarSrc}
+          alt={playerChar?.characterName}
           style={{
             width: '90%',
             height: '90%',
@@ -154,9 +161,9 @@ const GridCell: React.FC<{
       {/* NPC avatars (show first NPC if no player) */}
       {!hasPlayer && npcChars.length > 0 && (
         <>
-          {npcChars[0].avatarBase64 ? (
+          {firstNpcAvatarSrc ? (
             <img
-              src={`data:image/png;base64,${npcChars[0].avatarBase64}`}
+              src={firstNpcAvatarSrc}
               alt={npcChars[0].characterName}
               style={{
                 width: '90%',
@@ -422,62 +429,65 @@ export const GridMap: React.FC<GridMapProps> = ({
                   fontSize: '11px',
                 }}
               >
-                {characters.map((char) => (
-                  <div
-                    key={char.characterId}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '2px 6px',
-                      backgroundColor: char.isPlayer
-                        ? colors.buttonPrimary
-                        : colors.backgroundAccent,
-                      color: char.isPlayer
-                        ? colors.buttonPrimaryText
-                        : colors.text,
-                      borderRadius: '4px',
-                    }}
-                  >
-                    {char.avatarBase64 ? (
-                      <img
-                        src={`data:image/png;base64,${char.avatarBase64}`}
-                        alt=""
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          borderRadius: '50%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                    ) : (
-                      <span
-                        style={{
-                          width: '16px',
-                          height: '16px',
-                          borderRadius: '50%',
-                          backgroundColor: char.isPlayer
-                            ? colors.buttonPrimaryText
-                            : colors.textSecondary,
-                          color: char.isPlayer
-                            ? colors.buttonPrimary
-                            : colors.backgroundSecondary,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '10px',
-                          fontWeight: 'bold',
-                        }}
-                      >
-                        {char.characterName.charAt(0).toUpperCase()}
+                {characters.map((char) => {
+                  const avatarSrc = getAvatarSrc(char.avatarBase64);
+                  return (
+                    <div
+                      key={char.characterId}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '2px 6px',
+                        backgroundColor: char.isPlayer
+                          ? colors.buttonPrimary
+                          : colors.backgroundAccent,
+                        color: char.isPlayer
+                          ? colors.buttonPrimaryText
+                          : colors.text,
+                        borderRadius: '4px',
+                      }}
+                    >
+                      {avatarSrc ? (
+                        <img
+                          src={avatarSrc}
+                          alt=""
+                          style={{
+                            width: '16px',
+                            height: '16px',
+                            borderRadius: '50%',
+                            objectFit: 'cover',
+                          }}
+                        />
+                      ) : (
+                        <span
+                          style={{
+                            width: '16px',
+                            height: '16px',
+                            borderRadius: '50%',
+                            backgroundColor: char.isPlayer
+                              ? colors.buttonPrimaryText
+                              : colors.textSecondary,
+                            color: char.isPlayer
+                              ? colors.buttonPrimary
+                              : colors.backgroundSecondary,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '10px',
+                            fontWeight: 'bold',
+                          }}
+                        >
+                          {char.characterName.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                      <span>{char.characterName}</span>
+                      <span style={{ opacity: 0.6 }}>
+                        ({char.position.x}, {char.position.y})
                       </span>
-                    )}
-                    <span>{char.characterName}</span>
-                    <span style={{ opacity: 0.6 }}>
-                      ({char.position.x}, {char.position.y})
-                    </span>
-                  </div>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
