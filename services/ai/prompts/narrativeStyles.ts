@@ -1296,15 +1296,52 @@ ${style.examplePhrases.map((p) => `"${p}"`).join('\n')}
 `);
   } else {
     sections.push(`
-=== NARRATIVE QUALITY GUIDELINES ===
-- Maintain cinematic pacing with deliberate variation of sentence lengths.
-- Keep descriptions grounded in sensory detail filtered through character POV.
-- Balance action beats with reflective pauses to preserve tension-and-release.
-- Use dialogue to reveal intent and subtext instead of pure exposition.
+=== NARRATIVE STYLE: DIRECT & DIALOGUE-FOCUSED ===
+Write with directness and economy. Every sentence must earn its place.
+
+**DIALOGUE RULES:**
+- Make dialogue SOUND REAL. Characters speak like actual people, not literary constructs.
+- Each character has a distinct voice based on their background, education, and personality.
+- Avoid dialogue tags that describe HOW someone speaks—let the words themselves convey tone.
+- Cut small talk unless it reveals character or advances the story.
+
+**DESCRIPTION RULES:**
+- NO excessive physical descriptions of expressions (e.g., "smiled with the corner of their mouth", "raised an eyebrow skeptically").
+- Describe only what matters for the scene—skip decorative details that don't serve story or atmosphere.
+- When describing action, be direct: what happens, what changes, what matters.
+- Trust the reader to infer emotions from context and dialogue.
+
+**PACING RULES:**
+- Events happen. Don't delay with introspection or over-description.
+- Keep scenes moving—enter late, leave early.
+- If nothing important happens in a paragraph, cut it.
+
+**AVOID:**
+- Flowery prose that pads word count
+- Describing every micro-expression and body language cue
+- Long internal monologues that repeat what's already clear
+- Atmospheric descriptions that don't serve the immediate scene
+- Adverb-heavy dialogue tags ("said angrily", "replied sarcastically")
+
+**PRIORITIES (in order):**
+1. Dialogue that sounds authentic
+2. Actions and their consequences
+3. Story progression
+4. Atmosphere (only when essential)
+`);
+    // For direct style, use simplified show-don't-tell that doesn't conflict with minimalist descriptions
+    sections.push(`
+=== SHOW, DON'T TELL (SIMPLIFIED) ===
+- Don't label emotions ("she was angry")—let dialogue and actions speak for themselves.
+- Don't over-describe body language. One telling detail is enough.
+- Reveal character through choices and dialogue, not narrator commentary.
+- Trust the reader to understand subtext.
 `);
   }
 
-  sections.push(`
+  // Only add full show-don't-tell rules when using genre presets or custom styles
+  if (trimmedCustomStyle || (genre && GENRE_PRESETS[genre])) {
+    sections.push(`
 === SHOW, DON'T TELL (MANDATORY) ===
 ${SHOW_DONT_TELL_RULES.emotions.instruction}
 
@@ -1315,6 +1352,7 @@ ${SHOW_DONT_TELL_RULES.atmosphere.instruction}
 ${SHOW_DONT_TELL_RULES.character.instruction}
 ${SHOW_DONT_TELL_RULES.selectiveUse.instruction}
 `);
+  }
 
   if (npcsInScene && npcsInScene.length > 0) {
     sections.push(generateVoiceDifferentiationInstructions(npcsInScene));
