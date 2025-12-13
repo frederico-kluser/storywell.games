@@ -568,7 +568,7 @@ const App: React.FC = () => {
 
 					{/* Card-based Story View */}
 					<div
-						className="flex-1 relative flex flex-col overflow-hidden select-none w-full max-w-full"
+						className="flex-1 relative flex flex-col overflow-hidden select-none w-full max-w-full min-h-0"
 						style={{ backgroundColor: colors.backgroundAccent }}
 						{...touchHandlers}
 					>
@@ -620,7 +620,7 @@ const App: React.FC = () => {
 						)}
 
 						{/* Story Cards Container */}
-						<div className="relative z-10 flex-1 flex flex-col p-1 md:p-4 w-full max-w-full overflow-hidden">
+						<div className="relative z-10 flex-1 flex flex-col p-1 md:p-4 w-full max-w-full overflow-hidden min-h-0">
 							{totalCards > 0 ? (
 								(() => {
 									const msg = visibleMessages[currentCardIndex];
@@ -649,7 +649,7 @@ const App: React.FC = () => {
 
 									return (
 										<div
-											className={`flex-1 transition-transform duration-300 ease-out ${
+											className={`flex-1 min-h-0 transition-transform duration-300 ease-out ${
 												swipeDirection === 'left'
 													? 'animate-slide-left'
 													: swipeDirection === 'right'

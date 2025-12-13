@@ -278,10 +278,10 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 	);
 
 	return (
-		<div className="w-full h-full flex flex-col max-w-full overflow-hidden">
+		<div className="w-full h-full flex flex-col max-w-full overflow-hidden min-h-0">
 			{/* Card Container with 3D Flip - Book Page Style */}
 			<div
-				className="flex-1 relative mx-auto w-full max-w-full md:max-w-4xl px-0 md:px-2"
+				className="flex-1 relative mx-auto w-full max-w-full md:max-w-4xl px-0 md:px-2 min-h-0"
 				style={{ perspective: '1000px' }}
 			>
 				{/* Flip Container */}
@@ -328,7 +328,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 						/>
 
 						{/* Content Area */}
-						<div className="relative h-full flex flex-col p-3 md:p-8">
+						<div className="relative h-full flex flex-col p-3 md:p-8 min-h-0">
 							{/* Header - Speaker & Controls */}
 							<div className="flex items-center justify-between mb-4 md:mb-6">
 								<div className="flex items-center gap-3">
@@ -376,7 +376,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 							</div>
 
 							{/* Message Text - Book Typography */}
-							<div className="flex-1 overflow-y-auto">
+							<div className="flex-1 overflow-y-auto min-h-0">
 								<div
 									className={`leading-relaxed whitespace-pre-wrap font-serif ${
 										isNarrator ? 'text-lg md:text-2xl italic text-center' : 'text-base md:text-xl'
