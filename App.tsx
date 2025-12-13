@@ -32,7 +32,6 @@ import {
 	Download,
 	Upload,
 	Volume2,
-	Palette,
 	ImageIcon,
 } from 'lucide-react';
 import { version } from './package.json';
@@ -551,19 +550,6 @@ const App: React.FC = () => {
 								<Download className="w-4 h-4 md:w-5 md:h-5" />
 							</button>
 							<button
-								onClick={() => setShowThemeColors(true)}
-								className="p-1.5 md:p-2 border-2 transition-colors hover:opacity-80"
-								style={{
-									backgroundColor: colors.buttonSecondary,
-									borderColor: colors.border,
-									color: colors.buttonSecondaryText,
-								}}
-								title="Theme Colors"
-								disabled={isGeneratingColors}
-							>
-								<Palette className={`w-4 h-4 md:w-5 md:h-5 ${isGeneratingColors ? 'animate-spin' : ''}`} />
-							</button>
-							<button
 								onClick={() => setShowStatus(true)}
 								className="p-1.5 md:p-2 border-2 transition-colors hover:opacity-80"
 								style={{
@@ -989,6 +975,7 @@ const App: React.FC = () => {
 				onClose={() => setShowSettings(false)}
 				onOpenVoiceSettings={() => setShowVoiceSettings(true)}
 				onOpenNarrativeStyle={() => setShowNarrativeStyleModal(true)}
+				onOpenThemeColors={() => setShowThemeColors(true)}
 				onDeleteDatabase={async () => {
 					await dbService.deleteAllGames();
 					// Clear local state after database deletion
@@ -1001,6 +988,7 @@ const App: React.FC = () => {
 				}}
 				onDeleteApiKey={handleLogout}
 				canEditNarrativeStyle={!!activeStory}
+				canEditThemeColors={!!activeStory}
 				t={t}
 			/>
 
