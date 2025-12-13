@@ -61,7 +61,7 @@ storywell.games é um motor de RPG baseado em navegador que usa inteligência ar
 | **IA Generativa**          | GPT-4.1 para narrativa, gpt-image-1-mini para imagens, Whisper para STT, gpt-4o-mini-tts para voz e prompts com schema JSON obrigatório                    |
 | **Persistência**           | IndexedDB normalizado, auto-save por turno, heavy context incremental e exportação/importação versionada                                                   |
 | **Internacionalização**    | EN/PT/ES/FR/RU/ZH com detecção automática + cookie, UI retro-futurista e suporte de voz sincronizado                                                       |
-| **Ferramentas para devs**  | Testes Jest/RTL cobrindo hooks/serviços/componentes e estrutura modular com separation of concerns                                                          |
+| **Ferramentas para devs**  | Testes Jest/RTL cobrindo hooks/serviços/componentes e estrutura modular com separation of concerns                                                         |
 
 ---
 
@@ -130,12 +130,12 @@ storywell.games é um motor de RPG baseado em navegador que usa inteligência ar
 
 ### Separação de Responsabilidades
 
-| Camada                     | Responsabilidade                      | Arquivos-Chave                       |
-| -------------------------- | ------------------------------------- | ------------------------------------ |
-| **Views** (`components/`)  | Renderização pura, recebem props      | `StoryCard.view.tsx`, `ActionInput.tsx` |
+| Camada                     | Responsabilidade                      | Arquivos-Chave                             |
+| -------------------------- | ------------------------------------- | ------------------------------------------ |
+| **Views** (`components/`)  | Renderização pura, recebem props      | `StoryCard.view.tsx`, `ActionInput.tsx`    |
 | **Logic** (`hooks/`)       | Gerenciamento de estado, orquestração | `useGameEngine.ts`, `useCardNavigation.ts` |
-| **Services** (`services/`) | APIs externas (OpenAI, IndexedDB)     | `openaiClient.ts`, `db.ts`           |
-| **Utils** (`utils/`)       | Funções auxiliares reutilizáveis      | `inventory.ts`, `errorHandler.ts`    |
+| **Services** (`services/`) | APIs externas (OpenAI, IndexedDB)     | `openaiClient.ts`, `db.ts`                 |
+| **Utils** (`utils/`)       | Funções auxiliares reutilizáveis      | `inventory.ts`, `errorHandler.ts`          |
 
 ---
 
@@ -147,33 +147,33 @@ storywell.games é um motor de RPG baseado em navegador que usa inteligência ar
 
 ```typescript
 interface GameState {
-  id: string;
-  title: string;
-  turnCount: number;
-  lastPlayed: number;
-  config: GameConfig;
+	id: string;
+	title: string;
+	turnCount: number;
+	lastPlayed: number;
+	config: GameConfig;
 
-  // Coleções em runtime (mapas para acesso O(1))
-  characters: Record<string, Character>;
-  locations: Record<string, Location>;
-  messages: ChatMessage[];
-  events: GameEvent[];
+	// Coleções em runtime (mapas para acesso O(1))
+	characters: Record<string, Character>;
+	locations: Record<string, Location>;
+	messages: ChatMessage[];
+	events: GameEvent[];
 
-  // Ponteiros de contexto atual
-  playerCharacterId: string;
-  currentLocationId: string;
+	// Ponteiros de contexto atual
+	playerCharacterId: string;
+	currentLocationId: string;
 
-  // Heavy Context - Contexto narrativo persistente
-  heavyContext?: HeavyContext;
+	// Heavy Context - Contexto narrativo persistente
+	heavyContext?: HeavyContext;
 
-  // Universe Context - Contexto profundo gerado na criação
-  universeContext?: string;
+	// Universe Context - Contexto profundo gerado na criação
+	universeContext?: string;
 
-  // Theme Colors - Paleta de cores baseada no universo
-  themeColors?: ThemeColors;
+	// Theme Colors - Paleta de cores baseada no universo
+	themeColors?: ThemeColors;
 
-  // Grid Map snapshots sincronizados com pageNumber
-  gridSnapshots?: GridSnapshot[];
+	// Grid Map snapshots sincronizados com pageNumber
+	gridSnapshots?: GridSnapshot[];
 }
 ```
 
@@ -183,38 +183,41 @@ interface GameState {
 
 ```typescript
 export interface GridPosition {
-  x: number;
-  y: number;
+	x: number;
+	y: number;
 }
 
 export interface GridCharacterPosition {
-  characterId: string;
-  characterName: string;
-  position: GridPosition;
-  isPlayer: boolean;
-  avatarBase64?: string;
+	characterId: string;
+	characterName: string;
+	position: GridPosition;
+	isPlayer: boolean;
+	avatarBase64?: string;
 }
 
 export interface GridSnapshot {
-  id: string;
-  gameId: string;
-  atMessageNumber: number;
-  timestamp: number;
-  locationId: string;
-  locationName: string;
-  characterPositions: GridCharacterPosition[];
+	id: string;
+	gameId: string;
+	atMessageNumber: number;
+	timestamp: number;
+	locationId: string;
+	locationName: string;
+	characterPositions: GridCharacterPosition[];
 }
 
 export interface GridUpdateResponse {
-  shouldUpdate: boolean;
-  characterPositions?: { characterId: string; characterName: string; x: number; y: number; isPlayer: boolean; }[];
-  reasoning?: string;
+	shouldUpdate: boolean;
+	characterPositions?: { characterId: string; characterName: string; x: number; y: number; isPlayer: boolean }[];
+	reasoning?: string;
 }
 ```
 
-- `GameState.gridSnapshots` guarda uma linha do tempo espacial sincronizada com `pageNumber`, permitindo reconstruir o mapa para qualquer carta.
-- `GridUpdateResponse` é o contrato consumido por `openaiClient.updateGridPositions`/`gridUpdate.prompt.ts`, garantindo que só updates necessários sejam persistidos.
-- `updateGridPositions` sempre mantém player + NPCs no snapshot: reutiliza coordenadas anteriores para quem não se moveu e gera posições de fallback próximas ao jogador para NPCs novos.
+- `GameState.gridSnapshots` guarda uma linha do tempo espacial sincronizada com `pageNumber`, permitindo reconstruir o
+  mapa para qualquer carta.
+- `GridUpdateResponse` é o contrato consumido por `openaiClient.updateGridPositions`/`gridUpdate.prompt.ts`, garantindo
+  que só updates necessários sejam persistidos.
+- `updateGridPositions` sempre mantém player + NPCs no snapshot: reutiliza coordenadas anteriores para quem não se moveu
+  e gera posições de fallback próximas ao jogador para NPCs novos.
 
 ### Character - Modelo de Entidade
 
@@ -222,18 +225,18 @@ export interface GridUpdateResponse {
 
 ```typescript
 interface Character {
-  id: string;
-  gameId?: string;                              // Foreign Key para IndexedDB
-  name: string;
-  description: string;
-  isPlayer: boolean;
-  locationId: string;
-  stats: CharacterStats;                        // hp, maxHp, gold obrigatórios
-  inventory: Item[];                            // Lista estruturada de itens
-  relationships: Record<string, number>;        // CharacterID -> 0-100 (Afinidade)
-  state: 'idle' | 'talking' | 'fighting' | 'unconscious' | 'dead';
-  avatarColor?: string;                         // Hex code fallback
-  avatarBase64?: string;                        // Imagem gerada (IndexedDB)
+	id: string;
+	gameId?: string; // Foreign Key para IndexedDB
+	name: string;
+	description: string;
+	isPlayer: boolean;
+	locationId: string;
+	stats: CharacterStats; // hp, maxHp, gold obrigatórios
+	inventory: Item[]; // Lista estruturada de itens
+	relationships: Record<string, number>; // CharacterID -> 0-100 (Afinidade)
+	state: 'idle' | 'talking' | 'fighting' | 'unconscious' | 'dead';
+	avatarColor?: string; // Hex code fallback
+	avatarBase64?: string; // Imagem gerada (IndexedDB)
 }
 ```
 
@@ -243,26 +246,26 @@ interface Character {
 
 ```typescript
 type ItemCategory =
-  | 'weapon'      // Espadas, arcos, armas
-  | 'armor'       // Escudos, armaduras
-  | 'consumable'  // Poções, comida, pergaminhos
-  | 'material'    // Materiais de crafting
-  | 'quest'       // Itens de missão (não vendíveis)
-  | 'valuable'    // Gemas, joias, tesouros
-  | 'currency'    // Moedas
-  | 'misc';       // Outros
+	| 'weapon' // Espadas, arcos, armas
+	| 'armor' // Escudos, armaduras
+	| 'consumable' // Poções, comida, pergaminhos
+	| 'material' // Materiais de crafting
+	| 'quest' // Itens de missão (não vendíveis)
+	| 'valuable' // Gemas, joias, tesouros
+	| 'currency' // Moedas
+	| 'misc'; // Outros
 
 interface Item {
-  name: string;
-  description?: string;
-  quantity: number;
-  category: ItemCategory;
-  baseValue?: number;      // Valor em gold
-  stackable: boolean;
-  consumable: boolean;
-  effects?: ItemEffect[];  // Efeitos quando usado
-  canSell?: boolean;
-  canDrop?: boolean;
+	name: string;
+	description?: string;
+	quantity: number;
+	category: ItemCategory;
+	baseValue?: number; // Valor em gold
+	stackable: boolean;
+	consumable: boolean;
+	effects?: ItemEffect[]; // Efeitos quando usado
+	canSell?: boolean;
+	canDrop?: boolean;
 }
 ```
 
@@ -272,14 +275,14 @@ interface Item {
 
 ```typescript
 interface GMResponse {
-  messages: GMResponseMessage[];
-  stateUpdates: {
-    newLocations?: Location[];
-    newCharacters?: Character[];
-    updatedCharacters?: Partial<Character>[];
-    locationChange?: string;      // Novo ID de localização
-    eventLog?: string;            // Resumo do turno
-  };
+	messages: GMResponseMessage[];
+	stateUpdates: {
+		newLocations?: Location[];
+		newCharacters?: Character[];
+		updatedCharacters?: Partial<Character>[];
+		locationChange?: string; // Novo ID de localização
+		eventLog?: string; // Resumo do turno
+	};
 }
 ```
 
@@ -289,12 +292,12 @@ interface GMResponse {
 
 ```typescript
 interface HeavyContext {
-  mainMission?: string;         // Missão de longo prazo
-  currentMission?: string;      // Objetivo imediato
-  activeProblems?: string[];    // Problemas/conflitos ativos
-  currentConcerns?: string[];   // Preocupações/medos
-  importantNotes?: string[];    // Elementos importantes da história
-  lastUpdated?: number;
+	mainMission?: string; // Missão de longo prazo
+	currentMission?: string; // Objetivo imediato
+	activeProblems?: string[]; // Problemas/conflitos ativos
+	currentConcerns?: string[]; // Preocupações/medos
+	importantNotes?: string[]; // Elementos importantes da história
+	lastUpdated?: number;
 }
 ```
 
@@ -302,7 +305,8 @@ interface HeavyContext {
 
 ## Principais Técnicas do Código
 
-Esta seção detalha as técnicas mais importantes implementadas no código, com referências específicas aos arquivos e funções.
+Esta seção detalha as técnicas mais importantes implementadas no código, com referências específicas aos arquivos e
+funções.
 
 ### 1. Fuzzy Matching para Busca de Personagens
 
@@ -311,43 +315,37 @@ Esta seção detalha as técnicas mais importantes implementadas no código, com
 O sistema usa uma estratégia de 4 níveis para encontrar personagens por nome, tolerando erros de digitação e acentos:
 
 ```typescript
-const findCharacterByName = (
-  characters: Record<string, Character>,
-  charName: string
-): Character | undefined => {
-  const normalizedSearch = normalizeSpeakerName(charName);
-  const charArray = Object.values(characters);
+const findCharacterByName = (characters: Record<string, Character>, charName: string): Character | undefined => {
+	const normalizedSearch = normalizeSpeakerName(charName);
+	const charArray = Object.values(characters);
 
-  // 1. Exact match (case insensitive)
-  let found = charArray.find(c =>
-    c.name.toLowerCase() === charName.toLowerCase()
-  );
-  if (found) return found;
+	// 1. Exact match (case insensitive)
+	let found = charArray.find((c) => c.name.toLowerCase() === charName.toLowerCase());
+	if (found) return found;
 
-  // 2. Normalized match (ignoring accents/special chars)
-  found = charArray.find(c =>
-    normalizeSpeakerName(c.name) === normalizedSearch
-  );
-  if (found) return found;
+	// 2. Normalized match (ignoring accents/special chars)
+	found = charArray.find((c) => normalizeSpeakerName(c.name) === normalizedSearch);
+	if (found) return found;
 
-  // 3. Partial match - search name contains character name or vice versa
-  found = charArray.find(c => {
-    const normalizedCharName = normalizeSpeakerName(c.name);
-    return normalizedCharName.includes(normalizedSearch) ||
-           normalizedSearch.includes(normalizedCharName);
-  });
-  if (found) return found;
+	// 3. Partial match - search name contains character name or vice versa
+	found = charArray.find((c) => {
+		const normalizedCharName = normalizeSpeakerName(c.name);
+		return normalizedCharName.includes(normalizedSearch) || normalizedSearch.includes(normalizedCharName);
+	});
+	if (found) return found;
 
-  // 4. Word-based match - any significant word matches
-  const searchWords = normalizedSearch.split(/\s+/).filter(w => w.length > 2);
-  if (searchWords.length > 0) {
-    found = charArray.find(c => {
-      const charWords = normalizeSpeakerName(c.name).split(/\s+/).filter(w => w.length > 2);
-      return searchWords.some(sw => charWords.some(cw => cw === sw || cw.includes(sw)));
-    });
-  }
+	// 4. Word-based match - any significant word matches
+	const searchWords = normalizedSearch.split(/\s+/).filter((w) => w.length > 2);
+	if (searchWords.length > 0) {
+		found = charArray.find((c) => {
+			const charWords = normalizeSpeakerName(c.name)
+				.split(/\s+/)
+				.filter((w) => w.length > 2);
+			return searchWords.some((sw) => charWords.some((cw) => cw === sw || cw.includes(sw)));
+		});
+	}
 
-  return found;
+	return found;
 };
 ```
 
@@ -362,42 +360,42 @@ O banco usa normalização relacional: o `GameState` é decomposto em 5 tabelas 
 ```typescript
 // Decomposição ao salvar (db.ts:79-115)
 saveGame: async (gameState: GameState): Promise<void> => {
-  const db = await dbService.open();
-  const tx = db.transaction(
-    [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS],
-    'readwrite'
-  );
+	const db = await dbService.open();
+	const tx = db.transaction(
+		[STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS],
+		'readwrite',
+	);
 
-  const gameId = gameState.id;
-  const { characters, locations, events, ...metaData } = gameState;
+	const gameId = gameState.id;
+	const { characters, locations, events, ...metaData } = gameState;
 
-  // Metadados vão para GAMES
-  tx.objectStore(STORES.GAMES).put(metaData);
+	// Metadados vão para GAMES
+	tx.objectStore(STORES.GAMES).put(metaData);
 
-  // Personagens normalizados com gameId
-  Object.values(characters).forEach(char => {
-    tx.objectStore(STORES.CHARACTERS).put({ ...char, gameId });
-  });
+	// Personagens normalizados com gameId
+	Object.values(characters).forEach((char) => {
+		tx.objectStore(STORES.CHARACTERS).put({ ...char, gameId });
+	});
 
-  // Localizações, mensagens e eventos também normalizados
-  // ...
-}
+	// Localizações, mensagens e eventos também normalizados
+	// ...
+};
 
 // Reconstrução ao carregar (db.ts:123-187)
 loadGame: async (id: string): Promise<GameState | undefined> => {
-  // Query paralela em todas as tabelas
-  const [charsArr, locsArr, msgsArr, evtsArr] = await Promise.all([
-    getAllByIndex(STORES.CHARACTERS, 'by_game_id', id),
-    getAllByIndex(STORES.LOCATIONS, 'by_game_id', id),
-    getAllByIndex(STORES.MESSAGES, 'by_game_id', id),
-    getAllByIndex(STORES.EVENTS, 'by_game_id', id),
-  ]);
+	// Query paralela em todas as tabelas
+	const [charsArr, locsArr, msgsArr, evtsArr] = await Promise.all([
+		getAllByIndex(STORES.CHARACTERS, 'by_game_id', id),
+		getAllByIndex(STORES.LOCATIONS, 'by_game_id', id),
+		getAllByIndex(STORES.MESSAGES, 'by_game_id', id),
+		getAllByIndex(STORES.EVENTS, 'by_game_id', id),
+	]);
 
-  // Reconstrói a árvore hidratada
-  const characters: Record<string, Character> = {};
-  charsArr.forEach((c: Character) => characters[c.id] = c);
-  // ...
-}
+	// Reconstrói a árvore hidratada
+	const characters: Record<string, Character> = {};
+	charsArr.forEach((c: Character) => (characters[c.id] = c));
+	// ...
+};
 ```
 
 ### 3. Type Guards para Sistema de Inventário
@@ -409,27 +407,23 @@ Type guards garantem segurança de tipos em runtime e suportam migração autom�
 ```typescript
 // Verifica se é um Item válido
 export function isItem(item: unknown): item is Item {
-  if (typeof item !== 'object' || item === null) return false;
-  const obj = item as Record<string, unknown>;
-  return (
-    typeof obj.id === 'string' &&
-    typeof obj.name === 'string' &&
-    typeof obj.category === 'string'
-  );
+	if (typeof item !== 'object' || item === null) return false;
+	const obj = item as Record<string, unknown>;
+	return typeof obj.id === 'string' && typeof obj.name === 'string' && typeof obj.category === 'string';
 }
 
 // Verifica se é inventário legado (string[])
 export function isLegacyInventory(inventory: unknown): inventory is string[] {
-  if (!Array.isArray(inventory)) return false;
-  if (inventory.length === 0) return false;
-  return typeof inventory[0] === 'string';
+	if (!Array.isArray(inventory)) return false;
+	if (inventory.length === 0) return false;
+	return typeof inventory[0] === 'string';
 }
 
 // Verifica se é inventário moderno (Item[])
 export function isItemInventory(inventory: unknown): inventory is Item[] {
-  if (!Array.isArray(inventory)) return false;
-  if (inventory.length === 0) return true; // Empty array é válido
-  return isItem(inventory[0]);
+	if (!Array.isArray(inventory)) return false;
+	if (inventory.length === 0) return true; // Empty array é válido
+	return isItem(inventory[0]);
 }
 ```
 
@@ -441,32 +435,55 @@ O sistema detecta categorias de itens usando keywords em múltiplos idiomas:
 
 ```typescript
 const CATEGORY_KEYWORDS: Record<ItemCategory, string[]> = {
-  consumable: [
-    // English
-    'potion', 'elixir', 'food', 'drink', 'herb', 'medicine',
-    // Portuguese
-    'poção', 'pocao', 'elixir', 'comida', 'bebida', 'erva',
-    // Spanish
-    'poción', 'comida', 'bebida', 'hierba', 'medicina',
-  ],
-  weapon: [
-    'sword', 'axe', 'bow', 'dagger', // English
-    'espada', 'machado', 'arco', 'adaga', // Portuguese
-    'espada', 'hacha', 'arco', 'daga', // Spanish
-  ],
-  // ... outras categorias
+	consumable: [
+		// English
+		'potion',
+		'elixir',
+		'food',
+		'drink',
+		'herb',
+		'medicine',
+		// Portuguese
+		'poção',
+		'pocao',
+		'elixir',
+		'comida',
+		'bebida',
+		'erva',
+		// Spanish
+		'poción',
+		'comida',
+		'bebida',
+		'hierba',
+		'medicina',
+	],
+	weapon: [
+		'sword',
+		'axe',
+		'bow',
+		'dagger', // English
+		'espada',
+		'machado',
+		'arco',
+		'adaga', // Portuguese
+		'espada',
+		'hacha',
+		'arco',
+		'daga', // Spanish
+	],
+	// ... outras categorias
 };
 
 export function detectItemCategory(name: string): ItemCategory {
-  const lower = name.toLowerCase();
-  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    for (const keyword of keywords) {
-      if (lower.includes(keyword)) {
-        return category as ItemCategory;
-      }
-    }
-  }
-  return 'misc';
+	const lower = name.toLowerCase();
+	for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+		for (const keyword of keywords) {
+			if (lower.includes(keyword)) {
+				return category as ItemCategory;
+			}
+		}
+	}
+	return 'misc';
 }
 ```
 
@@ -478,50 +495,48 @@ A função `transformRawResponse` normaliza a resposta JSON da IA para o formato
 
 ```typescript
 const transformRawResponse = (raw: any): GMResponse => {
-  // Initialize stateUpdates if not present
-  if (!raw.stateUpdates) raw.stateUpdates = {};
-  if (!raw.stateUpdates.newCharacters) raw.stateUpdates.newCharacters = [];
+	// Initialize stateUpdates if not present
+	if (!raw.stateUpdates) raw.stateUpdates = {};
+	if (!raw.stateUpdates.newCharacters) raw.stateUpdates.newCharacters = [];
 
-  // Track character IDs to avoid duplicates
-  const existingNewCharacterIds = new Set(
-    raw.stateUpdates.newCharacters.map((c: any) => c.id)
-  );
+	// Track character IDs to avoid duplicates
+	const existingNewCharacterIds = new Set(raw.stateUpdates.newCharacters.map((c: any) => c.id));
 
-  // Process messages and extract new characters from dialogue
-  if (raw.messages && Array.isArray(raw.messages)) {
-    raw.messages = raw.messages.map((msg: any): GMResponseMessage => {
-      // Handle old format (senderName/text) - convert to new format
-      if (msg.senderName !== undefined && msg.characterName === undefined) {
-        if (msg.type === 'dialogue') {
-          return {
-            type: 'dialogue',
-            characterName: msg.senderName,
-            dialogue: msg.text,
-            voiceTone: msg.voiceTone || 'neutral',
-          };
-        }
-        // ... handle other types
-      }
+	// Process messages and extract new characters from dialogue
+	if (raw.messages && Array.isArray(raw.messages)) {
+		raw.messages = raw.messages.map((msg: any): GMResponseMessage => {
+			// Handle old format (senderName/text) - convert to new format
+			if (msg.senderName !== undefined && msg.characterName === undefined) {
+				if (msg.type === 'dialogue') {
+					return {
+						type: 'dialogue',
+						characterName: msg.senderName,
+						dialogue: msg.text,
+						voiceTone: msg.voiceTone || 'neutral',
+					};
+				}
+				// ... handle other types
+			}
 
-      // Extract newCharacterData from dialogue messages
-      if (msg.type === 'dialogue' && msg.newCharacterData) {
-        const charData = msg.newCharacterData;
-        if (charData.id && !existingNewCharacterIds.has(charData.id)) {
-          raw.stateUpdates.newCharacters.push(transformNewCharacterData(charData));
-          existingNewCharacterIds.add(charData.id);
-        }
-      }
+			// Extract newCharacterData from dialogue messages
+			if (msg.type === 'dialogue' && msg.newCharacterData) {
+				const charData = msg.newCharacterData;
+				if (charData.id && !existingNewCharacterIds.has(charData.id)) {
+					raw.stateUpdates.newCharacters.push(transformNewCharacterData(charData));
+					existingNewCharacterIds.add(charData.id);
+				}
+			}
 
-      return msg;
-    });
-  }
+			return msg;
+		});
+	}
 
-  // Transform stats arrays to objects: [{key: "hp", value: 100}] → {hp: 100}
-  // Transform relationships arrays to objects
-  // Normalize inventory to Item[] format
-  // ...
+	// Transform stats arrays to objects: [{key: "hp", value: 100}] → {hp: 100}
+	// Transform relationships arrays to objects
+	// Normalize inventory to Item[] format
+	// ...
 
-  return raw as GMResponse;
+	return raw as GMResponse;
 };
 ```
 
@@ -586,43 +601,43 @@ Sistema robusto de classificação de erros:
 
 ```typescript
 export const parseOpenAIError = (error: any): { errorType: ErrorType; message?: string } => {
-  // Handle OpenAI SDK errors
-  if (error?.error?.code || error?.error?.type) {
-    const code = error.error.code || error.error.type;
-    switch (code) {
-      case 'insufficient_quota':
-        return { errorType: 'insufficient_quota', message };
-      case 'invalid_api_key':
-        return { errorType: 'invalid_key', message };
-      case 'rate_limit_exceeded':
-        return { errorType: 'rate_limit', message };
-      default:
-        return { errorType: 'generic', message };
-    }
-  }
+	// Handle OpenAI SDK errors
+	if (error?.error?.code || error?.error?.type) {
+		const code = error.error.code || error.error.type;
+		switch (code) {
+			case 'insufficient_quota':
+				return { errorType: 'insufficient_quota', message };
+			case 'invalid_api_key':
+				return { errorType: 'invalid_key', message };
+			case 'rate_limit_exceeded':
+				return { errorType: 'rate_limit', message };
+			default:
+				return { errorType: 'generic', message };
+		}
+	}
 
-  // Handle HTTP status codes
-  if (error?.status) {
-    switch (error.status) {
-      case 401: return { errorType: 'invalid_key' };
-      case 429:
-        if (error.message?.includes('quota'))
-          return { errorType: 'insufficient_quota' };
-        return { errorType: 'rate_limit' };
-      case 500: case 502: case 503:
-        return { errorType: 'network' };
-    }
-  }
+	// Handle HTTP status codes
+	if (error?.status) {
+		switch (error.status) {
+			case 401:
+				return { errorType: 'invalid_key' };
+			case 429:
+				if (error.message?.includes('quota')) return { errorType: 'insufficient_quota' };
+				return { errorType: 'rate_limit' };
+			case 500:
+			case 502:
+			case 503:
+				return { errorType: 'network' };
+		}
+	}
 
-  // Handle string patterns
-  const errorMessage = error?.message || String(error);
-  if (errorMessage.includes('insufficient_quota'))
-    return { errorType: 'insufficient_quota' };
-  if (errorMessage.includes('invalid') && errorMessage.includes('key'))
-    return { errorType: 'invalid_key' };
-  // ...
+	// Handle string patterns
+	const errorMessage = error?.message || String(error);
+	if (errorMessage.includes('insufficient_quota')) return { errorType: 'insufficient_quota' };
+	if (errorMessage.includes('invalid') && errorMessage.includes('key')) return { errorType: 'invalid_key' };
+	// ...
 
-  return { errorType: 'generic', message: errorMessage };
+	return { errorType: 'generic', message: errorMessage };
 };
 ```
 
@@ -634,21 +649,21 @@ Estratégia de seleção de modelos otimizada para custo vs qualidade:
 
 ```typescript
 const MODEL_CONFIG = {
-  // Tarefas complexas - mantém gpt-4.1 ($2.00/1M input, $8.00/1M output)
-  gameMaster: 'gpt-4.1',           // Loop principal: narrativa, NPCs, mecânicas
-  storyInitialization: 'gpt-4.1', // Criação inicial do mundo
-  universeContext: 'gpt-4.1',     // Geração de contexto narrativo
+	// Tarefas complexas - mantém gpt-4.1 ($2.00/1M input, $8.00/1M output)
+	gameMaster: 'gpt-4.1', // Loop principal: narrativa, NPCs, mecânicas
+	storyInitialization: 'gpt-4.1', // Criação inicial do mundo
+	universeContext: 'gpt-4.1', // Geração de contexto narrativo
 
-  // Tarefas médias - gpt-4.1-mini (80% economia)
-  onboarding: 'gpt-4.1-mini',     // Entrevista de criação
-  heavyContext: 'gpt-4.1-mini',   // Análise de contexto
-  playerMessageProcessing: 'gpt-4.1-mini',
-  customActionAnalysis: 'gpt-4.1-mini',
-  actionOptions: 'gpt-4.1-mini',  // 5 sugestões de ação
-  themeColors: 'gpt-4.1-mini',
+	// Tarefas médias - gpt-4.1-mini (80% economia)
+	onboarding: 'gpt-4.1-mini', // Entrevista de criação
+	heavyContext: 'gpt-4.1-mini', // Análise de contexto
+	playerMessageProcessing: 'gpt-4.1-mini',
+	customActionAnalysis: 'gpt-4.1-mini',
+	actionOptions: 'gpt-4.1-mini', // 5 sugestões de ação
+	themeColors: 'gpt-4.1-mini',
 
-  // Tarefas simples - gpt-4.1-nano (95% economia)
-  textClassification: 'gpt-4.1-nano',
+	// Tarefas simples - gpt-4.1-nano (95% economia)
+	textClassification: 'gpt-4.1-nano',
 } as const;
 ```
 
@@ -658,18 +673,18 @@ const MODEL_CONFIG = {
 
 ```typescript
 const IMAGE_SIZE_PRESETS = {
-  characterAvatar: {
-    imageSize: '1024x1024',
-    quality: 'medium',
-    targetDimensions: { width: 124, height: 124 },
-    description: 'Character avatars scaled down to 124px squares.',
-  },
-  locationBackground: {
-    imageSize: '1536x1024',
-    quality: 'medium',
-    targetDimensions: { width: 768, height: 512 },
-    description: 'Cinematic widescreen backgrounds for locations.',
-  },
+	characterAvatar: {
+		imageSize: '1024x1024',
+		quality: 'medium',
+		targetDimensions: { width: 124, height: 124 },
+		description: 'Character avatars scaled down to 124px squares.',
+	},
+	locationBackground: {
+		imageSize: '1536x1024',
+		quality: 'medium',
+		targetDimensions: { width: 768, height: 512 },
+		description: 'Cinematic widescreen backgrounds for locations.',
+	},
 } as const;
 ```
 
@@ -681,26 +696,27 @@ Remove duplicatas geradas por race conditions:
 
 ```typescript
 export function sanitizeMessages(messages: ChatMessage[]): ChatMessage[] {
-  const seen = new Set<string>();
-  const result: ChatMessage[] = [];
+	const seen = new Set<string>();
+	const result: ChatMessage[] = [];
 
-  for (const msg of messages) {
-    // Deduplication by ID
-    if (seen.has(msg.id)) continue;
-    seen.add(msg.id);
+	for (const msg of messages) {
+		// Deduplication by ID
+		if (seen.has(msg.id)) continue;
+		seen.add(msg.id);
 
-    // Deduplication by content within 2-second window
-    const contentKey = `${msg.senderId}|${msg.type}|${msg.text}`;
-    const recentDupe = result.find(existing =>
-      Math.abs(existing.timestamp - msg.timestamp) < 2000 &&
-      `${existing.senderId}|${existing.type}|${existing.text}` === contentKey
-    );
-    if (recentDupe) continue;
+		// Deduplication by content within 2-second window
+		const contentKey = `${msg.senderId}|${msg.type}|${msg.text}`;
+		const recentDupe = result.find(
+			(existing) =>
+				Math.abs(existing.timestamp - msg.timestamp) < 2000 &&
+				`${existing.senderId}|${existing.type}|${existing.text}` === contentKey,
+		);
+		if (recentDupe) continue;
 
-    result.push(msg);
-  }
+		result.push(msg);
+	}
 
-  return result;
+	return result;
 }
 ```
 
@@ -740,29 +756,29 @@ Cada NPC recebe um perfil de voz inferido da sua descrição:
 
 ```typescript
 function inferVoiceProfileFromDescription(description: string): Partial<NPCVoiceProfile> {
-  const desc = description.toLowerCase();
-  const profile: Partial<NPCVoiceProfile> = {};
+	const desc = description.toLowerCase();
+	const profile: Partial<NPCVoiceProfile> = {};
 
-  // Inferir classe social
-  if (desc.includes('rei') || desc.includes('king') || desc.includes('queen')) {
-    profile.socialClass = 'royalty';
-    profile.educationLevel = 'educated';
-  } else if (desc.includes('mercador') || desc.includes('merchant')) {
-    profile.socialClass = 'middle';
-    profile.verbalTics = ['meu amigo', 'bom negócio', 'entre nós'];
-  } else if (desc.includes('camponês') || desc.includes('peasant')) {
-    profile.socialClass = 'lower';
-    profile.educationLevel = 'uneducated';
-  }
+	// Inferir classe social
+	if (desc.includes('rei') || desc.includes('king') || desc.includes('queen')) {
+		profile.socialClass = 'royalty';
+		profile.educationLevel = 'educated';
+	} else if (desc.includes('mercador') || desc.includes('merchant')) {
+		profile.socialClass = 'middle';
+		profile.verbalTics = ['meu amigo', 'bom negócio', 'entre nós'];
+	} else if (desc.includes('camponês') || desc.includes('peasant')) {
+		profile.socialClass = 'lower';
+		profile.educationLevel = 'uneducated';
+	}
 
-  // Inferir ritmo de fala
-  if (desc.includes('velho') || desc.includes('elderly')) {
-    profile.speechRhythm = 'slow';
-  } else if (desc.includes('nervoso') || desc.includes('anxious')) {
-    profile.speechRhythm = 'erratic';
-  }
+	// Inferir ritmo de fala
+	if (desc.includes('velho') || desc.includes('elderly')) {
+		profile.speechRhythm = 'slow';
+	} else if (desc.includes('nervoso') || desc.includes('anxious')) {
+		profile.speechRhythm = 'erratic';
+	}
 
-  return profile;
+	return profile;
 }
 ```
 
@@ -772,12 +788,12 @@ O sistema inclui regras rígidas para evitar "contar" emoções:
 
 ```typescript
 // NUNCA faça isso:
-'Ela estava com raiva.'
-'Ele estava nervoso.'
+'Ela estava com raiva.';
+'Ele estava nervoso.';
 
 // SEMPRE faça isso:
-'Ela bateu o punho na mesa, sua voz subindo uma oitava.'
-'Ele ajustou a gravata pela terceira vez, os olhos saltando para a porta.'
+'Ela bateu o punho na mesa, sua voz subindo uma oitava.';
+'Ele ajustou a gravata pela terceira vez, os olhos saltando para a porta.';
 ```
 
 ---
@@ -790,28 +806,26 @@ O sistema inclui regras rígidas para evitar "contar" emoções:
 
 ```typescript
 export const queryLLM = async (
-  apiKey: string,
-  messages: LLMMessage[],
-  config: LLMRequestConfig,
+	apiKey: string,
+	messages: LLMMessage[],
+	config: LLMRequestConfig,
 ): Promise<LLMResponse> => {
-  const client = new OpenAI({
-    apiKey,
-    dangerouslyAllowBrowser: true, // Required for browser-side usage
-  });
+	const client = new OpenAI({
+		apiKey,
+		dangerouslyAllowBrowser: true, // Required for browser-side usage
+	});
 
-  const response = await client.chat.completions.create({
-    model: config.model,
-    messages: messages,
-    temperature: 0, // Determinístico
-    response_format: config.responseFormat === 'json'
-      ? { type: 'json_object' }
-      : { type: 'text' },
-    ...(config.maxTokens && { max_tokens: config.maxTokens }),
-  });
+	const response = await client.chat.completions.create({
+		model: config.model,
+		messages: messages,
+		temperature: 0, // Determinístico
+		response_format: config.responseFormat === 'json' ? { type: 'json_object' } : { type: 'text' },
+		...(config.maxTokens && { max_tokens: config.maxTokens }),
+	});
 
-  return {
-    text: response.choices[0]?.message?.content || null,
-  };
+	return {
+		text: response.choices[0]?.message?.content || null,
+	};
 };
 ```
 
@@ -822,24 +836,24 @@ export const queryLLM = async (
 ```typescript
 // Montagem do contexto
 const messages: LLMMessage[] = [
-  {
-    role: 'system',
-    content: systemPrompt + '\n\n' + JSON.stringify(gmResponseSchema),
-  },
-  {
-    role: 'user',
-    content: `History (Context): ${JSON.stringify(gameState.messages.slice(-100))}`,
-  },
-  {
-    role: 'user',
-    content: `Player Action: "${input}"`,
-  },
+	{
+		role: 'system',
+		content: systemPrompt + '\n\n' + JSON.stringify(gmResponseSchema),
+	},
+	{
+		role: 'user',
+		content: `History (Context): ${JSON.stringify(gameState.messages.slice(-100))}`,
+	},
+	{
+		role: 'user',
+		content: `Player Action: "${input}"`,
+	},
 ];
 
 // Execução
 const response = await queryLLM(apiKey, messages, {
-  model: MODEL_CONFIG.gameMaster,
-  responseFormat: 'json',
+	model: MODEL_CONFIG.gameMaster,
+	responseFormat: 'json',
 });
 
 // Processamento
@@ -848,54 +862,49 @@ const result = transformRawResponse(raw);
 
 // Geração paralela de avatares para novos personagens
 if (result.stateUpdates.newCharacters?.length > 0) {
-  result.stateUpdates.newCharacters = await Promise.all(
-    result.stateUpdates.newCharacters.map(async (char) => {
-      const avatar = await generateCharacterAvatar(
-        apiKey, char.name, char.description,
-        gameState.config.universeName, gameState.config.visualStyle
-      );
-      return { ...char, avatarBase64: avatar };
-    })
-  );
+	result.stateUpdates.newCharacters = await Promise.all(
+		result.stateUpdates.newCharacters.map(async (char) => {
+			const avatar = await generateCharacterAvatar(
+				apiKey,
+				char.name,
+				char.description,
+				gameState.config.universeName,
+				gameState.config.visualStyle,
+			);
+			return { ...char, avatarBase64: avatar };
+		}),
+	);
 }
 ```
 
 ### Geração de Imagens
 
+A pipeline de imagens usa `generateImageWithPromptGuardrails` para equilibrar criatividade com conformidade:
+
+- **1ª tentativa:** envia o prompt original exatamente como foi montado pelo builder, preservando a intenção do designer
+  de narrativa.
+- **2ª e 3ª tentativas:** reescrevem o prompt com base no excerto de `docs/bypass.md`, aplicando descrições indiretas e
+  contextos artísticos antes de chamar a API.
+- **Observabilidade:** todos os passos são logados com emojis (🧑‍🎨/🌆/🛡️) para facilitar o tracing em produção.
+
 **Arquivo:** `services/ai/openaiClient.ts:269-347`
 
 ```typescript
-export const generateCharacterAvatar = async (
-  apiKey: string,
-  charName: string,
-  charDesc: string,
-  universeContext: string,
-  visualStyle?: string,
-): Promise<string | undefined> => {
-  const prompt = buildCharacterAvatarPrompt({
-    characterName: charName,
-    characterDescription: charDesc,
-    universeContext,
-    visualStyle,
-  });
+const rawAvatarBase64 = await generateImageWithPromptGuardrails({
+	apiKey,
+	basePrompt: prompt,
+	size: avatarPreset.imageSize,
+	quality: avatarPreset.quality,
+	contextLabel: 'Avatar',
+});
 
-  const avatarPreset = getImageGenerationPreset('characterAvatar');
+if (!rawAvatarBase64) {
+	console.warn(`🧑‍🎨 [Avatar] Unable to craft an image for "${charName}" after guarded attempts.`);
+	return undefined;
+}
 
-  try {
-    const rawAvatarBase64 = await generateImage(
-      apiKey, prompt,
-      avatarPreset.imageSize,
-      avatarPreset.quality
-    );
-
-    // Resize to target dimensions (124x124)
-    const optimizedAvatar = await applyImagePresetToBase64(rawAvatarBase64, 'characterAvatar');
-    return optimizedAvatar;
-  } catch (e) {
-    console.error('Avatar generation failed:', e);
-    return undefined;
-  }
-};
+const optimizedAvatar = await applyImagePresetToBase64(rawAvatarBase64, 'characterAvatar');
+return optimizedAvatar;
 ```
 
 ### Text-to-Speech com Tom Emocional
@@ -904,23 +913,23 @@ export const generateCharacterAvatar = async (
 
 ```typescript
 const buildTTSInstructions = (
-  language: Language,
-  voiceTone: string | undefined,
-  voiceType: 'narrator' | 'player' | 'npc',
+	language: Language,
+	voiceTone: string | undefined,
+	voiceType: 'narrator' | 'player' | 'npc',
 ): string => {
-  const languageDirective = getLanguageDirective(language);
+	const languageDirective = getLanguageDirective(language);
 
-  // Instruções específicas para português brasileiro
-  const languageSpecificInstructions: Partial<Record<Language, string>> = {
-    pt: `[Brazilian Portuguese]
+	// Instruções específicas para português brasileiro
+	const languageSpecificInstructions: Partial<Record<Language, string>> = {
+		pt: `[Brazilian Portuguese]
 You MUST speak in Brazilian Portuguese with an authentic Brazilian accent.
 - Open vowels typical of Brazilian speech
 - Soft 's' sounds (not 'sh' of European Portuguese)
 - Pronounce final 'e' as 'i' (e.g., "leite" → "leiti")
 - Pronounce 'd' and 't' before 'i' as 'dj' and 'tch'`,
-  };
+	};
 
-  return `${languageDirective}\nTone: ${voiceTone || 'neutral'}`;
+	return `${languageDirective}\nTone: ${voiceTone || 'neutral'}`;
 };
 ```
 
@@ -930,22 +939,22 @@ You MUST speak in Brazilian Portuguese with an authentic Brazilian accent.
 
 ```typescript
 export const transcribeAudioWithWhisper = async (
-  apiKey: string,
-  audioBlob: Blob,
-  language: string,
+	apiKey: string,
+	audioBlob: Blob,
+	language: string,
 ): Promise<string> => {
-  const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
+	const client = new OpenAI({ apiKey, dangerouslyAllowBrowser: true });
 
-  // Converter blob para File
-  const audioFile = new File([audioBlob], 'audio.webm', { type: 'audio/webm' });
+	// Converter blob para File
+	const audioFile = new File([audioBlob], 'audio.webm', { type: 'audio/webm' });
 
-  const transcription = await client.audio.transcriptions.create({
-    file: audioFile,
-    model: 'whisper-1',
-    language: language, // Hint de idioma
-  });
+	const transcription = await client.audio.transcriptions.create({
+		file: audioFile,
+		model: 'whisper-1',
+		language: language, // Hint de idioma
+	});
 
-  return transcription.text;
+	return transcription.text;
 };
 ```
 
@@ -955,49 +964,54 @@ export const transcribeAudioWithWhisper = async (
 
 ```typescript
 export const updateGridPositions = async (
-  apiKey: string,
-  gameState: GameState,
-  recentResponse: GMResponse,
-  language: Language,
-  currentMessageNumber: number,
+	apiKey: string,
+	gameState: GameState,
+	recentResponse: GMResponse,
+	language: Language,
+	currentMessageNumber: number,
 ): Promise<GridUpdateResult> => {
-  const prompt = buildGridUpdatePrompt({
-    gameState,
-    recentMessages,
-    eventLog: recentResponse.stateUpdates.eventLog,
-    currentGridPositions,
-    language,
-  });
+	const prompt = buildGridUpdatePrompt({
+		gameState,
+		recentMessages,
+		eventLog: recentResponse.stateUpdates.eventLog,
+		currentGridPositions,
+		language,
+	});
 
-  const response = await queryLLM(apiKey, messages, {
-    model: MODEL_CONFIG.gridUpdate,
-    responseFormat: 'json',
-  });
+	const response = await queryLLM(apiKey, messages, {
+		model: MODEL_CONFIG.gridUpdate,
+		responseFormat: 'json',
+	});
 
-  const parsed: GridUpdateResponse = JSON.parse(cleanJsonString(response.text));
-  if (!parsed.shouldUpdate || !parsed.characterPositions) {
-    return { updated: false };
-  }
+	const parsed: GridUpdateResponse = JSON.parse(cleanJsonString(response.text));
+	if (!parsed.shouldUpdate || !parsed.characterPositions) {
+		return { updated: false };
+	}
 
-  const snapshot: GridSnapshot = {
-    id: `grid_${gameState.id}_${Date.now()}`,
-    gameId: gameState.id,
-    atMessageNumber: currentMessageNumber,
-    locationId: gameState.currentLocationId,
-    locationName: currentLocation?.name || 'Unknown',
-    timestamp: Date.now(),
-    characterPositions,
-  };
+	const snapshot: GridSnapshot = {
+		id: `grid_${gameState.id}_${Date.now()}`,
+		gameId: gameState.id,
+		atMessageNumber: currentMessageNumber,
+		locationId: gameState.currentLocationId,
+		locationName: currentLocation?.name || 'Unknown',
+		timestamp: Date.now(),
+		characterPositions,
+	};
 
-  return { updated: true, snapshot };
+	return { updated: true, snapshot };
 };
 ```
 
-- O prompt `gridUpdate` aplica regras físicas (velocidade máxima, ocupação compartilhada, reset em mudança de localização) e schema JSON obrigatório para manter determinismo.
-- A função reaproveita o snapshot mais recente como contexto, só cria novo registro quando há movimento e loga o `reasoning` retornado pela IA.
-- Após interpretar o JSON, normalizamos os dados e mesclamos com o snapshot anterior para manter player + todos os NPCs visíveis no IndexedDB, mesmo quando apenas um personagem se move.
-- Quando não há histórico, `createInitialGridSnapshot` gera posições padrão (player no centro, NPCs ao redor) para evitar jitter no primeiro update.
-- O `gridContextSection` do `buildGameMasterPrompt` agora obriga o GM a citar onde os NPCs estão em relação ao jogador sempre que o posicionamento impactar a cena, mantendo a narrativa alinhada ao mapa.
+- O prompt `gridUpdate` aplica regras físicas (velocidade máxima, ocupação compartilhada, reset em mudança de
+  localização) e schema JSON obrigatório para manter determinismo.
+- A função reaproveita o snapshot mais recente como contexto, só cria novo registro quando há movimento e loga o
+  `reasoning` retornado pela IA.
+- Após interpretar o JSON, normalizamos os dados e mesclamos com o snapshot anterior para manter player + todos os NPCs
+  visíveis no IndexedDB, mesmo quando apenas um personagem se move.
+- Quando não há histórico, `createInitialGridSnapshot` gera posições padrão (player no centro, NPCs ao redor) para
+  evitar jitter no primeiro update.
+- O `gridContextSection` do `buildGameMasterPrompt` agora obriga o GM a citar onde os NPCs estão em relação ao jogador
+  sempre que o posicionamento impactar a cena, mantendo a narrativa alinhada ao mapa.
 
 ---
 
@@ -1009,102 +1023,108 @@ export const updateGridPositions = async (
 
 ```typescript
 export const useGameEngine = (): UseGameEngineReturn => {
-  // Estados principais
-  const [apiKey, setApiKey] = useState<string>('');
-  const [stories, setStories] = useState<GameState[]>([]);
-  const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [creationPhase, setCreationPhase] = useState<CreationPhase>(null);
-  const [processingPhase, setProcessingPhase] = useState<ProcessingPhase>(null);
+	// Estados principais
+	const [apiKey, setApiKey] = useState<string>('');
+	const [stories, setStories] = useState<GameState[]>([]);
+	const [currentStoryId, setCurrentStoryId] = useState<string | null>(null);
+	const [isProcessing, setIsProcessing] = useState(false);
+	const [isGenerating, setIsGenerating] = useState(false);
+	const [creationPhase, setCreationPhase] = useState<CreationPhase>(null);
+	const [processingPhase, setProcessingPhase] = useState<ProcessingPhase>(null);
 
-  // Theme Colors Context
-  const { setColors, setIsGenerating: setIsGeneratingColors } = useThemeColors();
+	// Theme Colors Context
+	const { setColors, setIsGenerating: setIsGeneratingColors } = useThemeColors();
 
-  // Inicialização (linhas 237-258)
-  useEffect(() => {
-    const init = async () => {
-      const detected = getBrowserLanguage();
-      setLanguage(detected);
+	// Inicialização (linhas 237-258)
+	useEffect(() => {
+		const init = async () => {
+			const detected = getBrowserLanguage();
+			setLanguage(detected);
 
-      const savedApiKey = localStorage.getItem('infinitum_api_key');
-      if (savedApiKey) setApiKey(savedApiKey);
-      else setShowApiKeyModal(true);
+			const savedApiKey = localStorage.getItem('infinitum_api_key');
+			if (savedApiKey) setApiKey(savedApiKey);
+			else setShowApiKeyModal(true);
 
-      // Load voice preference
-      const savedVoice = localStorage.getItem('infinitum_tts_voice');
-      if (savedVoice) setSelectedVoiceState(savedVoice);
+			// Load voice preference
+			const savedVoice = localStorage.getItem('infinitum_tts_voice');
+			if (savedVoice) setSelectedVoiceState(savedVoice);
 
-      const loadedStories = await dbService.loadGames();
-      setStories(loadedStories);
-    };
-    init();
-  }, []);
+			const loadedStories = await dbService.loadGames();
+			setStories(loadedStories);
+		};
+		init();
+	}, []);
 
-  // Carregamento de história completa (linhas 261-331)
-  useEffect(() => {
-    const loadFullStory = async () => {
-      if (!currentStoryId) return;
-      if (loadedStoriesRef.current.has(currentStoryId)) return;
+	// Carregamento de história completa (linhas 261-331)
+	useEffect(() => {
+		const loadFullStory = async () => {
+			if (!currentStoryId) return;
+			if (loadedStoriesRef.current.has(currentStoryId)) return;
 
-      let fullStory = await dbService.loadGame(currentStoryId);
+			let fullStory = await dbService.loadGame(currentStoryId);
 
-      // Migração automática se necessário
-      if (fullStory && needsMigration(fullStory)) {
-        const { migrated, gameState } = migrateGameState(fullStory);
-        if (migrated) {
-          fullStory = gameState;
-          await dbService.saveGame(fullStory);
-        }
-      }
+			// Migração automática se necessário
+			if (fullStory && needsMigration(fullStory)) {
+				const { migrated, gameState } = migrateGameState(fullStory);
+				if (migrated) {
+					fullStory = gameState;
+					await dbService.saveGame(fullStory);
+				}
+			}
 
-      // Merge messages e sanitize
-      setStories(prev => prev.map(s => {
-        if (s.id !== currentStoryId) return s;
-        const mergedMessages = sanitizeMessages([...s.messages, ...fullStory.messages]);
-        return { ...fullStory, messages: mergedMessages };
-      }));
-    };
-    loadFullStory();
-  }, [currentStoryId]);
+			// Merge messages e sanitize
+			setStories((prev) =>
+				prev.map((s) => {
+					if (s.id !== currentStoryId) return s;
+					const mergedMessages = sanitizeMessages([...s.messages, ...fullStory.messages]);
+					return { ...fullStory, messages: mergedMessages };
+				}),
+			);
+		};
+		loadFullStory();
+	}, [currentStoryId]);
 
-  // Geração automática de background (linhas 346-410)
-  useEffect(() => {
-    const generateBackgroundIfNeeded = async () => {
-      const activeStory = stories.find(s => s.id === currentStoryId);
-      const currentLocation = activeStory?.locations[activeStory.currentLocationId];
+	// Geração automática de background (linhas 346-410)
+	useEffect(() => {
+		const generateBackgroundIfNeeded = async () => {
+			const activeStory = stories.find((s) => s.id === currentStoryId);
+			const currentLocation = activeStory?.locations[activeStory.currentLocationId];
 
-      if (!currentLocation?.backgroundImage) {
-        const backgroundImage = await generateLocationBackground(
-          apiKey,
-          currentLocation.name,
-          currentLocation.description,
-          activeStory.config.universeName,
-          activeStory.config.visualStyle
-        );
-        // Update and save...
-      }
-    };
-    generateBackgroundIfNeeded();
-  }, [currentStoryId, stories]);
+			if (!currentLocation?.backgroundImage) {
+				const backgroundImage = await generateLocationBackground(
+					apiKey,
+					currentLocation.name,
+					currentLocation.description,
+					activeStory.config.universeName,
+					activeStory.config.visualStyle,
+				);
+				// Update and save...
+			}
+		};
+		generateBackgroundIfNeeded();
+	}, [currentStoryId, stories]);
 
-  return {
-    handleSendMessage,
-    handleCreateStory,
-    handleDeleteStory,
-    activeStory,
-    player,
-    // ...
-  };
+	return {
+		handleSendMessage,
+		handleCreateStory,
+		handleDeleteStory,
+		activeStory,
+		player,
+		// ...
+	};
 };
 ```
 
 ### Linha do Tempo de Grid no Estado
 
-- Na criação de histórias, `createInitialGridSnapshot(newState, newMessages.length)` posiciona o jogador no centro (5,5) e distribui NPCs em círculo, garantindo snapshot para a primeira carta.
-- A cada turno, após `generateGameTurn`, o hook executa `updateGridPositions` em background; se `updated: true`, o snapshot retornado é anexado via `safeUpdateStory`, preservando todo o histórico.
-- Saves legados sem snapshots recebem um snapshot inicial on-the-fly antes de qualquer análise, evitando erros no `GridMap`.
-- `gridSnapshots` é persistido no IndexedDB (store `GRIDS`) e exportado/importado junto com o resto do estado, permitindo reconstruir o mapa em qualquer dispositivo.
+- Na criação de histórias, `createInitialGridSnapshot(newState, newMessages.length)` posiciona o jogador no centro (5,5)
+  e distribui NPCs em círculo, garantindo snapshot para a primeira carta.
+- A cada turno, após `generateGameTurn`, o hook executa `updateGridPositions` em background; se `updated: true`, o
+  snapshot retornado é anexado via `safeUpdateStory`, preservando todo o histórico.
+- Saves legados sem snapshots recebem um snapshot inicial on-the-fly antes de qualquer análise, evitando erros no
+  `GridMap`.
+- `gridSnapshots` é persistido no IndexedDB (store `GRIDS`) e exportado/importado junto com o resto do estado,
+  permitindo reconstruir o mapa em qualquer dispositivo.
 
 ### Fases de Criação
 
@@ -1113,20 +1133,20 @@ export const useGameEngine = (): UseGameEngineReturn => {
 ```typescript
 // Fases durante criação de história
 type CreationPhase =
-  | 'initializing'
-  | 'colors'      // Gerando paleta de cores
-  | 'world'       // Criando mundo
-  | 'characters'  // Criando personagens
-  | 'avatar'      // Gerando avatar do jogador
-  | 'finalizing'
-  | null;
+	| 'initializing'
+	| 'colors' // Gerando paleta de cores
+	| 'world' // Criando mundo
+	| 'characters' // Criando personagens
+	| 'avatar' // Gerando avatar do jogador
+	| 'finalizing'
+	| null;
 
 // Fases durante processamento de mensagem
 type ProcessingPhase =
-  | 'classifying'  // Classificando input
-  | 'generating'   // Gerando resposta
-  | 'updating'     // Atualizando contexto
-  | null;
+	| 'classifying' // Classificando input
+	| 'generating' // Gerando resposta
+	| 'updating' // Atualizando contexto
+	| null;
 ```
 
 ---
@@ -1143,12 +1163,12 @@ const DB_VERSION = 3;
 const EXPORT_VERSION = 2;
 
 const STORES = {
-  GAMES: 'games',
-  CHARACTERS: 'characters',
-  LOCATIONS: 'locations',
-  MESSAGES: 'messages',
-  EVENTS: 'events',
-  GRIDS: 'grids', // Snapshots 10x10 sincronizados com pageNumber
+	GAMES: 'games',
+	CHARACTERS: 'characters',
+	LOCATIONS: 'locations',
+	MESSAGES: 'messages',
+	EVENTS: 'events',
+	GRIDS: 'grids', // Snapshots 10x10 sincronizados com pageNumber
 };
 
 charStore.createIndex('by_game_id', 'gameId', { unique: false });
@@ -1158,8 +1178,10 @@ evtStore.createIndex('by_game_id', 'gameId', { unique: false });
 gridStore.createIndex('by_game_id', 'gameId', { unique: false });
 ```
 
-- A atualização de schema adiciona a store `GRIDS`, permitindo persistir histórico infinito de `GridSnapshot` sem inflar documentos principais.
-- `EXPORT_VERSION` permanece 2, mas agora inclui snapshots; durante importação os IDs `grid_*` e o `characterId` do player são reescritos para manter consistência (ver `services/db.ts:281-399`).
+- A atualização de schema adiciona a store `GRIDS`, permitindo persistir histórico infinito de `GridSnapshot` sem inflar
+  documentos principais.
+- `EXPORT_VERSION` permanece 2, mas agora inclui snapshots; durante importação os IDs `grid_*` e o `characterId` do
+  player são reescritos para manter consistência (ver `services/db.ts:281-399`).
 
 ### Exportação e Importação
 
@@ -1168,50 +1190,50 @@ gridStore.createIndex('by_game_id', 'gameId', { unique: false });
 ```typescript
 // Exportar com versionamento
 exportGame: async (id: string): Promise<ExportedGameData | undefined> => {
-  const gameState = await dbService.loadGame(id);
-  return {
-    version: EXPORT_VERSION,
-    exportedAt: Date.now(),
-    game: gameState
-  };
-}
+	const gameState = await dbService.loadGame(id);
+	return {
+		version: EXPORT_VERSION,
+		exportedAt: Date.now(),
+		game: gameState,
+	};
+};
 
 // Validar antes de importar
 validateImport: (data: unknown): { valid: boolean; error?: string } => {
-  const exported = data as ExportedGameData;
+	const exported = data as ExportedGameData;
 
-  // Check version - bloqueia versões futuras
-  if (!exported.version || exported.version > EXPORT_VERSION) {
-    return { valid: false, error: 'version' };
-  }
+	// Check version - bloqueia versões futuras
+	if (!exported.version || exported.version > EXPORT_VERSION) {
+		return { valid: false, error: 'version' };
+	}
 
-  // Verificar campos obrigatórios
-  const requiredFields = ['id', 'title', 'config', 'playerCharacterId'];
-  for (const field of requiredFields) {
-    if (!(field in exported.game)) {
-      return { valid: false, error: `Missing: ${field}` };
-    }
-  }
+	// Verificar campos obrigatórios
+	const requiredFields = ['id', 'title', 'config', 'playerCharacterId'];
+	for (const field of requiredFields) {
+		if (!(field in exported.game)) {
+			return { valid: false, error: `Missing: ${field}` };
+		}
+	}
 
-  return { valid: true };
-}
+	return { valid: true };
+};
 
 // Importar com novo ID
 importGame: async (data: ExportedGameData): Promise<string> => {
-  const newId = crypto.randomUUID();
-  const newPlayerCharacterId = `player_${newId}`;
+	const newId = crypto.randomUUID();
+	const newPlayerCharacterId = `player_${newId}`;
 
-  // Atualizar todas as referências
-  const updatedCharacters = Object.entries(data.game.characters).map(([key, char]) => {
-    const newCharId = key === data.game.playerCharacterId ? newPlayerCharacterId : key;
-    return { ...char, id: newCharId, gameId: newId };
-  });
+	// Atualizar todas as referências
+	const updatedCharacters = Object.entries(data.game.characters).map(([key, char]) => {
+		const newCharId = key === data.game.playerCharacterId ? newPlayerCharacterId : key;
+		return { ...char, id: newCharId, gameId: newId };
+	});
 
-  // ... atualizar messages, locations, events
+	// ... atualizar messages, locations, events
 
-  await dbService.saveGame(importedGame);
-  return newId;
-}
+	await dbService.saveGame(importedGame);
+	return newId;
+};
 ```
 
 ---
@@ -1224,49 +1246,49 @@ importGame: async (data: ExportedGameData): Promise<string> => {
 
 ```typescript
 export const ECONOMY = {
-  SELL_MULTIPLIER: 0.5,    // Jogador recebe 50% do valor base
-  BUY_MULTIPLIER: 1.0,     // Jogador paga 100% do valor base
+	SELL_MULTIPLIER: 0.5, // Jogador recebe 50% do valor base
+	BUY_MULTIPLIER: 1.0, // Jogador paga 100% do valor base
 
-  PRICE_RANGES: {
-    consumable: { min: 5, max: 50 },
-    weapon: { min: 20, max: 500 },
-    armor: { min: 30, max: 600 },
-    valuable: { min: 50, max: 1000 },
-    material: { min: 1, max: 20 },
-    quest: { min: 0, max: 0 },      // Não vendível
-    currency: { min: 1, max: 1000 },
-    misc: { min: 1, max: 50 },
-  },
+	PRICE_RANGES: {
+		consumable: { min: 5, max: 50 },
+		weapon: { min: 20, max: 500 },
+		armor: { min: 30, max: 600 },
+		valuable: { min: 50, max: 1000 },
+		material: { min: 1, max: 20 },
+		quest: { min: 0, max: 0 }, // Não vendível
+		currency: { min: 1, max: 1000 },
+		misc: { min: 1, max: 50 },
+	},
 
-  STARTING_GOLD: {
-    fantasy: 50,
-    medieval: 50,
-    scifi: 100,
-    modern: 200,
-    cyberpunk: 150,
-    steampunk: 75,
-    horror: 30,
-    western: 40,
-    postapocalyptic: 20,
-  },
+	STARTING_GOLD: {
+		fantasy: 50,
+		medieval: 50,
+		scifi: 100,
+		modern: 200,
+		cyberpunk: 150,
+		steampunk: 75,
+		horror: 30,
+		western: 40,
+		postapocalyptic: 20,
+	},
 
-  MAX_STACK_SIZE: 99,
-  DEFAULT_INVENTORY_LIMIT: 30,
-  MIN_GOLD: 0,
+	MAX_STACK_SIZE: 99,
+	DEFAULT_INVENTORY_LIMIT: 30,
+	MIN_GOLD: 0,
 
-  LOOT_GOLD_RANGES: {
-    trivial: { min: 1, max: 10 },
-    easy: { min: 5, max: 25 },
-    medium: { min: 15, max: 50 },
-    hard: { min: 40, max: 100 },
-    boss: { min: 100, max: 500 },
-  },
+	LOOT_GOLD_RANGES: {
+		trivial: { min: 1, max: 10 },
+		easy: { min: 5, max: 25 },
+		medium: { min: 15, max: 50 },
+		hard: { min: 40, max: 100 },
+		boss: { min: 100, max: 500 },
+	},
 };
 
 export const DEFAULT_PLAYER_STATS = {
-  hp: 100,
-  maxHp: 100,
-  gold: 50,
+	hp: 100,
+	maxHp: 100,
+	gold: 50,
 };
 ```
 
@@ -1277,30 +1299,30 @@ export const DEFAULT_PLAYER_STATS = {
 ```typescript
 // Calcular preço de venda
 export function calculateSellPrice(baseValue: number): number {
-  return Math.floor(baseValue * ECONOMY.SELL_MULTIPLIER);
+	return Math.floor(baseValue * ECONOMY.SELL_MULTIPLIER);
 }
 
 // Determinar gold inicial pelo nome do universo
 export function getStartingGold(universeName: string): number {
-  const lower = universeName.toLowerCase();
+	const lower = universeName.toLowerCase();
 
-  if (lower.includes('star wars') || lower.includes('sci-fi')) {
-    return ECONOMY.STARTING_GOLD.scifi;
-  }
-  if (lower.includes('cyberpunk') || lower.includes('blade runner')) {
-    return ECONOMY.STARTING_GOLD.cyberpunk;
-  }
-  if (lower.includes('horror') || lower.includes('lovecraft')) {
-    return ECONOMY.STARTING_GOLD.horror;
-  }
-  // ... outros tipos
+	if (lower.includes('star wars') || lower.includes('sci-fi')) {
+		return ECONOMY.STARTING_GOLD.scifi;
+	}
+	if (lower.includes('cyberpunk') || lower.includes('blade runner')) {
+		return ECONOMY.STARTING_GOLD.cyberpunk;
+	}
+	if (lower.includes('horror') || lower.includes('lovecraft')) {
+		return ECONOMY.STARTING_GOLD.horror;
+	}
+	// ... outros tipos
 
-  return ECONOMY.STARTING_GOLD.fantasy; // Default
+	return ECONOMY.STARTING_GOLD.fantasy; // Default
 }
 
 // Formatar regras para prompt da IA
 export function getEconomyRulesForGMPrompt(): string {
-  return `
+	return `
 === ECONOMY & TRADING RULES (MANDATORY) ===
 
 **BUYING FROM NPCs:**
@@ -1357,27 +1379,25 @@ prompts/
  */
 
 export interface GameMasterPromptParams {
-  gameState: GameState;
-  playerInput: string;
-  language: Language;
-  fateResult?: FateResult;
-  genre?: NarrativeGenre;
-  useTone?: boolean;
+	gameState: GameState;
+	playerInput: string;
+	language: Language;
+	fateResult?: FateResult;
+	genre?: NarrativeGenre;
+	useTone?: boolean;
 }
 
 export function buildGameMasterPrompt(params: GameMasterPromptParams): string {
-  const { gameState, playerInput, language, fateResult, genre, useTone } = params;
+	const { gameState, playerInput, language, fateResult, genre, useTone } = params;
 
-  // Construir contexto do jogador
-  const player = gameState.characters[gameState.playerCharacterId];
-  const location = gameState.locations[gameState.currentLocationId];
+	// Construir contexto do jogador
+	const player = gameState.characters[gameState.playerCharacterId];
+	const location = gameState.locations[gameState.currentLocationId];
 
-  // Gerar instruções narrativas baseadas no gênero
-  const narrativeInstructions = genre
-    ? generateNarrativeInstructions(genre, language)
-    : '';
+	// Gerar instruções narrativas baseadas no gênero
+	const narrativeInstructions = genre ? generateNarrativeInstructions(genre, language) : '';
 
-  return `
+	return `
 You are the Game Master (GM) for an immersive RPG.
 
 === CURRENT STATE ===
@@ -1405,33 +1425,35 @@ Generate a response following the JSON schema provided.
 
 // Schema JSON para structured output
 export const gmResponseSchema = {
-  type: 'object',
-  properties: {
-    messages: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          type: { enum: ['narration', 'dialogue', 'system'] },
-          text: { type: 'string' },
-          characterName: { type: 'string' },
-          dialogue: { type: 'string' },
-          voiceTone: { type: 'string' },
-          newCharacterData: { /* ... */ },
-        },
-      },
-    },
-    stateUpdates: {
-      type: 'object',
-      properties: {
-        newLocations: { type: 'array' },
-        newCharacters: { type: 'array' },
-        updatedCharacters: { type: 'array' },
-        locationChange: { type: 'string' },
-        eventLog: { type: 'string' },
-      },
-    },
-  },
+	type: 'object',
+	properties: {
+		messages: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					type: { enum: ['narration', 'dialogue', 'system'] },
+					text: { type: 'string' },
+					characterName: { type: 'string' },
+					dialogue: { type: 'string' },
+					voiceTone: { type: 'string' },
+					newCharacterData: {
+						/* ... */
+					},
+				},
+			},
+		},
+		stateUpdates: {
+			type: 'object',
+			properties: {
+				newLocations: { type: 'array' },
+				newCharacters: { type: 'array' },
+				updatedCharacters: { type: 'array' },
+				locationChange: { type: 'string' },
+				eventLog: { type: 'string' },
+			},
+		},
+	},
 };
 ```
 
@@ -1443,18 +1465,16 @@ O sistema envia apenas diferenças incrementais:
 
 ```json
 {
-  "shouldUpdate": true,
-  "changes": {
-    "mainMission": { "action": "set", "value": "Impedir que o império acorde o titã." },
-    "currentMission": { "action": "clear" },
-    "activeProblems": [
-      { "action": "remove", "value": "Tempestade acima" },
-      { "action": "add", "value": "Guardas do templo em alerta" }
-    ],
-    "importantNotes": [
-      { "action": "add", "value": "A runa reage à luz da lua" }
-    ]
-  }
+	"shouldUpdate": true,
+	"changes": {
+		"mainMission": { "action": "set", "value": "Impedir que o império acorde o titã." },
+		"currentMission": { "action": "clear" },
+		"activeProblems": [
+			{ "action": "remove", "value": "Tempestade acima" },
+			{ "action": "add", "value": "Guardas do templo em alerta" }
+		],
+		"importantNotes": [{ "action": "add", "value": "A runa reage à luz da lua" }]
+	}
 }
 ```
 
@@ -1511,25 +1531,31 @@ O sistema envia apenas diferenças incrementais:
 
 ## Sistema de Mapa em Grade
 
-> Introduzido no commit `79cc5d6` (merge `claude/grid-navigation-system-HYTk0`) para fornecer contexto espacial sincronizado a cada carta.
+> Introduzido no commit `79cc5d6` (merge `claude/grid-navigation-system-HYTk0`) para fornecer contexto espacial
+> sincronizado a cada carta.
 
 ### Visão Geral
 
 - `gridSnapshots` grava posições 10x10 por `pageNumber`, permitindo voltar no tempo sem perder coerência.
-- A IA especializada (`gridUpdate.prompt.ts`) lê mensagens recentes + `eventLog` e decide se houve movimento físico antes de sugerir uma nova matriz.
+- A IA especializada (`gridUpdate.prompt.ts`) lê mensagens recentes + `eventLog` e decide se houve movimento físico
+  antes de sugerir uma nova matriz.
 - A UI expõe o mapa via flip-card dentro do `StoryCard`, evitando modais externos.
 
 ### Fluxo Completo
 
 1. **Criação** – `createInitialGridSnapshot` posiciona o jogador no centro e NPCs em círculo após as mensagens iniciais.
-2. **Turno** – Após `generateGameTurn`, `updateGridPositions` consulta o prompt e pode retornar `updated: true` com `GridSnapshot` completo.
-3. **Persistência** – Snapshots são salvos na store IndexedDB `GRIDS`, exportados/importados e anexados em memória via `safeUpdateStory`.
-4. **Renderização** – `StoryCard` passa `gridSnapshots`, `pageNumber` atual e cache de avatares para o `GridMap`, que seleciona o snapshot <= carta ativa.
+2. **Turno** – Após `generateGameTurn`, `updateGridPositions` consulta o prompt e pode retornar `updated: true` com
+   `GridSnapshot` completo.
+3. **Persistência** – Snapshots são salvos na store IndexedDB `GRIDS`, exportados/importados e anexados em memória via
+   `safeUpdateStory`.
+4. **Renderização** – `StoryCard` passa `gridSnapshots`, `pageNumber` atual e cache de avatares para o `GridMap`, que
+   seleciona o snapshot <= carta ativa.
 
 ### UX e Traduções
 
 - `GridMap` traz animação 3D, highlight piscante no player, badge de crowd e legenda rolável.
-- Botões `Map`/`Back to card`, rótulo `Map` e mensagem `No map data` estão traduzidos em EN/PT/ES/FR/RU/ZH (`i18n/locales.ts`).
+- Botões `Map`/`Back to card`, rótulo `Map` e mensagem `No map data` estão traduzidos em EN/PT/ES/FR/RU/ZH
+  (`i18n/locales.ts`).
 
 ---
 
@@ -1543,7 +1569,8 @@ O sistema envia apenas diferenças incrementais:
 - Background híbrido (avatar, cenário ou textura) com overlay para leitura confortável.
 - Botão de play com TTS configurável por voz/tom.
 - Navegação Prev/Next com barra de progresso, swipe e atalhos de teclado.
-- Botão **Map** aciona flip 3D e envia `gridSnapshots`, `pageNumber` e avatares atuais para o `GridMap` renderizar o snapshot correto.
+- Botão **Map** aciona flip 3D e envia `gridSnapshots`, `pageNumber` e avatares atuais para o `GridMap` renderizar o
+  snapshot correto.
 
 ### GridMap
 
@@ -1551,7 +1578,8 @@ O sistema envia apenas diferenças incrementais:
 
 - Busca o snapshot mais recente com `atMessageNumber <= carta atual` e aplica fallback de avatar.
 - Grid 10x10 responsivo com player piscando (intervalo de 500 ms) e badges de quantidade para NPCs empilhados.
-- Cabeçalho com localização, botão "Back" e integração total com `ThemeColors`; corpo pode usar o background da cena com overlay.
+- Cabeçalho com localização, botão "Back" e integração total com `ThemeColors`; corpo pode usar o background da cena com
+  overlay.
 - Legenda rolável lista personagens, coordenadas e avatar, mantendo contexto mesmo em telas menores.
 
 ### ActionInput
@@ -1569,6 +1597,7 @@ O sistema envia apenas diferenças incrementais:
 **Arquivo:** `components/ErrorModal.tsx`
 
 Trata erros específicos:
+
 - `insufficient_quota`: Link para billing da OpenAI
 - `invalid_key`: Modal para re-inserir key
 - `rate_limit`: Permite retry
@@ -1593,20 +1622,20 @@ Trata erros específicos:
 
 ```typescript
 export function getBrowserLanguage(): Language {
-  // 1. Cookie 'infinitum_lang'
-  const cookie = document.cookie.match(/infinitum_lang=(\w+)/);
-  if (cookie && supportedLanguages.includes(cookie[1])) {
-    return cookie[1] as Language;
-  }
+	// 1. Cookie 'infinitum_lang'
+	const cookie = document.cookie.match(/infinitum_lang=(\w+)/);
+	if (cookie && supportedLanguages.includes(cookie[1])) {
+		return cookie[1] as Language;
+	}
 
-  // 2. navigator.language
-  const browserLang = navigator.language.split('-')[0];
-  if (supportedLanguages.includes(browserLang)) {
-    return browserLang as Language;
-  }
+	// 2. navigator.language
+	const browserLang = navigator.language.split('-')[0];
+	if (supportedLanguages.includes(browserLang)) {
+		return browserLang as Language;
+	}
 
-  // 3. Fallback
-  return 'en';
+	// 3. Fallback
+	return 'en';
 }
 ```
 
@@ -1620,11 +1649,11 @@ export function getBrowserLanguage(): Language {
 
 ```typescript
 type ErrorType =
-  | 'insufficient_quota'  // Conta sem créditos
-  | 'invalid_key'         // API key inválida
-  | 'rate_limit'          // Muitas requisições
-  | 'network'             // Problemas de conexão
-  | 'generic';            // Outros erros
+	| 'insufficient_quota' // Conta sem créditos
+	| 'invalid_key' // API key inválida
+	| 'rate_limit' // Muitas requisições
+	| 'network' // Problemas de conexão
+	| 'generic'; // Outros erros
 ```
 
 ### Estratégias de Recuperação
@@ -1641,17 +1670,17 @@ type ErrorType =
 
 ## Stack Tecnológico
 
-| Camada         | Tecnologia                |
-| -------------- | ------------------------- |
+| Camada         | Tecnologia                 |
+| -------------- | -------------------------- |
 | Frontend       | React 19.2, TypeScript 5.8 |
-| Build          | Vite 6.2                  |
-| Ícones         | Lucide React 0.560        |
-| IA - LLM       | OpenAI GPT-4.1            |
-| IA - Imagem    | gpt-image-1-mini          |
-| IA - Voz       | Whisper + gpt-4o-mini-tts |
-| Banco de Dados | IndexedDB + localStorage  |
-| Testes         | Jest 29 + Testing Library |
-| Git Hooks      | Husky 9                   |
+| Build          | Vite 6.2                   |
+| Ícones         | Lucide React 0.560         |
+| IA - LLM       | OpenAI GPT-4.1             |
+| IA - Imagem    | gpt-image-1-mini           |
+| IA - Voz       | Whisper + gpt-4o-mini-tts  |
+| Banco de Dados | IndexedDB + localStorage   |
+| Testes         | Jest 29 + Testing Library  |
+| Git Hooks      | Husky 9                    |
 
 ### Scripts npm
 

@@ -147,12 +147,14 @@ Return a single, vivid prompt ready for GPT-image-1-mini. This is attempt ${atte
 
 const generateImageWithPromptGuardrails = async (config: GuidedImageGenerationConfig): Promise<string | undefined> => {
 	for (let attempt = 1; attempt <= MAX_IMAGE_PROMPT_ATTEMPTS; attempt++) {
+		const useOriginalPrompt = attempt === 1;
 		try {
-			const compliantPrompt = await synthesizeCompliantImagePrompt(config.apiKey, config.basePrompt, attempt);
-			console.info(
-				`🛡️ [${config.contextLabel}] Attempt ${attempt}/${MAX_IMAGE_PROMPT_ATTEMPTS} using compliant prompt rewrite.`,
-			);
-			const imageBase64 = await generateImage(config.apiKey, compliantPrompt, config.size, config.quality);
+			const promptToUse = useOriginalPrompt
+				? config.basePrompt
+				: await synthesizeCompliantImagePrompt(config.apiKey, config.basePrompt, attempt);
+			const promptLabel = useOriginalPrompt ? 'original prompt' : 'compliant prompt rewrite';
+			console.info(`🛡️ [${config.contextLabel}] Attempt ${attempt}/${MAX_IMAGE_PROMPT_ATTEMPTS} using ${promptLabel}.`);
+			const imageBase64 = await generateImage(config.apiKey, promptToUse, config.size, config.quality);
 			if (imageBase64) {
 				return imageBase64;
 			}
