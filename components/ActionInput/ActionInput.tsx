@@ -230,6 +230,11 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 		return colors.textSecondary;
 	};
 
+	// Fixed colors for Critical Success/Error hints - these should NEVER change
+	// based on narrative theme or percentages
+	const CRITICAL_SUCCESS_COLOR = '#166534'; // green-800 - always green for success
+	const CRITICAL_ERROR_COLOR = '#dc2626'; // red-600 - always red for error
+
 	const renderContextSyncBadge = () => {
 		if (!showBackgroundUpdate) return null;
 		return (
@@ -643,16 +648,17 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 										)}
 									</div>
 									{/* Action hints - visible descriptive text */}
+									{/* Critical Success/Error hints always use fixed green/red colors */}
 									{(opt.goodHint || opt.badHint) && (
 										<div className="mt-2 pt-2 border-t text-xs md:text-sm tracking-wide" style={{ borderColor: colors.border }}>
 											{opt.goodHint && (
-												<div className="flex items-start gap-1.5 mb-1" style={{ color: getLuckColor(opt.goodChance) }}>
+												<div className="flex items-start gap-1.5 mb-1" style={{ color: CRITICAL_SUCCESS_COLOR }}>
 													<Sparkles className="w-3 h-3 mt-0.5 flex-shrink-0" />
 													<span className="italic">{opt.goodHint}</span>
 												</div>
 											)}
 											{opt.badHint && (
-												<div className="flex items-start gap-1.5" style={{ color: getRiskColor(opt.badChance) }}>
+												<div className="flex items-start gap-1.5" style={{ color: CRITICAL_ERROR_COLOR }}>
 													<AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
 													<span className="italic">{opt.badHint}</span>
 												</div>
