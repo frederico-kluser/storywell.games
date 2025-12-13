@@ -145,8 +145,10 @@ const App: React.FC = () => {
 	const narrativeModeForModal: NarrativeStyleMode =
 		activeStory?.narrativeConfig?.narrativeStyleMode || activeStory?.config?.narrativeStyleMode || 'auto';
 	const narrativeStylePreset =
-		activeStory?.narrativeConfig?.customNarrativeStyle ||
-		(activeStory?.config?.narrativeStyleMode === 'custom' ? activeStory?.config?.customNarrativeStyle : '') ||
+		activeStory?.narrativeConfig?.customNarrativeStyleRaw ??
+		(activeStory?.config?.narrativeStyleMode === 'custom'
+			? activeStory?.config?.customNarrativeStyleRaw ?? activeStory?.config?.customNarrativeStyle
+			: undefined) ??
 		'';
 	const narrativeGenre = activeStory?.narrativeConfig?.genre || activeStory?.config?.genre;
 

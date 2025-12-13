@@ -173,7 +173,9 @@ export interface GameConfig {
 	/** Strategy used to define the narrative tone (auto vs custom) */
 	narrativeStyleMode?: NarrativeStyleMode;
 	/** Player-provided narrative style instructions when using custom mode */
-	customNarrativeStyle?: string;
+	customNarrativeStyle?: string; // formatted brief
+	/** Raw text entered by the player before normalization */
+	customNarrativeStyleRaw?: string;
 }
 
 // The "Hydrated" Game State used by the React App (Runtime View Model)
@@ -362,6 +364,8 @@ export interface NarrativeConfig {
 	genre?: NarrativeGenre;
 	/** Instruções personalizadas fornecidas pelo jogador */
 	customNarrativeStyle?: string;
+	/** Texto bruto fornecido pelo jogador */
+	customNarrativeStyleRaw?: string;
 	/** Estratégia usada para definir o estilo narrativo */
 	narrativeStyleMode?: NarrativeStyleMode;
 	/** Estado atual do pacing */

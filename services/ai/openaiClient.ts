@@ -119,6 +119,17 @@ const IMAGE_PROMPT_SYSTEM_DIRECTIVE = `You rewrite potentially sensitive image p
 
 const MAX_IMAGE_PROMPT_ATTEMPTS = 3;
 
+const NARRATIVE_STYLE_SYSTEM_DIRECTIVE = `You are a senior narrative dramaturg who rewrites high-level style briefs into precise creative direction.
+- Consolidate redundant ideas.
+- Clarify POV, tense, cadence, vocabulary, and mandatory techniques.
+- Output a compact template with the following sections in uppercase labels:
+VOICE & POV:
+CADENCE & STRUCTURE:
+TECHNIQUES & DEVICES:
+SENSORY & THEMES:
+
+Each section should contain short bullet points. Respond with text only.`;
+
 interface GuidedImageGenerationConfig {
 	apiKey: string;
 	basePrompt: string;
@@ -178,6 +189,33 @@ const generateImageWithPromptGuardrails = async (config: GuidedImageGenerationCo
 		`⚠️ [${config.contextLabel}] Unable to generate image after ${MAX_IMAGE_PROMPT_ATTEMPTS} attempts. Inform the user and continue.`,
 	);
 	return undefined;
+};
+
+export const normalizeNarrativeStyleBrief = async (apiKey: string, rawBrief: string): Promise<string> => {
+	const cleaned = rawBrief?.trim();
+	if (!cleaned) {
+		throw new Error('Empty narrative style brief');
+	}
+
+	const messages: LLMMessage[] = [
+		{ role: 'system', content: NARRATIVE_STYLE_SYSTEM_DIRECTIVE },
+		{
+			role: 'user',
+			content: `Player-provided description:\n${cleaned}`,
+		},
+	];
+
+	const response = await queryLLM(apiKey, messages, {
+		model: 'gpt-4.1-mini',
+		responseFormat: 'text',
+		temperature: 0.2,
+	});
+
+	if (!response.text) {
+		throw new Error('No formatted narrative style returned');
+	}
+
+	return response.text.trim();
 };
 
 /**

@@ -168,6 +168,7 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 			dialogueHeavy: true,
 			narrativeStyleMode,
 			customNarrativeStyle: narrativeStyleMode === 'custom' ? trimmedStyle : undefined,
+			customNarrativeStyleRaw: narrativeStyleMode === 'custom' ? trimmedStyle : undefined,
 		};
 		onCreate(fullConfig);
 	};
@@ -228,7 +229,9 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 									<div className="flex gap-3 border border-dashed border-stone-300 bg-stone-50 p-3">
 										<Info className="w-4 h-4 text-stone-500 mt-0.5" />
 										<div>
-											<p className="text-[11px] font-bold uppercase tracking-wide text-stone-500">{t.narrativeStyleInfoTitle}</p>
+											<p className="text-[11px] font-bold uppercase tracking-wide text-stone-500">
+												{t.narrativeStyleInfoTitle}
+											</p>
 											<p className="text-[11px] text-stone-600 leading-snug">{t.narrativeStyleInfoBody}</p>
 										</div>
 									</div>

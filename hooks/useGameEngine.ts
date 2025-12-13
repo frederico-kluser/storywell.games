@@ -28,6 +28,7 @@ import {
 	generateLocationBackground,
 	updateGridPositions,
 	createInitialGridSnapshot,
+	normalizeNarrativeStyleBrief,
 } from '../services/ai/openaiClient';
 import { dbService, ExportedGameData } from '../services/db';
 import { getBrowserLanguage, translations, setLanguageCookie } from '../i18n/locales';
@@ -474,7 +475,14 @@ export const useGameEngine = (): UseGameEngineReturn => {
 
 	const updateNarrativeStyle = async (mode: NarrativeStyleMode, customStyle?: string) => {
 		if (!currentStoryId) return;
+		let formattedStyle: string | undefined;
 		const trimmedStyle = customStyle?.trim();
+		if (mode === 'custom') {
+			if (!trimmedStyle) {
+				throw new Error('Narrative style text is required for custom mode.');
+			}
+			formattedStyle = await normalizeNarrativeStyleBrief(apiKey, trimmedStyle);
+		}
 
 		safeUpdateStory((story) => {
 			const previousNarrative: NarrativeConfig = story.narrativeConfig || {};
@@ -482,13 +490,15 @@ export const useGameEngine = (): UseGameEngineReturn => {
 				...previousNarrative,
 				genre: previousNarrative.genre ?? story.config?.genre,
 				narrativeStyleMode: mode,
-				customNarrativeStyle: mode === 'custom' ? trimmedStyle : undefined,
+				customNarrativeStyle: mode === 'custom' ? formattedStyle : undefined,
+				customNarrativeStyleRaw: mode === 'custom' ? trimmedStyle : undefined,
 			};
 
 			const nextConfig = {
 				...story.config,
 				narrativeStyleMode: mode,
-				customNarrativeStyle: mode === 'custom' ? trimmedStyle : undefined,
+				customNarrativeStyle: mode === 'custom' ? formattedStyle : undefined,
+				customNarrativeStyleRaw: mode === 'custom' ? trimmedStyle : undefined,
 			};
 
 			return {
@@ -506,22 +516,45 @@ export const useGameEngine = (): UseGameEngineReturn => {
 		setCreationPhase('initializing');
 
 		try {
+			let preparedConfig = { ...config };
+			const narrativeMode: NarrativeStyleMode = preparedConfig.narrativeStyleMode ?? 'auto';
+			if (narrativeMode === 'custom') {
+				const rawBrief = (preparedConfig.customNarrativeStyleRaw ?? preparedConfig.customNarrativeStyle ?? '').trim();
+				if (!rawBrief) {
+					throw new Error('Narrative style text is required when using custom mode.');
+				}
+				const formattedBrief = await normalizeNarrativeStyleBrief(apiKey, rawBrief);
+				preparedConfig = {
+					...preparedConfig,
+					customNarrativeStyleRaw: rawBrief,
+					customNarrativeStyle: formattedBrief,
+				};
+			} else {
+				preparedConfig = {
+					...preparedConfig,
+					customNarrativeStyleRaw: undefined,
+					customNarrativeStyle: undefined,
+				};
+			}
+
+			const storyConfig = preparedConfig;
+
 			// Phase 1: Colors - Start colors generation
 			setCreationPhase('colors');
 
 			// Run story initialization and theme colors generation in parallel
 			// But show progress phases sequentially for better UX
 			const colorsPromise = generateThemeColors(apiKey, {
-				universeName: config.universeName,
-				universeType: config.universeType as 'original' | 'existing',
-				genre: config.genre,
-				visualStyle: config.visualStyle,
+				universeName: storyConfig.universeName,
+				universeType: storyConfig.universeType as 'original' | 'existing',
+				genre: storyConfig.genre,
+				visualStyle: storyConfig.visualStyle,
 				language,
 			});
 
 			// Phase 2: World - Start story initialization (runs parallel with colors)
 			setCreationPhase('world');
-			const initPromise = initializeStory(apiKey, config, language);
+			const initPromise = initializeStory(apiKey, storyConfig, language);
 
 			// Wait for colors first
 			const themeColors = await colorsPromise;
@@ -570,7 +603,7 @@ export const useGameEngine = (): UseGameEngineReturn => {
 			// 2. Resolve Player Character
 			// Fuzzy match name OR take the first character if list is small, OR create fallback
 			let playerChar = generatedCharacters.find((c: any) =>
-				c.name.toLowerCase().includes(config.playerName.toLowerCase()),
+				c.name.toLowerCase().includes(storyConfig.playerName.toLowerCase()),
 			);
 
 			if (!playerChar && generatedCharacters.length > 0) {
@@ -580,11 +613,11 @@ export const useGameEngine = (): UseGameEngineReturn => {
 
 			if (!playerChar) {
 				// Fallback creation with default stats including gold
-				const startingGold = getStartingGold(config.universeName);
+				const startingGold = getStartingGold(storyConfig.universeName);
 				playerChar = {
 					id: 'player_fallback',
-					name: config.playerName,
-					description: config.playerDesc,
+					name: storyConfig.playerName,
+					description: storyConfig.playerDesc,
 					isPlayer: true,
 					locationId: initialLocation.id,
 					stats: {
@@ -614,15 +647,17 @@ export const useGameEngine = (): UseGameEngineReturn => {
 
 			const newState: GameState = {
 				id: newStoryId,
-				title: `${config.universeName} - ${config.playerName}`,
+				title: `${storyConfig.universeName} - ${storyConfig.playerName}`,
 				turnCount: 0,
 				lastPlayed: Date.now(),
-				config: { ...config, language },
+				config: { ...storyConfig, language },
 				narrativeConfig: {
-					genre: config.genre,
-					narrativeStyleMode: config.narrativeStyleMode ?? 'auto',
+					genre: storyConfig.genre,
+					narrativeStyleMode: storyConfig.narrativeStyleMode ?? 'auto',
 					customNarrativeStyle:
-						(config.narrativeStyleMode ?? 'auto') === 'custom' ? config.customNarrativeStyle?.trim() : undefined,
+						(storyConfig.narrativeStyleMode ?? 'auto') === 'custom' ? storyConfig.customNarrativeStyle : undefined,
+					customNarrativeStyleRaw:
+						(storyConfig.narrativeStyleMode ?? 'auto') === 'custom' ? storyConfig.customNarrativeStyleRaw : undefined,
 				},
 				playerCharacterId: playerChar.id,
 				currentLocationId: initialLocation.id,
