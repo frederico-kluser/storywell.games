@@ -259,6 +259,11 @@ ${getItemAwarenessRulesForPrompt()}
 - Extreme: badChance 41-50%, goodChance 30-50% (only when narrative stakes justify it)
 Always clamp each value to 0-50 and ensure goodChance + badChance ≤ 80 so neutral outcomes remain possible.
 
+=== CRITICAL OUTCOME DIRECTIVE ===
+- Any roll inside badChance becomes a **CRITICAL ERROR**: the player's intention must fail or backfire violently. Describe the concrete punishment in the badHint so the GM prompt can enforce it verbatim.
+- Any roll inside goodChance becomes a **CRITICAL SUCCESS**: the player's intention must triumph completely and deliver the exact boon you outline in the goodHint.
+- Make it explicit that these critical states override normal resolution; the eventual action must follow the hints you provide when a critical triggers.
+
 === QUALITY RUBRIC ===
 - "Good" options must advance missions, reveal intel, or leverage resources the player actually has.
 - "Cautious" options should proactively mitigate danger (retreat, regroup, prepare, heal) and keep risks in the Safe band.
@@ -282,6 +287,7 @@ ${hasHealingItems && healthPercent < 70 ? '7. IMPORTANT: Player has low HP and h
    - goodHint: brief description of the potential benefit (e.g., "find hidden treasure", "gain ally trust")
    - badHint: brief description of the potential harm (e.g., "alert enemies", "trigger trap")
 10. If you assign High or Extreme risk, the goodHint must describe the concrete payoff that justifies the danger.
+11. Prefix every goodHint with "Critical Success:" and every badHint with "Critical Error:" before describing the localized outcome so the GM knows these effects are mandatory when a critical triggers.
 
 Respond with JSON:
 {
