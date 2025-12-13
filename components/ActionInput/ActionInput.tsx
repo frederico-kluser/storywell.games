@@ -596,7 +596,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 				</button>
 
 				{/* Options container - collapsible on mobile */}
-				<div className={`p-1.5 md:p-6 ${isCollapsed ? 'hidden md:block' : 'block'}`}>
+				<div className={`p-1.5 md:p-6 max-h-[50vh] md:max-h-none overflow-y-auto ${isCollapsed ? 'hidden md:block' : 'block'}`}>
 					<div className="max-w-full md:max-w-5xl mx-auto">
 						{renderContextSyncBadge()}
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
