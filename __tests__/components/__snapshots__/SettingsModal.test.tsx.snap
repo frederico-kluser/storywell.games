@@ -1,0 +1,839 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SettingsModal snapshots should match snapshot for default state 1`] = `
+<div>
+  <div
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md shadow-[12px_12px_0px_rgba(0,0,0,1)] relative"
+    >
+      <div
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+      >
+        <h2
+          class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="settings-icon"
+          >
+            Settings
+          </span>
+          Settings
+        </h2>
+        <button
+          class="text-white/70 hover:text-white transition-colors"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4 space-y-3"
+      >
+        <button
+          class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-stone-300 hover:border-stone-900"
+        >
+          <div
+            class="w-12 h-12 flex items-center justify-center transition-colors bg-stone-100 group-hover:bg-stone-200"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="edit-icon"
+            >
+              Edit
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Edit Narrative Style
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Adjust tone presets or inject a custom writing brief.
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-stone-900 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-stone-200 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="volume-icon"
+            >
+              Volume
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Voice Settings
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Configure TTS voice and tone options
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-red-500 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-red-50 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700 group-hover:text-red-500"
+              data-testid="trash-icon"
+            >
+              Trash
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900 group-hover:text-red-600"
+            >
+              Delete All Saves
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Remove all stories from local storage
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-orange-500 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-orange-50 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700 group-hover:text-orange-500"
+              data-testid="key-icon"
+            >
+              Key
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900 group-hover:text-orange-600"
+            >
+              Remove API Key
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Clear saved OpenAI key and return to start
+            </p>
+          </div>
+        </button>
+      </div>
+      <div
+        class="p-4 border-t-2 border-stone-300 bg-stone-50"
+      >
+        <button
+          class="w-full py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SettingsModal snapshots should match snapshot when closed 1`] = `<div />`;
+
+exports[`SettingsModal snapshots should match snapshot with Portuguese translations 1`] = `
+<div>
+  <div
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md shadow-[12px_12px_0px_rgba(0,0,0,1)] relative"
+    >
+      <div
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+      >
+        <h2
+          class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="settings-icon"
+          >
+            Settings
+          </span>
+          Configurações
+        </h2>
+        <button
+          class="text-white/70 hover:text-white transition-colors"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4 space-y-3"
+      >
+        <button
+          class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-stone-300 hover:border-stone-900"
+        >
+          <div
+            class="w-12 h-12 flex items-center justify-center transition-colors bg-stone-100 group-hover:bg-stone-200"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="edit-icon"
+            >
+              Edit
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Editar Estilo Narrativo
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Ajuste presets de tom ou injete um briefing personalizado.
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-stone-900 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-stone-200 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="volume-icon"
+            >
+              Volume
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Configurações de Voz
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Configure voz e tom do TTS
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-red-500 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-red-50 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700 group-hover:text-red-500"
+              data-testid="trash-icon"
+            >
+              Trash
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900 group-hover:text-red-600"
+            >
+              Excluir Todos os Saves
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Remover todas as histórias do armazenamento local
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-orange-500 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-orange-50 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700 group-hover:text-orange-500"
+              data-testid="key-icon"
+            >
+              Key
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900 group-hover:text-orange-600"
+            >
+              Remover Chave API
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Limpar chave OpenAI salva e voltar ao início
+            </p>
+          </div>
+        </button>
+      </div>
+      <div
+        class="p-4 border-t-2 border-stone-300 bg-stone-50"
+      >
+        <button
+          class="w-full py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SettingsModal snapshots should match snapshot with delete API key confirmation 1`] = `
+<div>
+  <div
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md shadow-[12px_12px_0px_rgba(0,0,0,1)] relative"
+    >
+      <div
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+      >
+        <h2
+          class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="settings-icon"
+          >
+            Settings
+          </span>
+          Settings
+        </h2>
+        <button
+          class="text-white/70 hover:text-white transition-colors"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4 space-y-3"
+      >
+        <button
+          class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-stone-300 hover:border-stone-900"
+        >
+          <div
+            class="w-12 h-12 flex items-center justify-center transition-colors bg-stone-100 group-hover:bg-stone-200"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="edit-icon"
+            >
+              Edit
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Edit Narrative Style
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Adjust tone presets or inject a custom writing brief.
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-stone-900 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-stone-200 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="volume-icon"
+            >
+              Volume
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Voice Settings
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Configure TTS voice and tone options
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-red-500 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-red-50 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700 group-hover:text-red-500"
+              data-testid="trash-icon"
+            >
+              Trash
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900 group-hover:text-red-600"
+            >
+              Delete All Saves
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Remove all stories from local storage
+            </p>
+          </div>
+        </button>
+        <div
+          class="p-4 border-2 border-orange-500 bg-orange-50"
+        >
+          <div
+            class="flex items-center gap-2 text-orange-600 mb-3"
+          >
+            <span
+              class="w-5 h-5"
+              data-testid="alert-icon"
+            >
+              Alert
+            </span>
+            <span
+              class="font-bold uppercase text-sm"
+            >
+              Confirm Deletion
+            </span>
+          </div>
+          <p
+            class="text-sm text-orange-700 mb-4"
+          >
+            This will remove your API key.
+          </p>
+          <div
+            class="flex gap-2"
+          >
+            <button
+              class="flex-1 py-2 px-4 bg-stone-200 text-stone-700 font-bold uppercase text-sm hover:bg-stone-300 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              class="flex-1 py-2 px-4 bg-orange-600 text-white font-bold uppercase text-sm hover:bg-orange-700 transition-colors"
+            >
+              Remove Key
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-4 border-t-2 border-stone-300 bg-stone-50"
+      >
+        <button
+          class="w-full py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SettingsModal snapshots should match snapshot with delete database confirmation 1`] = `
+<div>
+  <div
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md shadow-[12px_12px_0px_rgba(0,0,0,1)] relative"
+    >
+      <div
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+      >
+        <h2
+          class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="settings-icon"
+          >
+            Settings
+          </span>
+          Settings
+        </h2>
+        <button
+          class="text-white/70 hover:text-white transition-colors"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4 space-y-3"
+      >
+        <button
+          class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-stone-300 hover:border-stone-900"
+        >
+          <div
+            class="w-12 h-12 flex items-center justify-center transition-colors bg-stone-100 group-hover:bg-stone-200"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="edit-icon"
+            >
+              Edit
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Edit Narrative Style
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Adjust tone presets or inject a custom writing brief.
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-stone-900 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-stone-200 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="volume-icon"
+            >
+              Volume
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Voice Settings
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Configure TTS voice and tone options
+            </p>
+          </div>
+        </button>
+        <div
+          class="p-4 border-2 border-red-500 bg-red-50"
+        >
+          <div
+            class="flex items-center gap-2 text-red-600 mb-3"
+          >
+            <span
+              class="w-5 h-5"
+              data-testid="alert-icon"
+            >
+              Alert
+            </span>
+            <span
+              class="font-bold uppercase text-sm"
+            >
+              Confirm Deletion
+            </span>
+          </div>
+          <p
+            class="text-sm text-red-700 mb-4"
+          >
+            This will permanently delete all your saved stories.
+          </p>
+          <div
+            class="flex gap-2"
+          >
+            <button
+              class="flex-1 py-2 px-4 bg-stone-200 text-stone-700 font-bold uppercase text-sm hover:bg-stone-300 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              class="flex-1 py-2 px-4 bg-red-600 text-white font-bold uppercase text-sm hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+            >
+              Delete All
+            </button>
+          </div>
+        </div>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-orange-500 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-orange-50 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700 group-hover:text-orange-500"
+              data-testid="key-icon"
+            >
+              Key
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900 group-hover:text-orange-600"
+            >
+              Remove API Key
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Clear saved OpenAI key and return to start
+            </p>
+          </div>
+        </button>
+      </div>
+      <div
+        class="p-4 border-t-2 border-stone-300 bg-stone-50"
+      >
+        <button
+          class="w-full py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`SettingsModal snapshots should match snapshot with narrative style disabled 1`] = `
+<div>
+  <div
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md shadow-[12px_12px_0px_rgba(0,0,0,1)] relative"
+    >
+      <div
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+      >
+        <h2
+          class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="settings-icon"
+          >
+            Settings
+          </span>
+          Settings
+        </h2>
+        <button
+          class="text-white/70 hover:text-white transition-colors"
+        >
+          <span
+            class="w-6 h-6"
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4 space-y-3"
+      >
+        <button
+          class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-dashed border-stone-200 cursor-not-allowed opacity-60"
+          disabled=""
+        >
+          <div
+            class="w-12 h-12 flex items-center justify-center transition-colors bg-stone-50"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="edit-icon"
+            >
+              Edit
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Edit Narrative Style
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Start a story to edit its narrative tone.
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-stone-900 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-stone-200 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700"
+              data-testid="volume-icon"
+            >
+              Volume
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Voice Settings
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Configure TTS voice and tone options
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-red-500 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-red-50 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700 group-hover:text-red-500"
+              data-testid="trash-icon"
+            >
+              Trash
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900 group-hover:text-red-600"
+            >
+              Delete All Saves
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Remove all stories from local storage
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 border-stone-300 bg-white hover:border-orange-500 transition-all flex items-center gap-4 group"
+        >
+          <div
+            class="w-12 h-12 bg-stone-100 flex items-center justify-center group-hover:bg-orange-50 transition-colors"
+          >
+            <span
+              class="w-6 h-6 text-stone-700 group-hover:text-orange-500"
+              data-testid="key-icon"
+            >
+              Key
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900 group-hover:text-orange-600"
+            >
+              Remove API Key
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Clear saved OpenAI key and return to start
+            </p>
+          </div>
+        </button>
+      </div>
+      <div
+        class="p-4 border-t-2 border-stone-300 bg-stone-50"
+      >
+        <button
+          class="w-full py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

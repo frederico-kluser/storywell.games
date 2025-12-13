@@ -174,4 +174,60 @@ describe('ActionInput', () => {
       }, { timeout: 3000 });
     });
   });
+
+  describe('snapshots', () => {
+    it('should match snapshot for loading state', () => {
+      // Mock to delay loading
+      jest.mock('../../services/ai/openaiClient', () => ({
+        generateActionOptions: jest.fn().mockImplementation(() => new Promise(() => {})),
+        rollFate: jest.fn().mockReturnValue({ type: 'neutral' })
+      }));
+
+      const { container } = renderWithTheme(<ActionInput {...defaultProps} />);
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot for processing state', () => {
+      const { container } = renderWithTheme(
+        <ActionInput {...defaultProps} isProcessing={true} />
+      );
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot with options displayed', async () => {
+      const { container } = renderWithTheme(<ActionInput {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Look around')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot with different language', async () => {
+      const ptTranslations = {
+        inputPlaceholder: 'Digite uma ação...',
+        customAction: 'Ação Personalizada',
+        generatingOptions: 'Gerando opções...',
+        back: 'Voltar',
+        safe: 'Seguro'
+      };
+
+      const { container } = renderWithTheme(
+        <ActionInput
+          {...defaultProps}
+          language="pt"
+          t={ptTranslations}
+        />
+      );
+
+      await waitFor(() => {
+        const hasCustom = screen.queryByText('Ação Personalizada') !== null;
+        const hasGenerating = screen.queryByText('Gerando opções...') !== null;
+        expect(hasCustom || hasGenerating).toBe(true);
+      }, { timeout: 3000 });
+
+      expect(container).toMatchSnapshot();
+    });
+  });
 });

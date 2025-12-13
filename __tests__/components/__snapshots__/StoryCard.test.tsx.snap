@@ -1,0 +1,1060 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StoryCard snapshots should match snapshot for NPC with avatar 1`] = `
+<div>
+  <div
+    class="w-full h-full flex flex-col max-w-full overflow-hidden"
+  >
+    <div
+      class="flex-1 relative mx-auto w-full max-w-full md:max-w-4xl px-0 md:px-2"
+    >
+      <div
+        class="w-full h-full relative"
+        style="transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: rotateY(0deg);"
+      >
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden transition-all duration-300"
+          style="background-color: rgb(245, 245, 244); color: rgb(28, 25, 23); background-size: cover; background-position: center; box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917;"
+        >
+          <div
+            class="absolute inset-0 pointer-events-none opacity-10"
+          />
+          <div
+            class="absolute top-0 right-0 w-8 h-8 pointer-events-none"
+            style="box-shadow: -2px 2px 5px #1c191730;"
+          />
+          <div
+            class="relative h-full flex flex-col p-3 md:p-8"
+          >
+            <div
+              class="flex items-center justify-between mb-4 md:mb-6"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="w-12 h-12 md:w-16 md:h-16 rounded-sm overflow-hidden flex-shrink-0"
+                  style="border: 2px solid #1c1917; box-shadow: 3px 3px 0px #1c1917;"
+                >
+                  <img
+                    alt="Merchant"
+                    class="w-full h-full object-cover"
+                    src="data:image/png;base64,test"
+                  />
+                </div>
+                <div
+                  class="px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-bold uppercase tracking-widest rounded-sm"
+                  style="background-color: rgb(255, 255, 255); color: rgb(28, 25, 23); border: 1px solid #d6d3d1;"
+                >
+                  MERCHANT
+                </div>
+              </div>
+              <button
+                class="p-2 rounded-full transition-all hover:scale-110 disabled:opacity-30 disabled:hover:scale-100"
+                disabled=""
+                style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1; color: rgb(28, 25, 23);"
+                title="Read Aloud"
+              >
+                <span
+                  class="w-5 h-5"
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+            <div
+              class="flex-1 relative overflow-hidden min-h-0"
+            >
+              <div
+                class="leading-relaxed whitespace-pre-wrap font-serif pr-4 md:pr-8 text-base md:text-xl"
+                style="color: rgb(28, 25, 23); transform: translateY(-0px); transition: transform 120ms ease-out;"
+              >
+                Welcome to my shop, traveler!
+              </div>
+            </div>
+            <div
+              class="mt-4 md:mt-6 pt-4 flex items-center justify-between"
+              style="border-top: 1px solid #d6d3d1;"
+            >
+              <div
+                class="text-xs font-mono uppercase tracking-wider"
+                style="color: rgb(120, 113, 108);"
+              >
+                Page 
+                1
+                 of 
+                5
+              </div>
+              <div
+                class="text-xs font-mono hidden md:block"
+                style="color: rgb(120, 113, 108);"
+              >
+                Use arrow keys or swipe to navigate
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden"
+          style="background-color: rgb(245, 245, 244); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917; transform: rotateY(180deg);"
+        >
+          <div
+            class="w-full h-full flex items-center justify-center"
+          >
+            <p
+              style="color: rgb(120, 113, 108);"
+            >
+              No map data available
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex items-center justify-between gap-2 mt-2 md:mt-4 px-1 md:px-4 w-full max-w-full"
+    >
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0"
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-left"
+        >
+          &lt;
+        </span>
+        <span
+          class="hidden md:inline"
+        >
+          Previous
+        </span>
+      </button>
+      <div
+        class="flex items-center gap-1 md:gap-2 flex-1 min-w-0 max-w-[100px] md:max-w-[180px] mx-1 md:mx-2"
+      >
+        <div
+          class="flex-1 h-1.5 md:h-2 rounded-full overflow-hidden relative min-w-0"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-300 ease-out"
+            style="background-color: rgb(28, 25, 23); width: 20%;"
+          />
+        </div>
+        <span
+          class="text-[10px] md:text-xs font-mono font-bold whitespace-nowrap flex-shrink-0"
+          style="color: rgb(120, 113, 108);"
+        >
+          1
+          /
+          5
+        </span>
+      </div>
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0 "
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="hidden md:inline"
+        >
+          Next
+        </span>
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-right"
+        >
+          &gt;
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCard snapshots should match snapshot for narrator message 1`] = `
+<div>
+  <div
+    class="w-full h-full flex flex-col max-w-full overflow-hidden"
+  >
+    <div
+      class="flex-1 relative mx-auto w-full max-w-full md:max-w-4xl px-0 md:px-2"
+    >
+      <div
+        class="w-full h-full relative"
+        style="transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: rotateY(0deg);"
+      >
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden transition-all duration-300"
+          style="background-color: rgb(245, 245, 244); color: rgb(28, 25, 23); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917;"
+        >
+          <div
+            class="absolute inset-0 pointer-events-none opacity-10"
+          />
+          <div
+            class="absolute top-0 right-0 w-8 h-8 pointer-events-none"
+            style="box-shadow: -2px 2px 5px #1c191730;"
+          />
+          <div
+            class="relative h-full flex flex-col p-3 md:p-8"
+          >
+            <div
+              class="flex items-center justify-between mb-4 md:mb-6"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="w-12 h-12 md:w-16 md:h-16 rounded-sm flex items-center justify-center flex-shrink-0"
+                  style="background-color: rgb(255, 255, 255); border: 2px solid #d6d3d1;"
+                >
+                  <span
+                    class="w-6 h-6 md:w-8 md:h-8"
+                    data-testid="terminal-icon"
+                  >
+                    Terminal
+                  </span>
+                </div>
+                <div
+                  class="px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-bold uppercase tracking-widest rounded-sm"
+                  style="background-color: rgb(231, 229, 228); color: rgb(120, 113, 108); border: 1px solid #d6d3d1;"
+                >
+                  NARRATOR
+                </div>
+              </div>
+              <button
+                class="p-2 rounded-full transition-all hover:scale-110 disabled:opacity-30 disabled:hover:scale-100"
+                disabled=""
+                style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1; color: rgb(28, 25, 23);"
+                title="Read Aloud"
+              >
+                <span
+                  class="w-5 h-5"
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+            <div
+              class="flex-1 relative overflow-hidden min-h-0"
+            >
+              <div
+                class="leading-relaxed whitespace-pre-wrap font-serif pr-4 md:pr-8 text-lg md:text-2xl italic text-center"
+                style="color: rgb(28, 25, 23); transform: translateY(-0px); transition: transform 120ms ease-out;"
+              >
+                <span
+                  class="text-3xl md:text-4xl leading-none align-text-top mr-2"
+                  style="color: rgb(120, 113, 108);"
+                >
+                  “
+                </span>
+                The wind howled through the ancient forest...
+                <span
+                  class="text-3xl md:text-4xl leading-none align-text-bottom ml-2"
+                  style="color: rgb(120, 113, 108);"
+                >
+                  ”
+                </span>
+              </div>
+            </div>
+            <div
+              class="mt-4 md:mt-6 pt-4 flex items-center justify-between"
+              style="border-top: 1px solid #d6d3d1;"
+            >
+              <div
+                class="text-xs font-mono uppercase tracking-wider"
+                style="color: rgb(120, 113, 108);"
+              >
+                Page 
+                1
+                 of 
+                5
+              </div>
+              <div
+                class="text-xs font-mono hidden md:block"
+                style="color: rgb(120, 113, 108);"
+              >
+                Use arrow keys or swipe to navigate
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden"
+          style="background-color: rgb(245, 245, 244); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917; transform: rotateY(180deg);"
+        >
+          <div
+            class="w-full h-full flex items-center justify-center"
+          >
+            <p
+              style="color: rgb(120, 113, 108);"
+            >
+              No map data available
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex items-center justify-between gap-2 mt-2 md:mt-4 px-1 md:px-4 w-full max-w-full"
+    >
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0"
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-left"
+        >
+          &lt;
+        </span>
+        <span
+          class="hidden md:inline"
+        >
+          Previous
+        </span>
+      </button>
+      <div
+        class="flex items-center gap-1 md:gap-2 flex-1 min-w-0 max-w-[100px] md:max-w-[180px] mx-1 md:mx-2"
+      >
+        <div
+          class="flex-1 h-1.5 md:h-2 rounded-full overflow-hidden relative min-w-0"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-300 ease-out"
+            style="background-color: rgb(28, 25, 23); width: 20%;"
+          />
+        </div>
+        <span
+          class="text-[10px] md:text-xs font-mono font-bold whitespace-nowrap flex-shrink-0"
+          style="color: rgb(120, 113, 108);"
+        >
+          1
+          /
+          5
+        </span>
+      </div>
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0 "
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="hidden md:inline"
+        >
+          Next
+        </span>
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-right"
+        >
+          &gt;
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCard snapshots should match snapshot for player message 1`] = `
+<div>
+  <div
+    class="w-full h-full flex flex-col max-w-full overflow-hidden"
+  >
+    <div
+      class="flex-1 relative mx-auto w-full max-w-full md:max-w-4xl px-0 md:px-2"
+    >
+      <div
+        class="w-full h-full relative"
+        style="transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: rotateY(0deg);"
+      >
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden transition-all duration-300"
+          style="background-color: rgb(245, 245, 244); color: rgb(28, 25, 23); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917;"
+        >
+          <div
+            class="absolute inset-0 pointer-events-none opacity-10"
+          />
+          <div
+            class="absolute top-0 right-0 w-8 h-8 pointer-events-none"
+            style="box-shadow: -2px 2px 5px #1c191730;"
+          />
+          <div
+            class="relative h-full flex flex-col p-3 md:p-8"
+          >
+            <div
+              class="flex items-center justify-between mb-4 md:mb-6"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-bold uppercase tracking-widest rounded-sm"
+                  style="background-color: rgb(28, 25, 23); color: rgb(255, 255, 255);"
+                >
+                  YOU
+                </div>
+              </div>
+              <button
+                class="p-2 rounded-full transition-all hover:scale-110 disabled:opacity-30 disabled:hover:scale-100"
+                disabled=""
+                style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1; color: rgb(28, 25, 23);"
+                title="Read Aloud"
+              >
+                <span
+                  class="w-5 h-5"
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+            <div
+              class="flex-1 relative overflow-hidden min-h-0"
+            >
+              <div
+                class="leading-relaxed whitespace-pre-wrap font-serif pr-4 md:pr-8 text-base md:text-xl"
+                style="color: rgb(28, 25, 23); transform: translateY(-0px); transition: transform 120ms ease-out;"
+              >
+                Hello, this is a test message.
+              </div>
+            </div>
+            <div
+              class="mt-4 md:mt-6 pt-4 flex items-center justify-between"
+              style="border-top: 1px solid #d6d3d1;"
+            >
+              <div
+                class="text-xs font-mono uppercase tracking-wider"
+                style="color: rgb(120, 113, 108);"
+              >
+                Page 
+                1
+                 of 
+                5
+              </div>
+              <div
+                class="text-xs font-mono hidden md:block"
+                style="color: rgb(120, 113, 108);"
+              >
+                Use arrow keys or swipe to navigate
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden"
+          style="background-color: rgb(245, 245, 244); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917; transform: rotateY(180deg);"
+        >
+          <div
+            class="w-full h-full flex items-center justify-center"
+          >
+            <p
+              style="color: rgb(120, 113, 108);"
+            >
+              No map data available
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex items-center justify-between gap-2 mt-2 md:mt-4 px-1 md:px-4 w-full max-w-full"
+    >
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0"
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-left"
+        >
+          &lt;
+        </span>
+        <span
+          class="hidden md:inline"
+        >
+          Previous
+        </span>
+      </button>
+      <div
+        class="flex items-center gap-1 md:gap-2 flex-1 min-w-0 max-w-[100px] md:max-w-[180px] mx-1 md:mx-2"
+      >
+        <div
+          class="flex-1 h-1.5 md:h-2 rounded-full overflow-hidden relative min-w-0"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-300 ease-out"
+            style="background-color: rgb(28, 25, 23); width: 20%;"
+          />
+        </div>
+        <span
+          class="text-[10px] md:text-xs font-mono font-bold whitespace-nowrap flex-shrink-0"
+          style="color: rgb(120, 113, 108);"
+        >
+          1
+          /
+          5
+        </span>
+      </div>
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0 "
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="hidden md:inline"
+        >
+          Next
+        </span>
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-right"
+        >
+          &gt;
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCard snapshots should match snapshot for system message 1`] = `
+<div>
+  <div
+    class="w-full h-full flex flex-col max-w-full overflow-hidden"
+  >
+    <div
+      class="flex-1 relative mx-auto w-full max-w-full md:max-w-4xl px-0 md:px-2"
+    >
+      <div
+        class="w-full h-full relative"
+        style="transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: rotateY(0deg);"
+      >
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden transition-all duration-300"
+          style="background-color: rgb(245, 245, 244); color: rgb(28, 25, 23); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917;"
+        >
+          <div
+            class="absolute inset-0 pointer-events-none opacity-10"
+          />
+          <div
+            class="absolute top-0 right-0 w-8 h-8 pointer-events-none"
+            style="box-shadow: -2px 2px 5px #1c191730;"
+          />
+          <div
+            class="relative h-full flex flex-col p-3 md:p-8"
+          >
+            <div
+              class="flex items-center justify-between mb-4 md:mb-6"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="w-12 h-12 md:w-16 md:h-16 rounded-sm flex items-center justify-center flex-shrink-0"
+                  style="background-color: rgb(255, 255, 255); border: 2px solid #d6d3d1;"
+                >
+                  <span
+                    class="w-6 h-6 md:w-8 md:h-8"
+                    data-testid="info-icon"
+                  >
+                    Info
+                  </span>
+                </div>
+                <div
+                  class="px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-bold uppercase tracking-widest rounded-sm"
+                  style="background-color: rgba(59, 130, 246, 0.125); color: rgb(59, 130, 246); border: 1px solid #3b82f6;"
+                >
+                  SYSTEM
+                </div>
+              </div>
+              <button
+                class="p-2 rounded-full transition-all hover:scale-110 disabled:opacity-30 disabled:hover:scale-100"
+                disabled=""
+                style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1; color: rgb(28, 25, 23);"
+                title="Read Aloud"
+              >
+                <span
+                  class="w-5 h-5"
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+            <div
+              class="flex-1 relative overflow-hidden min-h-0"
+            >
+              <div
+                class="leading-relaxed whitespace-pre-wrap font-serif pr-4 md:pr-8 text-base md:text-xl"
+                style="color: rgb(28, 25, 23); transform: translateY(-0px); transition: transform 120ms ease-out;"
+              >
+                Achievement unlocked: First Steps
+              </div>
+            </div>
+            <div
+              class="mt-4 md:mt-6 pt-4 flex items-center justify-between"
+              style="border-top: 1px solid #d6d3d1;"
+            >
+              <div
+                class="text-xs font-mono uppercase tracking-wider"
+                style="color: rgb(120, 113, 108);"
+              >
+                Page 
+                1
+                 of 
+                5
+              </div>
+              <div
+                class="text-xs font-mono hidden md:block"
+                style="color: rgb(120, 113, 108);"
+              >
+                Use arrow keys or swipe to navigate
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden"
+          style="background-color: rgb(245, 245, 244); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917; transform: rotateY(180deg);"
+        >
+          <div
+            class="w-full h-full flex items-center justify-center"
+          >
+            <p
+              style="color: rgb(120, 113, 108);"
+            >
+              No map data available
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex items-center justify-between gap-2 mt-2 md:mt-4 px-1 md:px-4 w-full max-w-full"
+    >
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0"
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-left"
+        >
+          &lt;
+        </span>
+        <span
+          class="hidden md:inline"
+        >
+          Previous
+        </span>
+      </button>
+      <div
+        class="flex items-center gap-1 md:gap-2 flex-1 min-w-0 max-w-[100px] md:max-w-[180px] mx-1 md:mx-2"
+      >
+        <div
+          class="flex-1 h-1.5 md:h-2 rounded-full overflow-hidden relative min-w-0"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-300 ease-out"
+            style="background-color: rgb(28, 25, 23); width: 20%;"
+          />
+        </div>
+        <span
+          class="text-[10px] md:text-xs font-mono font-bold whitespace-nowrap flex-shrink-0"
+          style="color: rgb(120, 113, 108);"
+        >
+          1
+          /
+          5
+        </span>
+      </div>
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0 "
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="hidden md:inline"
+        >
+          Next
+        </span>
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-right"
+        >
+          &gt;
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCard snapshots should match snapshot with grid map button visible 1`] = `
+<div>
+  <div
+    class="w-full h-full flex flex-col max-w-full overflow-hidden"
+  >
+    <div
+      class="flex-1 relative mx-auto w-full max-w-full md:max-w-4xl px-0 md:px-2"
+    >
+      <div
+        class="w-full h-full relative"
+        style="transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: rotateY(0deg);"
+      >
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden transition-all duration-300"
+          style="background-color: rgb(245, 245, 244); color: rgb(28, 25, 23); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917;"
+        >
+          <div
+            class="absolute inset-0 pointer-events-none opacity-10"
+          />
+          <div
+            class="absolute top-0 right-0 w-8 h-8 pointer-events-none"
+            style="box-shadow: -2px 2px 5px #1c191730;"
+          />
+          <div
+            class="relative h-full flex flex-col p-3 md:p-8"
+          >
+            <div
+              class="flex items-center justify-between mb-4 md:mb-6"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-bold uppercase tracking-widest rounded-sm"
+                  style="background-color: rgb(28, 25, 23); color: rgb(255, 255, 255);"
+                >
+                  YOU
+                </div>
+              </div>
+              <button
+                class="p-2 rounded-full transition-all hover:scale-110 disabled:opacity-30 disabled:hover:scale-100"
+                disabled=""
+                style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1; color: rgb(28, 25, 23);"
+                title="Read Aloud"
+              >
+                <span
+                  class="w-5 h-5"
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+            <div
+              class="flex-1 relative overflow-hidden min-h-0"
+            >
+              <div
+                class="leading-relaxed whitespace-pre-wrap font-serif pr-4 md:pr-8 text-base md:text-xl"
+                style="color: rgb(28, 25, 23); transform: translateY(-0px); transition: transform 120ms ease-out;"
+              >
+                Hello, this is a test message.
+              </div>
+            </div>
+            <div
+              class="mt-4 md:mt-6 pt-4 flex items-center justify-between"
+              style="border-top: 1px solid #d6d3d1;"
+            >
+              <div
+                class="text-xs font-mono uppercase tracking-wider"
+                style="color: rgb(120, 113, 108);"
+              >
+                Page 
+                1
+                 of 
+                5
+              </div>
+              <div
+                class="text-xs font-mono hidden md:block"
+                style="color: rgb(120, 113, 108);"
+              >
+                Use arrow keys or swipe to navigate
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden"
+          style="background-color: rgb(245, 245, 244); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917; transform: rotateY(180deg);"
+        >
+          <div
+            data-testid="grid-map"
+          >
+            <span>
+              Grid Map - Message: 
+              1
+            </span>
+            <button>
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex items-center justify-between gap-2 mt-2 md:mt-4 px-1 md:px-4 w-full max-w-full"
+    >
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0"
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-left"
+        >
+          &lt;
+        </span>
+        <span
+          class="hidden md:inline"
+        >
+          Previous
+        </span>
+      </button>
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-4 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 flex-shrink-0"
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+        title="View Map"
+      >
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="map-icon"
+        >
+          Map
+        </span>
+        <span
+          class="hidden md:inline"
+        >
+          Map
+        </span>
+      </button>
+      <div
+        class="flex items-center gap-1 md:gap-2 flex-1 min-w-0 max-w-[100px] md:max-w-[180px] mx-1 md:mx-2"
+      >
+        <div
+          class="flex-1 h-1.5 md:h-2 rounded-full overflow-hidden relative min-w-0"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-300 ease-out"
+            style="background-color: rgb(28, 25, 23); width: 20%;"
+          />
+        </div>
+        <span
+          class="text-[10px] md:text-xs font-mono font-bold whitespace-nowrap flex-shrink-0"
+          style="color: rgb(120, 113, 108);"
+        >
+          1
+          /
+          5
+        </span>
+      </div>
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0 "
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="hidden md:inline"
+        >
+          Next
+        </span>
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-right"
+        >
+          &gt;
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCard snapshots should match snapshot with pulse animation on next button 1`] = `
+<div>
+  <div
+    class="w-full h-full flex flex-col max-w-full overflow-hidden"
+  >
+    <div
+      class="flex-1 relative mx-auto w-full max-w-full md:max-w-4xl px-0 md:px-2"
+    >
+      <div
+        class="w-full h-full relative"
+        style="transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform: rotateY(0deg);"
+      >
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden transition-all duration-300"
+          style="background-color: rgb(245, 245, 244); color: rgb(28, 25, 23); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917;"
+        >
+          <div
+            class="absolute inset-0 pointer-events-none opacity-10"
+          />
+          <div
+            class="absolute top-0 right-0 w-8 h-8 pointer-events-none"
+            style="box-shadow: -2px 2px 5px #1c191730;"
+          />
+          <div
+            class="relative h-full flex flex-col p-3 md:p-8"
+          >
+            <div
+              class="flex items-center justify-between mb-4 md:mb-6"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-bold uppercase tracking-widest rounded-sm"
+                  style="background-color: rgb(28, 25, 23); color: rgb(255, 255, 255);"
+                >
+                  YOU
+                </div>
+              </div>
+              <button
+                class="p-2 rounded-full transition-all hover:scale-110 disabled:opacity-30 disabled:hover:scale-100"
+                disabled=""
+                style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1; color: rgb(28, 25, 23);"
+                title="Read Aloud"
+              >
+                <span
+                  class="w-5 h-5"
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+            <div
+              class="flex-1 relative overflow-hidden min-h-0"
+            >
+              <div
+                class="leading-relaxed whitespace-pre-wrap font-serif pr-4 md:pr-8 text-base md:text-xl"
+                style="color: rgb(28, 25, 23); transform: translateY(-0px); transition: transform 120ms ease-out;"
+              >
+                Hello, this is a test message.
+              </div>
+            </div>
+            <div
+              class="mt-4 md:mt-6 pt-4 flex items-center justify-between"
+              style="border-top: 1px solid #d6d3d1;"
+            >
+              <div
+                class="text-xs font-mono uppercase tracking-wider"
+                style="color: rgb(120, 113, 108);"
+              >
+                Page 
+                1
+                 of 
+                5
+              </div>
+              <div
+                class="text-xs font-mono hidden md:block"
+                style="color: rgb(120, 113, 108);"
+              >
+                Use arrow keys or swipe to navigate
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="absolute inset-0 rounded-sm overflow-hidden"
+          style="background-color: rgb(245, 245, 244); box-shadow: inset 0 0 30px #1c191720,
+								8px 8px 0px #1c1917,
+								-2px 0 10px #1c191730; border: 3px solid #1c1917; transform: rotateY(180deg);"
+        >
+          <div
+            class="w-full h-full flex items-center justify-center"
+          >
+            <p
+              style="color: rgb(120, 113, 108);"
+            >
+              No map data available
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="flex items-center justify-between gap-2 mt-2 md:mt-4 px-1 md:px-4 w-full max-w-full"
+    >
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0"
+        style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #d6d3d1; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-left"
+        >
+          &lt;
+        </span>
+        <span
+          class="hidden md:inline"
+        >
+          Previous
+        </span>
+      </button>
+      <div
+        class="flex items-center gap-1 md:gap-2 flex-1 min-w-0 max-w-[100px] md:max-w-[180px] mx-1 md:mx-2"
+      >
+        <div
+          class="flex-1 h-1.5 md:h-2 rounded-full overflow-hidden relative min-w-0"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-300 ease-out"
+            style="background-color: rgb(28, 25, 23); width: 20%;"
+          />
+        </div>
+        <span
+          class="text-[10px] md:text-xs font-mono font-bold whitespace-nowrap flex-shrink-0"
+          style="color: rgb(120, 113, 108);"
+        >
+          1
+          /
+          5
+        </span>
+      </div>
+      <button
+        class="flex items-center gap-1 px-2 py-2 md:px-6 md:py-3 font-bold uppercase text-xs md:text-sm transition-all hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 flex-shrink-0 animate-pulse-glow"
+        style="background-color: rgb(28, 25, 23); color: rgb(255, 255, 255); border: 2px solid #1c1917; box-shadow: 3px 3px 0px #1c1917;"
+      >
+        <span
+          class="hidden md:inline"
+        >
+          Next
+        </span>
+        <span
+          class="w-4 h-4 md:w-5 md:h-5"
+          data-testid="chevron-right"
+        >
+          &gt;
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+`;
