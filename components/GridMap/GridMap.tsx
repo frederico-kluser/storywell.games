@@ -108,7 +108,7 @@ const GridCell: React.FC<{
       : colors.backgroundAccent
     : isOccupied
     ? colors.backgroundSecondary
-    : colors.background;
+    : 'transparent';
 
   return (
     <div
@@ -381,16 +381,6 @@ export const GridMap: React.FC<GridMapProps> = ({
               backgroundPosition: 'center',
             }}
           >
-            {/* Background overlay for better grid visibility */}
-            {locationBackgroundImage && (
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  backgroundColor: `${colors.background}CC`,
-                }}
-              />
-            )}
             {currentGrid ? (
               <div
                 style={{
@@ -403,7 +393,7 @@ export const GridMap: React.FC<GridMapProps> = ({
                   maxWidth: '100%',
                   maxHeight: '100%',
                   aspectRatio: gridSize > 0 ? undefined : '1',
-                  backgroundColor: colors.border,
+                  backgroundColor: 'transparent',
                   border: `2px solid ${colors.borderStrong}`,
                   borderRadius: '4px',
                   overflow: 'hidden',
