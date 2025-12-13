@@ -139,7 +139,7 @@ exports[`ActionInput snapshots should match snapshot for loading state 1`] = `
             >
               <div
                 class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(120, 113, 108);"
+                style="color: rgb(22, 101, 52);"
               >
                 <span
                   data-testid="sparkles-icon"
@@ -154,7 +154,7 @@ exports[`ActionInput snapshots should match snapshot for loading state 1`] = `
               </div>
               <div
                 class="flex items-start gap-1.5"
-                style="color: rgb(120, 113, 108);"
+                style="color: rgb(220, 38, 38);"
               >
                 <span
                   data-testid="alert-icon"
@@ -214,7 +214,7 @@ exports[`ActionInput snapshots should match snapshot for loading state 1`] = `
             >
               <div
                 class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(68, 64, 60);"
+                style="color: rgb(22, 101, 52);"
               >
                 <span
                   data-testid="sparkles-icon"
@@ -229,7 +229,7 @@ exports[`ActionInput snapshots should match snapshot for loading state 1`] = `
               </div>
               <div
                 class="flex items-start gap-1.5"
-                style="color: rgb(120, 113, 108);"
+                style="color: rgb(220, 38, 38);"
               >
                 <span
                   data-testid="alert-icon"
@@ -289,7 +289,7 @@ exports[`ActionInput snapshots should match snapshot for loading state 1`] = `
             >
               <div
                 class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(68, 64, 60);"
+                style="color: rgb(22, 101, 52);"
               >
                 <span
                   data-testid="sparkles-icon"
@@ -304,7 +304,7 @@ exports[`ActionInput snapshots should match snapshot for loading state 1`] = `
               </div>
               <div
                 class="flex items-start gap-1.5"
-                style="color: rgb(217, 119, 6);"
+                style="color: rgb(220, 38, 38);"
               >
                 <span
                   data-testid="alert-icon"
@@ -351,7 +351,7 @@ exports[`ActionInput snapshots should match snapshot for loading state 1`] = `
             >
               <div
                 class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(120, 113, 108);"
+                style="color: rgb(22, 101, 52);"
               >
                 <span
                   data-testid="sparkles-icon"
@@ -562,7 +562,7 @@ exports[`ActionInput snapshots should match snapshot with options loaded 1`] = `
             >
               <div
                 class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(120, 113, 108);"
+                style="color: rgb(22, 101, 52);"
               >
                 <span
                   data-testid="sparkles-icon"
@@ -577,7 +577,7 @@ exports[`ActionInput snapshots should match snapshot with options loaded 1`] = `
               </div>
               <div
                 class="flex items-start gap-1.5"
-                style="color: rgb(120, 113, 108);"
+                style="color: rgb(220, 38, 38);"
               >
                 <span
                   data-testid="alert-icon"
@@ -637,7 +637,7 @@ exports[`ActionInput snapshots should match snapshot with options loaded 1`] = `
             >
               <div
                 class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(68, 64, 60);"
+                style="color: rgb(22, 101, 52);"
               >
                 <span
                   data-testid="sparkles-icon"
@@ -652,7 +652,7 @@ exports[`ActionInput snapshots should match snapshot with options loaded 1`] = `
               </div>
               <div
                 class="flex items-start gap-1.5"
-                style="color: rgb(120, 113, 108);"
+                style="color: rgb(220, 38, 38);"
               >
                 <span
                   data-testid="alert-icon"
@@ -712,7 +712,7 @@ exports[`ActionInput snapshots should match snapshot with options loaded 1`] = `
             >
               <div
                 class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(68, 64, 60);"
+                style="color: rgb(22, 101, 52);"
               >
                 <span
                   data-testid="sparkles-icon"
@@ -727,7 +727,7 @@ exports[`ActionInput snapshots should match snapshot with options loaded 1`] = `
               </div>
               <div
                 class="flex items-start gap-1.5"
-                style="color: rgb(217, 119, 6);"
+                style="color: rgb(220, 38, 38);"
               >
                 <span
                   data-testid="alert-icon"
@@ -774,7 +774,7 @@ exports[`ActionInput snapshots should match snapshot with options loaded 1`] = `
             >
               <div
                 class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(120, 113, 108);"
+                style="color: rgb(22, 101, 52);"
               >
                 <span
                   data-testid="sparkles-icon"
