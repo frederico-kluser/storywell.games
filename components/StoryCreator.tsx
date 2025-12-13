@@ -53,6 +53,11 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 	const [inputValue, setInputValue] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 	const [isCustomInput, setIsCustomInput] = useState(false);
+
+	// Edit history states
+	const [editingIndex, setEditingIndex] = useState<number | null>(null);
+	const [hoveringIndex, setHoveringIndex] = useState<number | null>(null);
+	const [editValue, setEditValue] = useState('');
 	const [narrativeStyleMode, setNarrativeStyleMode] = useState<'auto' | 'custom'>('auto');
 	const [customNarrativeStyle, setCustomNarrativeStyle] = useState('');
 
@@ -164,6 +169,53 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 			console.error('Error processing answer');
 			setCurrentStep(previousStep);
 			// Remove the failed answer from history
+			setHistory(history);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	// Handle editing a previous answer
+	const handleStartEdit = (index: number) => {
+		setEditingIndex(index);
+		setEditValue(history[index].answer);
+	};
+
+	const handleCancelEdit = () => {
+		setEditingIndex(null);
+		setEditValue('');
+	};
+
+	const handleConfirmEdit = async () => {
+		if (editingIndex === null || !editValue.trim()) return;
+
+		const editedQuestion = history[editingIndex].question;
+		const newAnswer = editValue.trim();
+
+		// Truncate history to only include items before the edited one
+		const truncatedHistory = history.slice(0, editingIndex);
+
+		// Reset states
+		setEditingIndex(null);
+		setEditValue('');
+		setHoveringIndex(null);
+
+		// Update history with the new answer
+		setHistory([...truncatedHistory, { question: editedQuestion, answer: newAnswer }]);
+		setCurrentStep(null);
+		setIsLoading(true);
+
+		try {
+			const response = await processOnboardingStep(
+				apiKey,
+				[...truncatedHistory, { question: editedQuestion, answer: newAnswer }],
+				universeType,
+				language,
+			);
+			setCurrentStep(response);
+		} catch {
+			console.error('Error processing edited answer');
+			// Restore original history on error
 			setHistory(history);
 		} finally {
 			setIsLoading(false);
@@ -460,10 +512,65 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 												{item.question}
 											</div>
 										</div>
-										<div className="flex gap-3 justify-end">
-											<div className="bg-stone-800 text-white p-3 border border-stone-900 rounded-tl-lg rounded-bl-lg rounded-br-lg shadow-sm font-bold">
-												{item.answer}
-											</div>
+										<div
+											className="flex gap-3 justify-end"
+											onMouseEnter={() => !isLoading && editingIndex === null && setHoveringIndex(idx)}
+											onMouseLeave={() => setHoveringIndex(null)}
+										>
+											{editingIndex === idx ? (
+												// Edit mode
+												<div className="flex flex-col gap-2 w-full max-w-[80%]">
+													<textarea
+														value={editValue}
+														onChange={(e) => setEditValue(e.target.value)}
+														onKeyDown={(e) => {
+															if (e.key === 'Enter' && !e.shiftKey && editValue.trim()) {
+																e.preventDefault();
+																handleConfirmEdit();
+															}
+															if (e.key === 'Escape') {
+																handleCancelEdit();
+															}
+														}}
+														className="w-full bg-stone-50 border-2 border-amber-500 p-3 text-stone-900 focus:border-amber-600 outline-none text-sm font-bold resize-none"
+														rows={2}
+														autoFocus
+													/>
+													<div className="flex gap-2 justify-end">
+														<button
+															onClick={handleCancelEdit}
+															className="px-3 py-1.5 border-2 border-stone-300 bg-white hover:border-stone-500 text-stone-600 text-xs font-bold uppercase transition-colors flex items-center gap-1"
+														>
+															<X className="w-3 h-3" />
+															{t.cancel}
+														</button>
+														<button
+															onClick={handleConfirmEdit}
+															disabled={!editValue.trim()}
+															className="px-3 py-1.5 border-2 border-amber-500 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold uppercase transition-colors flex items-center gap-1 disabled:opacity-50"
+														>
+															<Check className="w-3 h-3" />
+															{t.confirm || 'Confirm'}
+														</button>
+													</div>
+												</div>
+											) : (
+												// Display mode with edit button on hover
+												<div className="relative group">
+													<div className="bg-stone-800 text-white p-3 border border-stone-900 rounded-tl-lg rounded-bl-lg rounded-br-lg shadow-sm font-bold">
+														{item.answer}
+													</div>
+													{hoveringIndex === idx && !isLoading && (
+														<button
+															onClick={() => handleStartEdit(idx)}
+															className="absolute -top-2 -right-2 w-7 h-7 bg-amber-500 hover:bg-amber-600 text-white rounded-full flex items-center justify-center shadow-md transition-all transform hover:scale-110 border-2 border-white"
+															title={t.edit || 'Edit'}
+														>
+															<Edit3 className="w-3.5 h-3.5" />
+														</button>
+													)}
+												</div>
+											)}
 										</div>
 									</div>
 								))}
