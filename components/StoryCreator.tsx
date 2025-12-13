@@ -11,6 +11,7 @@ import {
 	ChevronDown,
 	Edit3,
 	ArrowLeft,
+	Info,
 } from 'lucide-react';
 import { Language } from '../types';
 import { translations } from '../i18n/locales';
@@ -46,6 +47,8 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 	const [inputValue, setInputValue] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 	const [isCustomInput, setIsCustomInput] = useState(false);
+	const [narrativeStyleMode, setNarrativeStyleMode] = useState<'auto' | 'custom'>('auto');
+	const [customNarrativeStyle, setCustomNarrativeStyle] = useState('');
 
 	const prepChecklist = [
 		{ title: t.wizTheme, helper: t.wizThemePlace },
@@ -151,12 +154,20 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 			return;
 		}
 
+		const trimmedStyle = customNarrativeStyle.trim();
+		if (narrativeStyleMode === 'custom' && !trimmedStyle) {
+			alert(t.narrativeStyleRequired || 'Describe your narrative style before continuing.');
+			return;
+		}
+
 		// Merge AI config with defaults
 		const fullConfig = {
 			...currentStep.finalConfig,
 			universeType,
 			combatStyle: 'descriptive',
 			dialogueHeavy: true,
+			narrativeStyleMode,
+			customNarrativeStyle: narrativeStyleMode === 'custom' ? trimmedStyle : undefined,
 		};
 		onCreate(fullConfig);
 	};
@@ -182,6 +193,56 @@ export const StoryCreator: React.FC<StoryCreatorProps> = ({ onCreate, isCreating
 
 				{/* Content Area */}
 				<div className="flex-1 overflow-y-auto p-4 md:p-6 font-mono bg-stone-100 flex flex-col">
+					<div className="mb-4">
+						<div className="bg-white border-2 border-stone-900 p-4 md:p-5 shadow-[4px_4px_0px_#d6d3d1]">
+							<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+								<div>
+									<p className="text-xs font-bold uppercase text-stone-500">{t.narrativeStyleHeading}</p>
+									<p className="text-[11px] text-stone-500">{t.narrativeStyleHelper}</p>
+								</div>
+								<div className="flex gap-2">
+									<button
+										onClick={() => setNarrativeStyleMode('auto')}
+										className={`px-3 py-2 border-2 text-[11px] font-bold uppercase tracking-wide transition-colors ${
+											narrativeStyleMode === 'auto'
+												? 'bg-stone-900 text-white border-stone-900'
+												: 'bg-white text-stone-500 border-stone-300 hover:border-stone-900'
+										}`}
+									>
+										{t.narrativeStyleAuto}
+									</button>
+									<button
+										onClick={() => setNarrativeStyleMode('custom')}
+										className={`px-3 py-2 border-2 text-[11px] font-bold uppercase tracking-wide transition-colors ${
+											narrativeStyleMode === 'custom'
+												? 'bg-stone-900 text-white border-stone-900'
+												: 'bg-white text-stone-500 border-stone-300 hover:border-stone-900'
+										}`}
+									>
+										{t.narrativeStyleCustom}
+									</button>
+								</div>
+							</div>
+							{narrativeStyleMode === 'custom' && (
+								<div className="mt-4 space-y-3">
+									<div className="flex gap-3 border border-dashed border-stone-300 bg-stone-50 p-3">
+										<Info className="w-4 h-4 text-stone-500 mt-0.5" />
+										<div>
+											<p className="text-[11px] font-bold uppercase tracking-wide text-stone-500">{t.narrativeStyleInfoTitle}</p>
+											<p className="text-[11px] text-stone-600 leading-snug">{t.narrativeStyleInfoBody}</p>
+										</div>
+									</div>
+									<textarea
+										value={customNarrativeStyle}
+										onChange={(e) => setCustomNarrativeStyle(e.target.value)}
+										className="w-full bg-stone-50 border-2 border-stone-400 p-3 text-sm text-stone-900 focus:border-stone-900 outline-none min-h-[120px]"
+										placeholder={t.narrativeStylePlaceholder}
+									></textarea>
+								</div>
+							)}
+						</div>
+					</div>
+
 					{/* Phase 1: Selection */}
 					{!started && (
 						<div className="flex-1 flex flex-col justify-center space-y-6 md:space-y-8 animate-fade-in">

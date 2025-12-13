@@ -1238,19 +1238,32 @@ Construa essa transição naturalmente ao longo desta e das próximas respostas.
  * Gera um bloco completo de instruções narrativas para o prompt do GM.
  */
 export function generateNarrativeInstructions(options: {
-  genre: NarrativeGenre;
+  genre?: NarrativeGenre;
+  customStyleDescription?: string;
   pacingState?: PacingState;
   npcsInScene?: Array<{ name: string; profile: Partial<NPCVoiceProfile> }>;
   narrativeThreads?: NarrativeThread[];
   targetPacing?: PacingLevel;
 }): string {
-  const { genre, pacingState, npcsInScene, narrativeThreads, targetPacing } = options;
-  const style = GENRE_PRESETS[genre];
-
+  const { genre, customStyleDescription, pacingState, npcsInScene, narrativeThreads, targetPacing } = options;
   const sections: string[] = [];
+  const trimmedCustomStyle = customStyleDescription?.trim();
 
-  // 1. Estilo do Gênero
-  sections.push(`
+  if (trimmedCustomStyle) {
+    sections.push(`
+=== PLAYER-DEFINED NARRATIVE STYLE (MANDATORY) ===
+Interpret and apply the player's custom instructions below in EVERY narration, dialogue, and descriptive beat.
+
+${trimmedCustomStyle}
+
+Guidelines:
+- Treat cited authors, movements, or works as tonal references. Mirror cadence, vocabulary, and metaphor density.
+- When the player lists rhythm, atmosphere, or structural requirements, weave them consistently across narration and dialogue.
+- This custom style overrides any automatic genre presets until the player changes it.
+`);
+  } else if (genre && GENRE_PRESETS[genre]) {
+    const style = GENRE_PRESETS[genre];
+    sections.push(`
 === NARRATIVE STYLE: ${style.displayName.toUpperCase()} ===
 ${style.description}
 
@@ -1281,8 +1294,16 @@ ${style.avoid.map((a) => `- ${a}`).join('\n')}
 **EXAMPLE PHRASES (for tone reference):**
 ${style.examplePhrases.map((p) => `"${p}"`).join('\n')}
 `);
+  } else {
+    sections.push(`
+=== NARRATIVE QUALITY GUIDELINES ===
+- Maintain cinematic pacing with deliberate variation of sentence lengths.
+- Keep descriptions grounded in sensory detail filtered through character POV.
+- Balance action beats with reflective pauses to preserve tension-and-release.
+- Use dialogue to reveal intent and subtext instead of pure exposition.
+`);
+  }
 
-  // 2. Mostrar, Não Contar
   sections.push(`
 === SHOW, DON'T TELL (MANDATORY) ===
 ${SHOW_DONT_TELL_RULES.emotions.instruction}
@@ -1295,12 +1316,10 @@ ${SHOW_DONT_TELL_RULES.character.instruction}
 ${SHOW_DONT_TELL_RULES.selectiveUse.instruction}
 `);
 
-  // 3. Diferenciação de Voz (se houver NPCs)
   if (npcsInScene && npcsInScene.length > 0) {
     sections.push(generateVoiceDifferentiationInstructions(npcsInScene));
   }
 
-  // 4. Controle de Ritmo (se houver estado)
   if (pacingState) {
     sections.push(`
 === PACING CONTROL ===
@@ -1308,7 +1327,6 @@ ${generatePacingInstructions(pacingState, targetPacing)}
 `);
   }
 
-  // 5. Threads Narrativas (foreshadowing e callbacks)
   if (narrativeThreads && narrativeThreads.length > 0) {
     const planted = narrativeThreads.filter((t) => t.status === 'planted');
     const toReference = planted.filter((t) => t.importance === 'major' || Math.random() < 0.3);

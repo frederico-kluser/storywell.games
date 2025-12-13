@@ -37,7 +37,7 @@
  * @see {@link gmResponseSchema} - Schema JSON da resposta esperada
  */
 
-import { GameState, Language, FateResult, Character, Location, HeavyContext, Item, GridSnapshot, GridCharacterPosition } from '../../../types';
+import { GameState, Language, FateResult, Character, Location, HeavyContext, Item, GridSnapshot, GridCharacterPosition, NarrativeStyleMode } from '../../../types';
 import { getLanguageName } from '../../../i18n/locales';
 import { getEconomyRulesForGMPrompt } from '../../../constants/economy';
 import { formatInventoryForPrompt, formatStatsForPrompt, isItemInventory } from '../../../utils/inventory';
@@ -47,7 +47,6 @@ import {
   NarrativeThread,
   NPCVoiceProfile,
   generateNarrativeInstructions,
-  GENRE_PRESETS,
   VOICE_TEMPLATES,
 } from './narrativeStyles';
 
@@ -60,6 +59,8 @@ import {
  * @property {Language} language - Idioma para geração de texto ('en', 'pt', 'es')
  * @property {FateResult} [fateResult] - Resultado opcional do sistema de probabilidade (bom/ruim/neutro)
  * @property {NarrativeGenre} [genre] - Gênero narrativo para estilo específico
+ * @property {'auto' | 'custom'} [narrativeStyleMode] - Permite forçar modo automático ou estilo personalizado
+ * @property {string} [customNarrativeStyle] - Instruções personalizadas fornecidas pelo jogador
  * @property {PacingState} [pacingState] - Estado atual do ritmo narrativo
  * @property {NarrativeThread[]} [narrativeThreads] - Threads de foreshadowing e callbacks
  */
@@ -74,6 +75,10 @@ export interface GameMasterPromptParams {
   fateResult?: FateResult;
   /** Gênero narrativo para aplicar convenções de estilo específicas */
   genre?: NarrativeGenre;
+  /** Modo de seleção do estilo narrativo (auto vs custom) */
+  narrativeStyleMode?: NarrativeStyleMode;
+  /** Instruções personalizadas para substituir o gênero automático */
+  customNarrativeStyle?: string;
   /** Estado atual do ritmo/pacing da narrativa */
   pacingState?: PacingState;
   /** Threads narrativas ativas (foreshadowing, callbacks, Chekhov's guns) */
@@ -246,6 +251,8 @@ export function buildGameMasterPrompt({
   pacingState,
   narrativeThreads,
   useTone = true,
+  narrativeStyleMode,
+  customNarrativeStyle,
 }: GameMasterPromptParams): string {
   const currentLocation: Location | undefined =
     gameState.locations[gameState.currentLocationId];
@@ -265,37 +272,23 @@ export function buildGameMasterPrompt({
       return { name: npc.name, profile };
     });
 
-  // Generate narrative style instructions if genre is specified
-  let narrativeStyleSection = '';
-  if (genre) {
-    narrativeStyleSection = generateNarrativeInstructions({
-      genre,
-      pacingState,
-      npcsInScene: npcsInScene.length > 0 ? npcsInScene : undefined,
-      narrativeThreads,
-    });
-  } else {
-    // Default narrative quality instructions (show don't tell)
-    narrativeStyleSection = `
-    === NARRATIVE QUALITY GUIDELINES ===
+  const configNarrativeMode: NarrativeStyleMode = gameState.config?.narrativeStyleMode ?? 'auto';
+  const effectiveNarrativeMode = narrativeStyleMode ?? configNarrativeMode;
+  const configCustomStyle = gameState.config?.customNarrativeStyle?.trim();
+  const providedCustomStyle = customNarrativeStyle?.trim();
+  const finalCustomStyle =
+    effectiveNarrativeMode === 'custom' ? (providedCustomStyle || configCustomStyle) : undefined;
+  const shouldUseCustomStyle = effectiveNarrativeMode === 'custom' && !!finalCustomStyle;
+  const resolvedGenre = shouldUseCustomStyle ? undefined : genre ?? gameState.config?.genre;
 
-    **SHOW, DON'T TELL (MANDATORY):**
-    - NEVER use emotion labels (sad, angry, nervous, happy, etc.)
-    - SHOW emotions through: physical actions, body language, environmental details, dialogue subtext, physiological reactions
-    - ❌ "She was angry" → ✅ "She slammed her fist on the table, her voice rising an octave"
-    - ❌ "He was nervous" → ✅ "He adjusted his tie for the third time, eyes darting to the door"
+  const narrativeStyleSection = generateNarrativeInstructions({
+    genre: resolvedGenre,
+    customStyleDescription: shouldUseCustomStyle ? finalCustomStyle : undefined,
+    pacingState,
+    npcsInScene: npcsInScene.length > 0 ? npcsInScene : undefined,
+    narrativeThreads,
+  });
 
-    **SENSORY DETAILS:**
-    - Prioritize visual, auditory, and tactile details
-    - Let objects and environment imply backstory
-    - Filter descriptions through character perception
-
-    **PACING:**
-    - Vary sentence length for rhythm (short = urgency, long = reflection)
-    - Balance action with moments of breath
-    - Use dialogue to reveal character, not just convey information
-`;
-  }
 
   // Build universe context section if available
   let universeContextSection = '';

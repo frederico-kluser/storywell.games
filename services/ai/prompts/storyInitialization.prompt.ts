@@ -39,9 +39,10 @@
  * @see {@link StoryConfig} - Configuração do jogo vinda do onboarding
  */
 
-import { Language } from '../../../types';
+import { Language, NarrativeGenre, NarrativeStyleMode } from '../../../types';
 import { getLanguageName } from '../../../i18n/locales';
 import { getStartingGold, DEFAULT_PLAYER_STATS, formatEconomyRulesForPrompt } from '../../../constants/economy';
+import { GENRE_PRESETS } from './narrativeStyles';
 
 /**
  * Configuração da história coletada durante o processo de onboarding.
@@ -70,6 +71,12 @@ export interface StoryConfig {
   background: string;
   /** Memórias significativas do passado do personagem */
   memories: string;
+  /** Gênero narrativo sugerido (quando em modo automático) */
+  genre?: NarrativeGenre;
+  /** Estratégia de estilo narrativo selecionada pelo jogador */
+  narrativeStyleMode?: NarrativeStyleMode;
+  /** Instruções personalizadas para o estilo narrativo */
+  customNarrativeStyle?: string;
 }
 
 /**
@@ -159,6 +166,7 @@ export function buildStoryInitializationPrompt({
 }: StoryInitializationPromptParams): string {
   const langName = getLanguageName(language);
   const startingGold = getStartingGold(config.universeName);
+  const narrativeStyleDirective = buildNarrativeStyleDirective(config);
 
   return `
       Create the initial state for a new RPG.
@@ -167,6 +175,7 @@ export function buildStoryInitializationPrompt({
       Background: ${config.background}
       Memories: ${config.memories}
       Start Situation: ${config.startSituation}
+      ${narrativeStyleDirective}
 
       Generate a 'Narrator' introduction message, the initial Location, and the Player Character object.
 
@@ -189,4 +198,28 @@ export function buildStoryInitializationPrompt({
       Initialize the player with basic inventory relevant to the setting (e.g. clothes as armor, 1 key item).
       The output text MUST be in ${langName}.
   `;
+}
+
+function buildNarrativeStyleDirective(config: StoryConfig): string {
+  const mode: NarrativeStyleMode = config.narrativeStyleMode ?? 'auto';
+  const customStyle = config.customNarrativeStyle?.trim();
+
+  if (mode === 'custom' && customStyle) {
+    return `
+      === PLAYER-DEFINED STYLE (MANDATORY) ===
+      ${customStyle}
+      Apply this voice to the opening narration, character bios, and location descriptions. Mirror cited authors' cadence, vocabulary, and pacing.
+    `;
+  }
+
+  if (config.genre && GENRE_PRESETS[config.genre]) {
+    const preset = GENRE_PRESETS[config.genre];
+    const techniqueSample = preset.techniques.slice(0, 3).join(', ');
+    return `
+      === TARGET GENRE ===
+      Emulate the ${preset.displayName} genre with ${preset.vocabulary.formality.toLowerCase()} / ${preset.vocabulary.complexity.toLowerCase()} vocabulary, ${preset.atmosphere.primaryTone} tone, and techniques such as ${techniqueSample}.
+    `;
+  }
+
+  return '';
 }

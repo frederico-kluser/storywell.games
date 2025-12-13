@@ -154,6 +154,8 @@ export type NarrativeGenre =
   | 'superhero'         // Ação heróica: dilemas morais, poderes
   | 'slice_of_life';    // Cotidiano: momentos pequenos, realismo
 
+export type NarrativeStyleMode = 'auto' | 'custom';
+
 export interface GameConfig {
   universeType: 'original' | 'existing';
   universeName: string;
@@ -169,6 +171,10 @@ export interface GameConfig {
    * Example: "Studio Ghibli", "Dark Souls concept art", "Akira Toriyama style"
    */
   visualStyle?: string;
+  /** Strategy used to define the narrative tone (auto vs custom) */
+  narrativeStyleMode?: NarrativeStyleMode;
+  /** Player-provided narrative style instructions when using custom mode */
+  customNarrativeStyle?: string;
 }
 
 // The "Hydrated" Game State used by the React App (Runtime View Model)
@@ -353,6 +359,10 @@ export interface NarrativeThread {
 export interface NarrativeConfig {
   /** Gênero narrativo do universo */
   genre?: NarrativeGenre;
+  /** Instruções personalizadas fornecidas pelo jogador */
+  customNarrativeStyle?: string;
+  /** Estratégia usada para definir o estilo narrativo */
+  narrativeStyleMode?: NarrativeStyleMode;
   /** Estado atual do pacing */
   pacingState?: PacingState;
   /** Threads narrativas ativas */

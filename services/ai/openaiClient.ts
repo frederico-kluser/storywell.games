@@ -16,6 +16,7 @@ import {
 	GridSnapshot,
 	GridCharacterPosition,
 	GridUpdateResponse,
+	NarrativeStyleMode,
 } from '../../types';
 import { THEMED_FONTS, getFontByFamily } from '../../constants/fonts';
 import { languageInfo } from '../../i18n/locales';
@@ -754,12 +755,20 @@ export const generateGameTurn = async (
 	fateResult?: FateResult,
 	useTone: boolean = true,
 ): Promise<GMResponse> => {
+	const configNarrativeMode: NarrativeStyleMode = gameState.config?.narrativeStyleMode ?? 'auto';
+	const customStyle =
+		configNarrativeMode === 'custom' ? gameState.config?.customNarrativeStyle?.trim() : undefined;
+	const genreForPrompt = configNarrativeMode === 'custom' ? undefined : gameState.config.genre;
+
 	const systemInstruction = buildGameMasterPrompt({
 		gameState,
 		playerInput: input,
 		language,
 		fateResult,
 		useTone,
+		genre: genreForPrompt,
+		narrativeStyleMode: configNarrativeMode,
+		customNarrativeStyle: customStyle,
 	});
 	const schemaInstruction = `\n\nYou MUST respond with a valid JSON object following this exact schema:\n${JSON.stringify(
 		gmResponseSchema,
@@ -836,11 +845,19 @@ export const generateUniverseContext = async (
 	universeName: string,
 	universeType: 'original' | 'existing',
 	language: Language,
+	options?: {
+		genre?: NarrativeGenre;
+		narrativeStyleMode?: NarrativeStyleMode;
+		customNarrativeStyle?: string;
+	},
 ): Promise<string> => {
 	const prompt = buildUniverseContextPrompt({
 		universeName,
 		universeType,
 		language,
+		genre: options?.genre,
+		narrativeStyleMode: options?.narrativeStyleMode,
+		customNarrativeStyle: options?.customNarrativeStyle,
 	});
 
 	const messages: LLMMessage[] = [
@@ -1045,13 +1062,22 @@ export const initializeStory = async (
 		},
 	];
 
+	const storyStyleMode: NarrativeStyleMode = config.narrativeStyleMode ?? 'auto';
+	const customNarrativeStyle =
+		storyStyleMode === 'custom' ? config.customNarrativeStyle?.trim() : undefined;
+	const genreForUniverse = storyStyleMode === 'custom' ? undefined : config.genre;
+
 	// Run story initialization and universe context generation in parallel
 	const [storyResponse, universeContext] = await Promise.all([
 		queryLLM(apiKey, messages, {
 			model: MODEL_CONFIG.storyInitialization, // gpt-4.1 - criação inicial do mundo
 			responseFormat: 'json',
 		}),
-		generateUniverseContext(apiKey, config.universeName, config.universeType as 'original' | 'existing', language),
+		generateUniverseContext(apiKey, config.universeName, config.universeType as 'original' | 'existing', language, {
+			genre: genreForUniverse,
+			narrativeStyleMode: storyStyleMode,
+			customNarrativeStyle,
+		}),
 	]);
 
 	try {

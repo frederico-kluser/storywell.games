@@ -34,7 +34,7 @@
  * ```
  */
 
-import { Language } from '../../../types';
+import { Language, NarrativeStyleMode } from '../../../types';
 import { getLanguageName } from '../../../i18n/locales';
 import { NarrativeGenre, GENRE_PRESETS } from './narrativeStyles';
 
@@ -56,6 +56,10 @@ export interface UniverseContextPromptParams {
   language: Language;
   /** Gênero narrativo para aplicar convenções de estilo específicas */
   genre?: NarrativeGenre;
+  /** Estrategia escolhida para o estilo narrativo */
+  narrativeStyleMode?: NarrativeStyleMode;
+  /** Instruções customizadas fornecidas pelo jogador */
+  customNarrativeStyle?: string;
 }
 
 /**
@@ -90,6 +94,8 @@ export function buildUniverseContextPrompt({
   universeType,
   language,
   genre,
+  narrativeStyleMode,
+  customNarrativeStyle,
 }: UniverseContextPromptParams): string {
   const langName = getLanguageName(language);
 
@@ -131,10 +137,30 @@ Ensure the communication style, slang, customs, and narrative tone align with th
 `;
   }
 
+  const mode: NarrativeStyleMode = narrativeStyleMode ?? 'auto';
+  let customStyleInstructions = '';
+  const trimmedCustomStyle = mode === 'custom' ? customNarrativeStyle?.trim() : undefined;
+  if (mode === 'custom' && trimmedCustomStyle) {
+    genreInstructions = '';
+    customStyleInstructions = `
+===== PLAYER-DEFINED STYLE (MANDATORY) =====
+The player provided explicit narrative instructions. Apply them to the entire universe bible.
+
+CUSTOM STYLE BRIEF:
+${trimmedCustomStyle}
+
+INTERPRETATION RULES:
+- Treat cited authors/works as tonal references. Mirror cadence, sentence length, and metaphor density.
+- Document slang, customs, and cultural behaviors that reflect this custom tone.
+- Keep this custom style active for every dialogue, description, and lore entry until the player changes it.
+`;
+  }
+
   return `
 You are a world-building expert creating a comprehensive NARRATIVE CONTEXT DOCUMENT for an RPG universe.
 
 ${universeTypeInstruction}
+${customStyleInstructions || genreInstructions}
 
 Create a DETAILED and EXTENSIVE narrative context document in ${langName} for the universe "${universeName}".
 
