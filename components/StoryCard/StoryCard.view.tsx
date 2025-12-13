@@ -28,6 +28,7 @@ export interface StoryCardProps {
 	t: Record<string, string>;
 	language: Language;
 	showNextPulse?: boolean; // Show pulse animation on Next button when new content is available
+	newCardsCount?: number; // Number of new cards available (displayed next to Next button)
 	isMobile?: boolean; // Whether device is mobile (show swipe hint) or desktop (show arrow keys hint)
 	// Grid Map props
 	gridSnapshots?: GridSnapshot[];
@@ -62,6 +63,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 	t,
 	language = 'en',
 	showNextPulse = false,
+	newCardsCount = 0,
 	isMobile = false,
 	gridSnapshots,
 	currentLocationName,
@@ -644,7 +646,10 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 						boxShadow: canGoNext ? `3px 3px 0px ${colors.shadow}` : 'none',
 					}}
 				>
-					<span className="hidden md:inline">{t.next || 'Next'}</span>
+					<span className="hidden md:inline">
+						{t.next || 'Next'}
+						{newCardsCount > 0 && ` (${newCardsCount})`}
+					</span>
 					<ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
 				</button>
 			</div>

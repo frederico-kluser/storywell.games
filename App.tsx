@@ -700,6 +700,7 @@ const App: React.FC = () => {
 												t={t}
 												language={storyLanguage}
 												showNextPulse={showNextPulse}
+												newCardsCount={newCardsCount}
 												isMobile={isMobile}
 												gridSnapshots={activeStory.gridSnapshots}
 												currentLocationName={activeStory.locations[activeStory.currentLocationId]?.name}
@@ -726,22 +727,6 @@ const App: React.FC = () => {
 								</div>
 							)}
 
-							{/* New Cards Indicator - Visual only, not clickable */}
-							{newCardsCount > 0 && !isProcessing && (
-								<div
-									className="absolute bottom-2 right-2 md:bottom-4 md:right-4 z-30 px-2 py-1.5 md:px-4 md:py-3 font-bold uppercase tracking-wider text-[10px] md:text-sm animate-pulse border-2 pointer-events-none"
-									style={{
-										backgroundColor: colors.buttonPrimary,
-										color: colors.buttonPrimaryText,
-										borderColor: colors.borderStrong,
-										boxShadow: `2px 2px 0px ${colors.shadow}`,
-									}}
-								>
-									<span>
-										{newCardsCount} {t.newCards || 'new'}
-									</span>
-								</div>
-							)}
 						</div>
 					</div>
 
