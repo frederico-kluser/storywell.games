@@ -599,60 +599,77 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 				<div className={`p-1.5 md:p-6 ${isCollapsed ? 'hidden md:block' : 'block'}`}>
 					<div className="max-w-full md:max-w-5xl mx-auto">
 						{renderContextSyncBadge()}
-						<div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-1 md:gap-2">
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3">
 							{options.map((opt, idx) => (
 								<button
 									key={idx}
 									onClick={() => handleOptionClick(opt)}
 									disabled={isBlocked}
-									className="p-1.5 md:p-3 border-2 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 min-w-0 overflow-hidden"
+									className="p-2.5 md:p-4 border-2 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 min-w-0 overflow-hidden"
 									style={{
 										backgroundColor: colors.backgroundSecondary,
 										borderColor: colors.border,
 										color: colors.text,
 									}}
 								>
-									<div className="font-bold uppercase text-[9px] md:text-sm mb-0.5 md:mb-2 line-clamp-2 break-words">
+									<div className="font-bold uppercase text-sm md:text-base tracking-wide md:tracking-wider mb-1.5 md:mb-2 line-clamp-2 break-words">
 										{opt.text}
 									</div>
-									<div className="flex items-center gap-1 md:gap-3 text-[9px] md:text-xs flex-wrap">
+									<div className="flex items-center gap-2 md:gap-4 text-xs md:text-sm flex-wrap">
 										{opt.goodChance > 0 && (
 											<span
-												className="flex items-center gap-0.5"
+												className="flex items-center gap-1 font-medium"
 												style={{ color: getLuckColor(opt.goodChance) }}
 												title={opt.goodHint || 'Chance of good event'}
 											>
-												<Sparkles className="w-2.5 h-2.5 md:w-3 md:h-3" />
+												<Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" />
 												{opt.goodChance}%
 											</span>
 										)}
 										{opt.badChance > 0 && (
 											<span
-												className="flex items-center gap-0.5"
+												className="flex items-center gap-1 font-medium"
 												style={{ color: getRiskColor(opt.badChance) }}
 												title={opt.badHint || 'Chance of bad event'}
 											>
-												<AlertTriangle className="w-2.5 h-2.5 md:w-3 md:h-3" />
+												<AlertTriangle className="w-3.5 h-3.5 md:w-4 md:h-4" />
 												{opt.badChance}%
 											</span>
 										)}
 										{opt.goodChance === 0 && opt.badChance === 0 && (
-											<span style={{ color: colors.textSecondary }}>{t.safe || 'Safe'}</span>
+											<span className="text-xs md:text-sm font-medium tracking-wide" style={{ color: colors.textSecondary }}>{t.safe || 'Safe'}</span>
 										)}
 									</div>
+									{/* Action hints - visible descriptive text */}
+									{(opt.goodHint || opt.badHint) && (
+										<div className="mt-2 pt-2 border-t text-xs md:text-sm tracking-wide" style={{ borderColor: colors.border }}>
+											{opt.goodHint && (
+												<div className="flex items-start gap-1.5 mb-1" style={{ color: getLuckColor(opt.goodChance) }}>
+													<Sparkles className="w-3 h-3 mt-0.5 flex-shrink-0" />
+													<span className="italic">{opt.goodHint}</span>
+												</div>
+											)}
+											{opt.badHint && (
+												<div className="flex items-start gap-1.5" style={{ color: getRiskColor(opt.badChance) }}>
+													<AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+													<span className="italic">{opt.badHint}</span>
+												</div>
+											)}
+										</div>
+									)}
 								</button>
 							))}
 							<button
 								onClick={handleCustomClick}
 								disabled={isBlocked}
-								className="p-1.5 md:p-3 border-2 border-dashed text-left font-bold uppercase transition-all disabled:opacity-50 disabled:cursor-not-allowed text-[9px] md:text-sm flex items-center gap-1 md:gap-2 min-w-0 overflow-hidden"
+								className="p-2.5 md:p-4 border-2 border-dashed text-left font-bold uppercase transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base tracking-wide md:tracking-wider flex items-center gap-2 md:gap-3 min-w-0 overflow-hidden"
 								style={{
 									borderColor: colors.border,
 									backgroundColor: colors.backgroundAccent,
 									color: colors.textSecondary,
 								}}
 							>
-								<MoreHorizontal className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />
+								<MoreHorizontal className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
 								<span className="truncate">{t.customAction}</span>
 							</button>
 						</div>
