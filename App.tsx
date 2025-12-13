@@ -22,7 +22,7 @@ import {
 	Plus,
 	Terminal,
 	Settings,
-	Menu,
+	ArrowLeft,
 	MapPin,
 	Users,
 	Trash2,
@@ -502,8 +502,9 @@ const App: React.FC = () => {
 								onClick={() => setCurrentStoryId(null)}
 								className="md:hidden flex-shrink-0 hover:opacity-70"
 								style={{ color: colors.textSecondary }}
+								title={t.back || 'Back'}
 							>
-								<Menu />
+								<ArrowLeft className="w-5 h-5" />
 							</button>
 							<div className="min-w-0 flex-1">
 								<h2
@@ -568,6 +569,18 @@ const App: React.FC = () => {
 								}}
 							>
 								<Backpack className="w-4 h-4 md:w-5 md:h-5" />
+							</button>
+							<button
+								onClick={() => setShowSettings(true)}
+								className="md:hidden p-1.5 border-2 transition-colors hover:opacity-80"
+								style={{
+									backgroundColor: colors.buttonSecondary,
+									borderColor: colors.border,
+									color: colors.buttonSecondaryText,
+								}}
+								title={t.settings}
+							>
+								<Settings className="w-4 h-4" />
 							</button>
 							<div
 								className="hidden md:block text-xs px-3 py-1 border font-bold uppercase font-mono rounded-full"
