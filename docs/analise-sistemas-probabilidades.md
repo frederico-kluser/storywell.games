@@ -432,18 +432,18 @@ Tier alto → gpt-4.1 | Tier baixo → gpt-4.1-mini
 
 `generateGameTurn` chama modelo adequado e otimiza custo
 ```
-5. Automatizar a chamada de `gridUpdate.prompt.ts` logo após aplicar o `GMResponse` sempre que houver movimento implícito, garantindo que o mapa 10x10 permaneça fiel sem depender de ações manuais no hook.
+5. Automatizar a chamada de `gridUpdate.prompt.ts` logo após aplicar o `GMResponse` sempre que houver movimento implícito ou transformação de elementos, garantindo que o mapa 10x10 permaneça fiel sem depender de ações manuais no hook. O sistema agora usa **gpt-4.1** (não mini) para lidar com transformações complexas como árvores cortadas, baús abertos, etc. (ver seção 6).
 
 ```
 `GMResponse` aplicado
 
-        ↓ detecta movimento implícito (observa diffs)
+        ↓ detecta movimento ou transformação (observa diffs)
 
-Aciona `gridUpdate.prompt.ts`
+Aciona `gridUpdate.prompt.ts` (gpt-4.1)
 
-        ↓ atualiza grid
+        ↓ atualiza grid com sistema delta
 
-Mapa 10x10 é sincronizado automaticamente
+Mapa 10x10 é sincronizado + elementos transformados
 ```
 
 ## 5. Considerações para Evoluções
@@ -533,3 +533,185 @@ Rollout gradual aplica instruções novas sem romper legados
 ```
 
 Com estas referências você sabe exatamente onde alterar prompts, como os dados fluem entre front e back e quais são os efeitos esperados quando um bônus ou penalidade de destino é processado.
+
+## 6. Sistema de Grid Map com Elementos de Cenário
+
+O grid 10x10 evoluiu de um simples rastreador de posições para um sistema completo que representa tanto personagens quanto **elementos de cenário interativos**, com suporte a **transformações complexas de objetos**.
+
+### Estrutura de Dados
+
+```typescript
+interface GridElement {
+  id: string;
+  symbol: string;      // Letra A-Z (ex: "D" para Door, "C" para Chest)
+  name: string;        // "Oak Door", "Treasure Chest"
+  description: string; // Descrição mostrada no popup ao clicar
+  position: GridPosition;
+}
+
+interface GridSnapshot {
+  characterPositions: GridCharacterPosition[];
+  elements?: GridElement[];  // Elementos de cenário
+  timestamp: number;
+}
+
+interface GridUpdateResponse {
+  shouldUpdate: boolean;
+  characterPositions?: {...}[];  // DELTA: apenas personagens que moveram
+  elements?: {...}[];            // DELTA: apenas elementos novos/modificados
+  removedElements?: string[];    // Símbolos de elementos removidos
+  reasoning?: string;            // Explicação da mudança
+}
+```
+
+### Sistema Delta (Anti-Alucinação)
+
+O LLM retorna **apenas as mudanças**, não o grid inteiro. Isso reduz alucinações e economiza tokens:
+
+```
+Jogador: "Corto a árvore com meu machado"
+
+Estado anterior: [T] Oak Tree em (5,5), jogador em (4,5)
+
+      ↓ LLM analisa narrativa
+
+Resposta Delta:
+{
+  "shouldUpdate": true,
+  "characterPositions": [],
+  "elements": [
+    { "symbol": "S", "name": "Tree Stump", "x": 5, "y": 5 },
+    { "symbol": "L", "name": "Fallen Log", "x": 6, "y": 5 }
+  ],
+  "removedElements": ["T"],
+  "reasoning": "Árvore cortada. Toco na posição original. Tronco caiu para leste."
+}
+
+      ↓ Cliente faz merge
+
+Estado final: [S] Stump (5,5), [L] Log (6,5), jogador (4,5)
+```
+
+### Transformações de Elementos (CRÍTICO)
+
+O prompt instrui o LLM a lidar com objetos que mudam de estado sem desaparecer completamente:
+
+| Ação | Elemento Original | Resultado |
+|------|-------------------|-----------|
+| Árvore cortada | [T] Oak Tree | [S] Stump (mesma posição) + [L] Fallen Log (adjacente) |
+| Baú aberto | [C] Locked Chest | [O] Open Chest (mesma posição, nova descrição) |
+| Porta quebrada | [D] Wooden Door | [B] Broken Door (mesma posição) |
+| Barril destruído | [B] Barrel | [D] Debris (mesma posição) |
+| Fogo em palha | [H] Haystack | [F] Burning Haystack (mesma posição) |
+| Alavanca puxada | [L] Lever | [L] Lever (mesma posição, descrição atualizada) |
+
+**Regras de transformação:**
+1. REMOVER elemento original (adicionar símbolo a `removedElements`)
+2. ADICIONAR elemento(s) transformado(s) com NOVO símbolo e descrição
+3. Resíduos/detritos vão para células ADJACENTES
+4. Se jogador corta/quebra algo, a parte que cai vai para LONGE do jogador (física básica)
+
+### Integração com GM e Action Options
+
+Ambos os prompts principais recebem o estado completo do grid:
+
+```
+=== SPATIAL CONTEXT (10x10 GRID MAP) ===
+**Characters on the map (coordinates 0-9):**
+- @ Hero [PLAYER]: (5, 5)
+- @ Old Sage: (3, 4) - Distance: ~3 cells
+
+**Scene Elements (interactable objects):**
+- [D] Oak Door: (0, 5) - Distance: ~5 cells
+    → A heavy wooden door leading to the courtyard
+- [C] Treasure Chest: (7, 3) - Distance: ~4 cells
+    → An ornate chest with golden trim
+
+**Legend:**
+- @ = Character (player marked with [PLAYER])
+- [A-Z] = Scene elements (doors, chests, objects, etc.)
+
+**Spatial rules:**
+- Same/adjacent cells (distance 0-1): Can interact directly
+- Nearby (distance 2-3): Can see clearly, short walk to interact
+- Far (distance 4+): Requires movement to interact
+```
+
+**Regra especial para Action Options:**
+```
+7. If scene elements exist in the SPATIAL MAP, suggest at least one action
+   interacting with nearby elements (doors, chests, levers, etc.)
+```
+
+### Modelo e Custo
+
+`gridUpdate` usa **gpt-4.1** (não nano/mini) devido à complexidade das decisões de transformação:
+
+```typescript
+MODEL_CONFIG = {
+  // ...outras configurações...
+  gridUpdate: 'gpt-4.1', // Análise espacial complexa (transformações)
+}
+```
+
+A escolha do modelo full se justifica porque:
+- Decisões de transformação requerem raciocínio sobre física básica
+- O sistema delta exige compreensão precisa do que mudou vs. o que permanece
+- Erros no grid afetam diretamente a consistência narrativa
+
+### Fluxo de Atualização
+
+```
+1. generateGameTurn retorna narrativa
+   └─ "Você corta a árvore. Ela cai para o leste com estrondo."
+
+2. updateGridPositions() é chamada
+   ├─ Recebe: gameState, mensagens recentes, grid atual
+   ├─ Monta: buildGridUpdatePrompt()
+   ├─ Envia: queryLLM com gpt-4.1
+   └─ Retorna: GridUpdateResponse (delta)
+
+3. Merge no cliente (openaiClient.ts)
+   ├─ Copia todas as posições/elementos anteriores
+   ├─ Remove elementos listados em removedElements
+   ├─ Adiciona/atualiza elementos do delta
+   ├─ Garante símbolos únicos (A-Z sem colisão)
+   └─ Retorna novo GridSnapshot
+
+4. UI atualiza (GridMap.tsx)
+   ├─ Renderiza personagens com avatar (@)
+   ├─ Renderiza elementos com letra (A-Z)
+   ├─ Popup ao clicar em elemento
+   └─ Legenda mostra todos os símbolos
+```
+
+### Popup de Elemento
+
+Ao clicar em uma letra no grid, aparece popup com:
+- Nome do elemento
+- Descrição completa
+- Botão de fechar
+
+Isso permite que o jogador entenda o que cada símbolo representa sem sobrecarregar a visualização do grid.
+
+### Arquivos Envolvidos
+
+| Arquivo | Responsabilidade |
+|---------|------------------|
+| `types.ts` | Interfaces `GridElement`, `GridSnapshot`, `GridUpdateResponse` |
+| `services/ai/prompts/gridUpdate.prompt.ts` | Prompt de análise espacial + transformações |
+| `services/ai/openaiClient.ts` | `updateGridPositions()` + lógica de merge delta |
+| `components/GridMap/GridMap.tsx` | Renderização visual + popup |
+| `services/ai/prompts/gameMaster.prompt.ts` | Injeção do grid no contexto do GM |
+| `services/ai/prompts/actionOptions.prompt.ts` | Injeção do grid nas opções de ação |
+
+**O que está sendo bem executado:**
+- Sistema delta evita alucinações e reduz tokens
+- Transformações são tratadas como remove+add, mantendo consistência
+- Grid é passado para GM e Action Options, garantindo coerência espacial
+- Modelo gpt-4.1 garante qualidade nas decisões complexas
+
+**Sugestões de melhoria (3):**
+1. Adicionar cache de elementos por localização para evitar recálculo quando jogador volta a um local já visitado
+2. Implementar validação de colisão de elementos (dois elementos não devem ocupar a mesma célula)
+3. Criar sistema de "elementos temporários" com TTL para efeitos como fogo, fumaça, etc.

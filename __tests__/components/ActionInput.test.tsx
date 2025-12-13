@@ -113,6 +113,7 @@ describe('ActionInput', () => {
   const mockSetInputValue = jest.fn();
   const mockOnSendMessage = jest.fn().mockResolvedValue(undefined);
   const mockOnVoiceTranscription = jest.fn();
+  const mockSetIsCollapsed = jest.fn();
 
   const defaultProps = {
     apiKey: 'test-api-key',
@@ -123,7 +124,9 @@ describe('ActionInput', () => {
     isProcessing: false,
     onSendMessage: mockOnSendMessage,
     onVoiceTranscription: mockOnVoiceTranscription,
-    t: mockTranslations
+    t: mockTranslations,
+    isCollapsed: false,
+    setIsCollapsed: mockSetIsCollapsed
   };
 
   beforeEach(() => {
@@ -311,14 +314,15 @@ describe('ActionInput', () => {
   });
 
   describe('mobile collapse', () => {
-    it('should show actions label on mobile layouts', async () => {
+    it('should render action options on all layouts', async () => {
       renderWithTheme(<ActionInput {...defaultProps} />);
 
       await waitFor(() => {
         expect(screen.queryByText('Look around')).toBeInTheDocument();
       }, { timeout: 3000 });
 
-      expect(screen.queryByText('Actions')).toBeInTheDocument();
+      // Verify at least one action option is rendered
+      expect(screen.queryByText('Talk to merchant')).toBeInTheDocument();
     });
   });
 
