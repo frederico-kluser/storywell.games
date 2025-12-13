@@ -153,7 +153,7 @@ export const applyImagePresetToBase64 = async (base64: string, preset: ImageGene
 
 /**
  * Universal wrapper for calling the OpenAI LLM.
- * Uses GPT-4.1 model with temperature 0 for deterministic outputs.
+ * Defaults to deterministic temperature 0, but allows overrides per request.
  *
  * @param apiKey - The OpenAI API Key.
  * @param messages - The prompt messages (system, user, assistant).
@@ -173,7 +173,7 @@ export const queryLLM = async (
 	const response = await client.chat.completions.create({
 		model: config.model,
 		messages: messages,
-		temperature: 0, // Always use temperature 0 as requested
+		temperature: config.temperature ?? 0,
 		response_format: config.responseFormat === 'json' ? { type: 'json_object' } : { type: 'text' },
 		...(config.maxTokens && { max_tokens: config.maxTokens }),
 	});
