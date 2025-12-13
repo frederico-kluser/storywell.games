@@ -214,6 +214,7 @@ export interface GridUpdateResponse {
 
 - `GameState.gridSnapshots` guarda uma linha do tempo espacial sincronizada com `pageNumber`, permitindo reconstruir o mapa para qualquer carta.
 - `GridUpdateResponse` é o contrato consumido por `openaiClient.updateGridPositions`/`gridUpdate.prompt.ts`, garantindo que só updates necessários sejam persistidos.
+- `updateGridPositions` sempre mantém player + NPCs no snapshot: reutiliza coordenadas anteriores para quem não se moveu e gera posições de fallback próximas ao jogador para NPCs novos.
 
 ### Character - Modelo de Entidade
 
@@ -994,7 +995,9 @@ export const updateGridPositions = async (
 
 - O prompt `gridUpdate` aplica regras físicas (velocidade máxima, ocupação compartilhada, reset em mudança de localização) e schema JSON obrigatório para manter determinismo.
 - A função reaproveita o snapshot mais recente como contexto, só cria novo registro quando há movimento e loga o `reasoning` retornado pela IA.
+- Após interpretar o JSON, normalizamos os dados e mesclamos com o snapshot anterior para manter player + todos os NPCs visíveis no IndexedDB, mesmo quando apenas um personagem se move.
 - Quando não há histórico, `createInitialGridSnapshot` gera posições padrão (player no centro, NPCs ao redor) para evitar jitter no primeiro update.
+- O `gridContextSection` do `buildGameMasterPrompt` agora obriga o GM a citar onde os NPCs estão em relação ao jogador sempre que o posicionamento impactar a cena, mantendo a narrativa alinhada ao mapa.
 
 ---
 

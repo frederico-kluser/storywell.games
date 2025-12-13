@@ -460,6 +460,8 @@ export const useGameEngine = (): UseGameEngineReturn => {
       const newStories = [...prevStories];
       newStories[index] = sanitizedStory;
 
+      storiesRef.current = newStories;
+
       dbService.saveGame(sanitizedStory).catch(e => console.error("Auto-save failed", e));
       return newStories;
     });

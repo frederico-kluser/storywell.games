@@ -144,6 +144,12 @@ Analyze the recent events and determine if character positions on the grid shoul
 - Action doesn't involve physical displacement
 - Positions are already correct
 
+**OUTPUT RULES (MANDATORY):**
+- If shouldUpdate is true, return positions for every character at this location (player + all NPCs).
+- Reuse previous coordinates for characters that did not move; never drop them from the grid.
+- Always include the player entry and set isPlayer to true.
+- Use the reasoning field to mention how notable NPCs are positioned relative to the player (e.g., "Maris stays two cells east of the player").
+
 **POSITIONING GUIDELINES:**
 - Player character should generally be near the center (around 4-5, 4-5) initially
 - NPCs in conversation should be within 1-2 cells of each other

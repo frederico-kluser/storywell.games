@@ -536,6 +536,12 @@ When updating inventory/gold, use this structure:
 CRITICAL: Always return the COMPLETE inventory array, not just changes.
 ```
 
+### 6.4 Grid Map & Spatial Callouts
+
+- `gridUpdate.prompt.ts` agora obriga que cada resposta com `shouldUpdate=true` liste player + todos os NPCs na cena, reaproveitando coordenadas anteriores quando ninguém se move.
+- O `reasoning` deve mencionar distâncias/direções em relação ao jogador, ajudando o loop de economia a saber quem está perto o bastante para negociar, trocar itens ou tentar furtos.
+- `buildGameMasterPrompt` ganhou instruções explícitas para citar essas relações espaciais nas narrações, mantendo coerência entre o texto (troca de itens, pagamentos) e o mapa 10x10 renderizado no `StoryCard`.
+
 ---
 
 ## 7. Function Calling para State Management
