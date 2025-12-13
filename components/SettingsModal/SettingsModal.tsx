@@ -83,7 +83,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 				</div>
 
 				{/* Content */}
-				<div className="p-4 space-y-3 overflow-y-auto flex-1">
+				<div className="p-4 space-y-3 overflow-y-scroll flex-1">
 					{/* Narrative Style Option */}
 					<button
 						onClick={handleOpenNarrativeStyle}
