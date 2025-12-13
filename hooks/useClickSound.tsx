@@ -151,7 +151,7 @@ export function ClickSoundProvider({ children }: ClickSoundProviderProps) {
 
 		// Resume AudioContext if needed (handles browser autoplay restrictions)
 		soundService.resume().then(() => {
-			soundService.play(SOUNDS.UI_CLICK, 0.5); // Play at 50% volume
+			soundService.play(SOUNDS.UI_CLICK, 0.25); // Play at 25% volume
 		});
 	}, [enabled, isReady]);
 
@@ -169,7 +169,7 @@ export function ClickSoundProvider({ children }: ClickSoundProviderProps) {
 			if (interactiveElement && enabled && isReady) {
 				// Resume AudioContext if needed
 				await soundService.resume();
-				soundService.play(SOUNDS.UI_CLICK, 0.5);
+				soundService.play(SOUNDS.UI_CLICK, 0.25);
 			}
 		};
 

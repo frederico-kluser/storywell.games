@@ -225,6 +225,154 @@
       .animate-pulse-glow {
         animation: pulseGlow 1.5s ease-in-out infinite;
       }
+
+      /* ============================================
+         GLOBAL CLICK EFFECTS - UI Feedback System
+         ============================================
+         Provides visual feedback for all interactive elements.
+         Works with buttons, links, and any clickable element.
+      */
+
+      /* Base interactive element styles */
+      button,
+      a[href],
+      [role="button"],
+      [role="link"],
+      [role="menuitem"],
+      [role="tab"],
+      [role="option"],
+      input[type="button"],
+      input[type="submit"],
+      input[type="reset"],
+      select,
+      summary,
+      .clickable {
+        position: relative;
+        transition: transform 0.08s ease-out, filter 0.08s ease-out, box-shadow 0.08s ease-out;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+
+      /* Click/Press effect - scale down and darken slightly */
+      button:active:not(:disabled),
+      a[href]:active,
+      [role="button"]:active,
+      [role="link"]:active,
+      [role="menuitem"]:active,
+      [role="tab"]:active,
+      [role="option"]:active,
+      input[type="button"]:active:not(:disabled),
+      input[type="submit"]:active:not(:disabled),
+      input[type="reset"]:active:not(:disabled),
+      select:active:not(:disabled),
+      summary:active,
+      .clickable:active {
+        transform: scale(0.96) !important;
+        filter: brightness(0.92);
+      }
+
+      /* Cursor pointer elements also get click effect */
+      [style*="cursor: pointer"]:active,
+      [style*="cursor:pointer"]:active {
+        transform: scale(0.96);
+        filter: brightness(0.92);
+      }
+
+      /* Ripple effect container */
+      .click-ripple {
+        position: absolute;
+        border-radius: 50%;
+        background: var(--theme-text);
+        opacity: 0.15;
+        transform: scale(0);
+        animation: rippleEffect 0.4s ease-out forwards;
+        pointer-events: none;
+      }
+
+      @keyframes rippleEffect {
+        0% {
+          transform: scale(0);
+          opacity: 0.2;
+        }
+        100% {
+          transform: scale(2.5);
+          opacity: 0;
+        }
+      }
+
+      /* Enhanced retro button click effect */
+      .retro-btn:active:not(:disabled) {
+        transform: translate(3px, 3px) scale(0.98) !important;
+        box-shadow: 1px 1px 0px var(--theme-shadow) !important;
+        filter: brightness(0.95);
+      }
+
+      /* Card/Panel click effect for larger clickable areas */
+      .click-card:active {
+        transform: scale(0.98);
+        filter: brightness(0.97);
+        box-shadow: 2px 2px 0px var(--theme-shadow) !important;
+      }
+
+      /* Icon button specific effect (smaller elements) */
+      .icon-btn:active:not(:disabled) {
+        transform: scale(0.88);
+        filter: brightness(0.85);
+      }
+
+      /* Navigation button effect */
+      .nav-btn:active:not(:disabled) {
+        transform: translateX(0) scale(0.95);
+        filter: brightness(0.9);
+      }
+
+      /* Checkbox/Radio click effect */
+      input[type="checkbox"]:active,
+      input[type="radio"]:active {
+        transform: scale(0.9);
+      }
+
+      /* Disabled elements - no effect */
+      button:disabled,
+      input:disabled,
+      select:disabled,
+      [aria-disabled="true"] {
+        cursor: not-allowed;
+        pointer-events: auto;
+      }
+
+      button:disabled:active,
+      input:disabled:active,
+      select:disabled:active,
+      [aria-disabled="true"]:active {
+        transform: none !important;
+        filter: none !important;
+      }
+
+      /* Focus visible for accessibility (keyboard navigation) */
+      button:focus-visible,
+      a:focus-visible,
+      [role="button"]:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 2px solid var(--theme-btn-primary);
+        outline-offset: 2px;
+      }
+
+      /* Mobile touch feedback enhancement */
+      @media (hover: none) and (pointer: coarse) {
+        button:active:not(:disabled),
+        a[href]:active,
+        [role="button"]:active,
+        .clickable:active {
+          transform: scale(0.94) !important;
+          filter: brightness(0.88);
+        }
+
+        .retro-btn:active:not(:disabled) {
+          transform: translate(4px, 4px) scale(0.96) !important;
+        }
+      }
     </style>
   </head>
   <body>

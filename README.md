@@ -160,8 +160,15 @@ function MyComponent() {
 
 **Configuração:**
 - Preferência salva em `localStorage` (chave: `storywell.clickSoundEnabled`)
-- Volume padrão: 50%
+- Volume padrão: 25%
 - Inicialização lazy: aguarda primeira interação do usuário (política de autoplay dos navegadores)
+
+**Efeitos visuais de clique:**
+- Todos os elementos interativos têm efeito visual de "press" (`transform: scale(0.96)`)
+- Cards clicáveis: usar classe `clickable click-card`
+- Botões ícone: usar classe `icon-btn`
+- Efeito retro especial para `.retro-btn` (translate + scale)
+- Feedback tátil aprimorado em dispositivos touch
 
 ## Internacionalização e acessibilidade
 

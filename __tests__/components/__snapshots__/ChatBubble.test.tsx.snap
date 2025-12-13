@@ -194,7 +194,7 @@ exports[`ChatBubble rendering should match snapshot with avatar URL 1`] = `
       class="flex-shrink-0 flex md:flex-col items-center gap-2 mb-2 md:mb-0 md:mt-2 flex-row md:flex-col"
     >
       <div
-        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-white cursor-pointer hover:opacity-80 transition-opacity"
+        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-white cursor-pointer hover:opacity-80 transition-opacity clickable"
       >
         <img
           alt="Village Elder"
@@ -248,7 +248,7 @@ exports[`ChatBubble rendering should match snapshot with avatar base64 1`] = `
       class="flex-shrink-0 flex md:flex-col items-center gap-2 mb-2 md:mb-0 md:mt-2 flex-row md:flex-col"
     >
       <div
-        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-white cursor-pointer hover:opacity-80 transition-opacity"
+        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-white cursor-pointer hover:opacity-80 transition-opacity clickable"
       >
         <img
           alt="Village Elder"
