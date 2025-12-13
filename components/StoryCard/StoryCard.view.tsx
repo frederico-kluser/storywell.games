@@ -70,9 +70,9 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 	const isNarrator = message.senderId === 'GM' && message.type === MessageType.NARRATION;
 	const isSystem = message.type === MessageType.SYSTEM || message.senderId === 'SYSTEM';
 
-	// State for Typewriter Effect
-	const [displayedText, setDisplayedText] = useState('');
-	const [isTyping, setIsTyping] = useState(true);
+	// State for Text Reveal Effect (curtain-style reveal from top to bottom)
+	const [revealProgress, setRevealProgress] = useState(0); // 0 to 100
+	const [isRevealing, setIsRevealing] = useState(true);
 
 	// State for Audio Playback
 	const [isPlaying, setIsPlaying] = useState(false);
@@ -116,7 +116,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 
 	useEffect(() => {
 		updateScrollMetrics();
-	}, [displayedText, updateScrollMetrics]);
+	}, [revealProgress, updateScrollMetrics]);
 
 	useEffect(() => {
 		if (typeof window === 'undefined') return;
@@ -173,13 +173,11 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 		hasCalledCompleteRef.current = false;
 	}, [message.id]);
 
-	// Typewriter Logic
+	// Text Reveal Logic (curtain-style reveal from top to bottom)
 	useEffect(() => {
-		const fullText = message.text || '';
-
 		if (skipAnimation || !isActive) {
-			setDisplayedText(fullText);
-			setIsTyping(false);
+			setRevealProgress(100);
+			setIsRevealing(false);
 			if (!hasCalledCompleteRef.current) {
 				hasCalledCompleteRef.current = true;
 				onTypingCompleteRef.current?.();
@@ -187,26 +185,47 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 			return;
 		}
 
-		setDisplayedText('');
-		setIsTyping(true);
+		setRevealProgress(0);
+		setIsRevealing(true);
 
-		const interval = setInterval(() => {
-			setDisplayedText((prev) => {
-				if (prev.length < fullText.length) {
-					return prev + fullText.charAt(prev.length);
-				} else {
-					clearInterval(interval);
-					setIsTyping(false);
-					if (!hasCalledCompleteRef.current) {
-						hasCalledCompleteRef.current = true;
-						onTypingCompleteRef.current?.();
-					}
-					return prev;
+		// Calculate animation duration based on text length
+		// Base duration: 800ms, scales up to 2000ms for longer texts
+		const textLength = (message.text || '').length;
+		const baseDuration = 800;
+		const maxDuration = 2000;
+		const duration = Math.min(baseDuration + (textLength / 500) * 400, maxDuration);
+
+		const startTime = performance.now();
+		let animationFrame: number;
+
+		const animate = (currentTime: number) => {
+			const elapsed = currentTime - startTime;
+			const progress = Math.min((elapsed / duration) * 100, 100);
+
+			// Easing function for smoother animation (ease-out-cubic)
+			const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+			const easedProgress = easeOutCubic(progress / 100) * 100;
+
+			setRevealProgress(easedProgress);
+
+			if (progress < 100) {
+				animationFrame = requestAnimationFrame(animate);
+			} else {
+				setIsRevealing(false);
+				if (!hasCalledCompleteRef.current) {
+					hasCalledCompleteRef.current = true;
+					onTypingCompleteRef.current?.();
 				}
-			});
-		}, 20);
+			}
+		};
 
-		return () => clearInterval(interval);
+		animationFrame = requestAnimationFrame(animate);
+
+		return () => {
+			if (animationFrame) {
+				cancelAnimationFrame(animationFrame);
+			}
+		};
 	}, [message.text, message.id, skipAnimation, isActive]);
 
 	// Get avatar source
@@ -330,7 +349,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 	const PlayButton = () => (
 		<button
 			onClick={handlePlayAudio}
-			disabled={isLoadingAudio || isPlaying || isTyping || !apiKey}
+			disabled={isLoadingAudio || isPlaying || isRevealing || !apiKey}
 			className="p-2 rounded-full transition-all hover:scale-110 disabled:opacity-30 disabled:hover:scale-100"
 			style={{
 				backgroundColor: colors.backgroundSecondary,
@@ -447,7 +466,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 								<PlayButton />
 							</div>
 
-							{/* Message Text - Book Typography */}
+							{/* Message Text - Book Typography with Reveal Effect */}
 					<div
 						className="flex-1 relative overflow-hidden min-h-0"
 						ref={textContainerRef}
@@ -462,6 +481,8 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 								color: colors.text,
 								transform: `translateY(-${scrollOffset}px)`,
 								transition: 'transform 120ms ease-out',
+								// Curtain reveal effect: clip from bottom, revealing from top to bottom
+								clipPath: `inset(0 0 ${100 - revealProgress}% 0)`,
 							}}
 						>
 							{isNarrator && (
@@ -472,9 +493,8 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 									&ldquo;
 								</span>
 							)}
-							{displayedText}
-							{isTyping && <span className="animate-pulse ml-0.5">|</span>}
-							{isNarrator && !isTyping && (
+							{message.text || ''}
+							{isNarrator && !isRevealing && (
 								<span
 									className="text-3xl md:text-4xl leading-none align-text-bottom ml-2"
 									style={{ color: colors.textSecondary }}
