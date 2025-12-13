@@ -10,7 +10,7 @@ import {
 	CustomActionAnalysisResult,
 } from '../../services/ai/openaiClient';
 import { useThemeColors } from '../../hooks/useThemeColors';
-import { getCachedActionOptions, saveCachedActionOptions } from '../../utils/actionOptionsCache';
+import { fetchActionOptionsWithCache, getCachedActionOptions } from '../../utils/actionOptionsCache';
 
 interface ActionInputProps {
 	apiKey: string;
@@ -38,8 +38,8 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 	t,
 }) => {
 	const { colors } = useThemeColors();
-	// Combined loading state - blocks UI during processing or context update
-	const isBlocked = isProcessing || isUpdatingContext;
+	const isBlocked = isProcessing;
+	const showBackgroundUpdate = isUpdatingContext && !isProcessing;
 	const [options, setOptions] = useState<ActionOption[]>([]);
 	const [isLoadingOptions, setIsLoadingOptions] = useState(false);
 	const [showCustomInput, setShowCustomInput] = useState(false);
@@ -52,9 +52,6 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 	const [isAnalyzingAction, setIsAnalyzingAction] = useState(false);
 	const [customActionAnalysis, setCustomActionAnalysis] = useState<CustomActionAnalysisResult | null>(null);
 	const [pendingCustomAction, setPendingCustomAction] = useState<string>('');
-
-	// Ref to track if we've checked cache on initial load
-	const hasCheckedCacheRef = useRef(false);
 
 	// Generate options when messages change (new turn)
 	useEffect(() => {
@@ -72,7 +69,6 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 			if (cached && cached.lastMessageId === lastMessageId && cached.options.length > 0) {
 				// Cache hit! Use cached options instead of regenerating
 				setOptions(cached.options);
-				hasCheckedCacheRef.current = true;
 				return;
 			}
 
@@ -83,6 +79,8 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 
 	const loadOptions = async () => {
 		if (!apiKey || isLoadingOptions) return;
+		const lastMessage = activeStory.messages[activeStory.messages.length - 1];
+		if (!lastMessage) return;
 
 		setIsLoadingOptions(true);
 		setShowCustomInput(false);
@@ -93,14 +91,10 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 
 		try {
 			const storyLang = activeStory.config?.language || language;
-			const newOptions = await generateActionOptions(apiKey, activeStory, storyLang);
+			const newOptions = await fetchActionOptionsWithCache(activeStory.id, lastMessage.id, () =>
+				generateActionOptions(apiKey, activeStory, storyLang),
+			);
 			setOptions(newOptions);
-
-			// Save to cache for reload persistence
-			const lastMessage = activeStory.messages[activeStory.messages.length - 1];
-			if (lastMessage && newOptions.length > 0) {
-				saveCachedActionOptions(activeStory.id, lastMessage.id, newOptions);
-			}
 		} catch (e) {
 			console.error('Failed to load options:', e);
 			setOptions([]);
@@ -236,6 +230,19 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 		return colors.textSecondary;
 	};
 
+	const renderContextSyncBadge = () => {
+		if (!showBackgroundUpdate) return null;
+		return (
+			<div
+				className="mb-3 flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-wide"
+				style={{ color: colors.textSecondary }}
+			>
+				<Loader2 className="w-3.5 h-3.5 animate-spin" />
+				<span>{t.updatingContext || 'Atualizando memória...'}</span>
+			</div>
+		);
+	};
+
 	// Loading state
 	if (isLoadingOptions) {
 		return (
@@ -244,6 +251,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 				style={{ backgroundColor: colors.backgroundSecondary, borderTopColor: colors.border }}
 			>
 				<div className="max-w-full md:max-w-5xl mx-auto">
+					{renderContextSyncBadge()}
 					<div className="flex flex-col items-center gap-3 py-4 md:py-6">
 						{/* Animated loader icon */}
 						<div className="relative">
@@ -304,6 +312,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 					style={{ backgroundColor: colors.backgroundSecondary, borderTopColor: colors.border }}
 				>
 					<div className="max-w-full md:max-w-5xl mx-auto space-y-3 md:space-y-4">
+						{renderContextSyncBadge()}
 						{/* Header */}
 						<div className="text-xs md:text-sm font-bold uppercase" style={{ color: colors.textSecondary }}>
 							{t.customActionRisk || 'Risk Analysis'}
@@ -419,6 +428,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 					style={{ backgroundColor: colors.backgroundSecondary, borderTopColor: colors.border }}
 				>
 					<div className="max-w-full md:max-w-5xl mx-auto">
+						{renderContextSyncBadge()}
 						<div className="flex flex-col items-center gap-3 py-4 md:py-6">
 							{/* Animated loader icon */}
 							<div className="relative">
@@ -484,6 +494,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 				style={{ backgroundColor: colors.backgroundSecondary, borderTopColor: colors.border }}
 			>
 				<div className="max-w-full md:max-w-5xl mx-auto space-y-2 md:space-y-3">
+					{renderContextSyncBadge()}
 					<div className="flex items-center gap-2 md:gap-4">
 						<VoiceInput
 							apiKey={apiKey}
@@ -587,6 +598,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 				{/* Options container - collapsible on mobile */}
 				<div className={`p-1.5 md:p-6 ${isCollapsed ? 'hidden md:block' : 'block'}`}>
 					<div className="max-w-full md:max-w-5xl mx-auto">
+						{renderContextSyncBadge()}
 						<div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-1 md:gap-2">
 							{options.map((opt, idx) => (
 								<button

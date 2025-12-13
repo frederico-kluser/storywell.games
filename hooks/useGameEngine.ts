@@ -37,7 +37,7 @@ import { parseOpenAIError } from '../utils/errorHandler';
 import { ErrorType } from '../components/ErrorModal';
 import { migrateGameState, needsMigration } from '../utils/migration';
 import { DEFAULT_PLAYER_STATS, getStartingGold } from '../constants/economy';
-import { getCachedActionOptions, saveCachedActionOptions } from '../utils/actionOptionsCache';
+import { fetchActionOptionsWithCache } from '../utils/actionOptionsCache';
 import { useThemeColors } from './useThemeColors';
 
 // Creation phase type for progress tracking
@@ -216,7 +216,6 @@ export const useGameEngine = (): UseGameEngineReturn => {
 	const [isGeneratingBackground, setIsGeneratingBackground] = useState(false);
 	const [backgroundLocationName, setBackgroundLocationName] = useState('');
 	const generatingBackgroundRef = useRef<Set<string>>(new Set()); // Track which locations are currently generating
-	const actionOptionsPrefetchRef = useRef<Record<string, string>>({});
 	const pendingAvatarRef = useRef<Set<string>>(new Set());
 
 	// Creation Progress
@@ -804,31 +803,16 @@ export const useGameEngine = (): UseGameEngineReturn => {
 
 	const prefetchActionOptions = async (story: GameState) => {
 		if (!apiKey || !story.messages.length) return;
-
 		const lastMessage = story.messages[story.messages.length - 1];
-		const cached = getCachedActionOptions(story.id);
-		if (cached && cached.lastMessageId === lastMessage.id && cached.options.length > 0) {
-			return;
-		}
-
-		if (actionOptionsPrefetchRef.current[story.id] === lastMessage.id) {
-			return;
-		}
-
-		actionOptionsPrefetchRef.current[story.id] = lastMessage.id;
+		if (!lastMessage) return;
 
 		try {
 			const storyLang = story.config?.language || language;
-			const newOptions = await generateActionOptions(apiKey, story, storyLang);
-			if (newOptions.length > 0) {
-				saveCachedActionOptions(story.id, lastMessage.id, newOptions);
-			}
+			await fetchActionOptionsWithCache(story.id, lastMessage.id, () =>
+				generateActionOptions(apiKey, story, storyLang),
+			);
 		} catch (error) {
 			console.error('Action options prefetch failed:', error);
-		} finally {
-			if (actionOptionsPrefetchRef.current[story.id] === lastMessage.id) {
-				delete actionOptionsPrefetchRef.current[story.id];
-			}
 		}
 	};
 
@@ -884,7 +868,7 @@ export const useGameEngine = (): UseGameEngineReturn => {
 
 	const handleSendMessage = async (directMessage?: string, fateResult?: FateResult) => {
 		const rawText = directMessage || inputValue;
-		if (!rawText.trim() || !apiKey || !currentStoryId || isProcessing || isUpdatingContext) return;
+		if (!rawText.trim() || !apiKey || !currentStoryId || isProcessing) return;
 		const activeStoryId = currentStoryId;
 
 		setInputValue('');
