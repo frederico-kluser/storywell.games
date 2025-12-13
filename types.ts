@@ -550,6 +550,8 @@ export interface GridSnapshot {
 	characterPositions: GridCharacterPosition[];
 	/** Scene elements on the grid (doors, chests, trees, etc.) */
 	elements?: GridElement[];
+	/** Background image for the location at this snapshot time */
+	locationBackgroundImage?: string;
 }
 
 /**

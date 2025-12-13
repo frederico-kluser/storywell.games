@@ -2228,6 +2228,7 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 			locationName: currentLocation?.name || 'Unknown',
 			characterPositions,
 			elements: processedElements.length > 0 ? processedElements : undefined,
+			locationBackgroundImage: currentLocation?.backgroundImage,
 		};
 
 		console.log(
@@ -2289,5 +2290,6 @@ export const createInitialGridSnapshot = (gameState: GameState, messageNumber: n
 		locationId: gameState.currentLocationId,
 		locationName: currentLocation?.name || 'Unknown',
 		characterPositions,
+		locationBackgroundImage: currentLocation?.backgroundImage,
 	};
 };

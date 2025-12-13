@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { MessageType, ChatMessage, ThemeColors, Language, GridSnapshot } from '../../types';
 import { Terminal, Info, Play, Loader2, StopCircle, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Map, Backpack, Swords } from 'lucide-react';
 import { generateSpeech } from '../../services/ai/openaiClient';
@@ -95,6 +95,29 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 
 	// State for Grid Map flip
 	const [isMapFlipped, setIsMapFlipped] = useState(false);
+
+	// Get the effective background image from the appropriate grid snapshot
+	const currentMessageNumber = message.pageNumber ?? currentIndex + 1;
+	const effectiveBackgroundImage = useMemo(() => {
+		// Try to get the background from the appropriate grid snapshot
+		if (gridSnapshots && gridSnapshots.length > 0) {
+			// Find the most recent snapshot at or before this message number
+			let relevantSnapshot: GridSnapshot | null = null;
+			for (const snapshot of gridSnapshots) {
+				if (snapshot.atMessageNumber <= currentMessageNumber) {
+					if (!relevantSnapshot || snapshot.atMessageNumber > relevantSnapshot.atMessageNumber) {
+						relevantSnapshot = snapshot;
+					}
+				}
+			}
+			// If we found a snapshot with a background image, use it
+			if (relevantSnapshot?.locationBackgroundImage) {
+				return relevantSnapshot.locationBackgroundImage;
+			}
+		}
+		// Fallback to the prop if no snapshot background is available
+		return locationBackgroundImage;
+	}, [gridSnapshots, currentMessageNumber, locationBackgroundImage]);
 
 	// Manual scroll controls
 	const textContainerRef = useRef<HTMLDivElement>(null);
@@ -304,12 +327,12 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 		}
 
 		// When there's no avatar but there's a location background, use it
-		if (locationBackgroundImage) {
+		if (effectiveBackgroundImage) {
 			return {
 				backgroundColor: colors.background,
 				borderColor: colors.border,
 				color: colors.text,
-				backgroundImage: `linear-gradient(to bottom, ${colors.background}dd 0%, ${colors.background}cc 50%, ${colors.background}dd 100%), url(${locationBackgroundImage})`,
+				backgroundImage: `linear-gradient(to bottom, ${colors.background}dd 0%, ${colors.background}cc 50%, ${colors.background}dd 100%), url(${effectiveBackgroundImage})`,
 				backgroundSize: 'cover',
 				backgroundPosition: 'center',
 			};
@@ -587,12 +610,12 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 						{hasGridData && (
 							<GridMap
 								gridSnapshots={gridSnapshots!}
-								currentMessageNumber={message.pageNumber ?? currentIndex + 1}
+								currentMessageNumber={currentMessageNumber}
 								colors={colors}
 								isFlipped={isMapFlipped}
 								onToggleFlip={() => setIsMapFlipped(false)}
 								locationName={currentLocationName}
-								locationBackgroundImage={locationBackgroundImage}
+								locationBackgroundImage={effectiveBackgroundImage}
 								characterAvatars={characterAvatars}
 								t={t}
 							/>

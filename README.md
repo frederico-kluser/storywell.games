@@ -2,7 +2,7 @@
 
 > Motor de RPG narrativo em tempo real que combina GPT-4.1, mapas táticos, áudio 3D e prompts versionados para criar campanhas single-player no navegador.
 
-**Versão narrativa:** 2.0.48 · **Stack:** React 19 + Vite 6 · **Engine de IA:** OpenAI GPT-4.1 / gpt-4.1-mini / gpt-image-1-mini / Whisper / gpt-4o-mini-tts
+**Versão narrativa:** 2.0.49 · **Stack:** React 19 + Vite 6 · **Engine de IA:** OpenAI GPT-4.1 / gpt-4.1-mini / gpt-image-1-mini / Whisper / gpt-4o-mini-tts
 
 ---
 
