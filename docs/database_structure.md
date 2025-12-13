@@ -1,72 +1,50 @@
-
 # Estrutura do Banco de Dados (IndexedDB)
 
-O storywell.games utiliza uma abordagem **Relacional** dentro do **IndexedDB**.
-Apesar de ser um banco NoSQL, estruturamos os dados com chaves estrangeiras (`gameId`) para manter a integridade e escalabilidade.
+**Banco:** `InfinitumRPG_Core` · **DB_VERSION:** 3 · **Última atualização:** 13/12/2025
 
-**Nome do Banco:** `InfinitumRPG_Core`
-**Versão:** `2`
+O storywell.games segue o padrão **Data Mapper**: o `GameState` usado pelo React é desidratado em múltiplas object stores do IndexedDB e remontado quando um save é carregado. Isso mantém o app responsivo mesmo com milhares de mensagens e snapshots de grid.
 
 ---
 
-## 📂 Object Stores (Tabelas)
+## 1. Object Stores
 
-### 1. `games`
-Armazena os metadados da sessão. É a "cabeça" do save.
-*   **KeyPath:** `id` (String - Timestamp)
-*   **Campos:**
-    *   `title`: Nome da campanha.
-    *   `turnCount`: Número de turnos.
-    *   `lastPlayed`: Timestamp.
-    *   `config`: Objeto JSON com configurações (idioma, tema).
-    *   `playerCharacterId`: Ponteiro para a tabela `characters`.
-    *   `currentLocationId`: Ponteiro para a tabela `locations`.
+| Store | KeyPath | Índices | Conteúdo principal |
+| --- | --- | --- | --- |
+| `games` | `id` | — | Metadados: `title`, `turnCount`, `lastPlayed`, `config`, ponteiros (`playerCharacterId`, `currentLocationId`). |
+| `characters` | `id` | `by_game_id` | Jogador + NPCs com `stats`, `inventory: Item[]`, `relationships`, `avatarBase64`, `state`. |
+| `locations` | `id` | `by_game_id` | Grafo de locais, `connectedLocationIds`, descrições, `backgroundImage`. |
+| `messages` | `id` | `by_game_id` | Chat completo (`ChatMessage`), ordenado por timestamp e sanitizado contra duplicatas. |
+| `events` | `id` | `by_game_id` | `GameEvent` com `description`, `importance`, `turn`. Base para resumos futuros. |
+| `grids` | `id` | `by_game_id` | `GridSnapshot`: localização, `atMessageNumber`, timestamp e posições (x,y) de player/NPCs.
 
-### 2. `characters`
-Armazena todos os NPCs e o Jogador.
-*   **KeyPath:** `id` (String - UUID ou Slug)
-*   **Índices:**
-    *   `by_game_id`: Indexa campo `gameId`.
-*   **Campos Importantes:**
-    *   `gameId`: FK ligando ao jogo.
-    *   `inventory`: Array de Strings.
-    *   `stats`: Objeto JSON (HP, MP).
-    *   `relationships`: Mapa de afinidade.
-    *   `avatarBase64`: String longa com a imagem PNG codificada.
-
-### 3. `locations`
-Armazena o mapa do mundo.
-*   **KeyPath:** `id` (String)
-*   **Índices:**
-    *   `by_game_id`: Indexa campo `gameId`.
-*   **Campos Importantes:**
-    *   `gameId`: FK ligando ao jogo.
-    *   `connectedLocationIds`: Array de IDs de outros locais.
-    *   `backgroundImage`: String base64 com imagem de fundo gerada por DALL-E 3 (opcional).
-
-### 4. `messages`
-O log de chat. Pode crescer muito, por isso está separado.
-*   **KeyPath:** `id` (String - Timestamp_Index)
-*   **Índices:**
-    *   `by_game_id`: Indexa campo `gameId`.
-*   **Campos:**
-    *   `gameId`: FK.
-    *   `senderId`: Quem enviou.
-    *   `text`: O conteúdo.
-    *   `type`: DIALOGUE, NARRATION ou SYSTEM.
-
-### 5. `events`
-Log semântico para RAG (Retrieval Augmented Generation).
-*   **KeyPath:** `id`
-*   **Índices:**
-    *   `by_game_id`: Indexa campo `gameId`.
-*   **Campos:**
-    *   `description`: Resumo do que aconteceu.
-    *   `importance`: Peso do evento.
+> **Inventário estruturado:** desde a migração para `Item[]`, cada registro em `characters.inventory` contém `category`, `quantity`, `effects`, `stackable`, etc. Os prompts e UI usam `utils/inventory.ts` para formatar/validar esses dados.
 
 ---
 
-## 🔗 Diagrama de Relacionamento Lógico
+## 2. Fluxo de escrita (`saveGame`)
+
+1. `useGameEngine` chama `dbService.saveGame(gameState)` após cada turno.
+2. O serviço abre uma transação `readwrite` envolvendo todas as stores.
+3. O objeto `GameState` é desestruturado:
+   - `metaData` vai para `games` (sem `characters`, `locations`, `events`, `gridSnapshots`).
+   - Cada personagem recebe `gameId` e é salvo individualmente.
+   - Mensagens passam por `sanitizeMessages` para remover duplicidades e normalizar `pageNumber`.
+   - Snapshots do grid são salvos com `gameId` e mantidos ordenados por `atMessageNumber`.
+4. Em caso de erro a transação é revertida automaticamente, preservando consistência.
+
+---
+
+## 3. Fluxo de leitura (`loadGame`)
+
+1. `dbService.loadGame(id)` abre transação `readonly` e busca o registro em `games`.
+2. Em paralelo (`Promise.all`), coleta todos os registros nas demais stores usando `index('by_game_id').getAll(id)`.
+3. Reconstroi `characters`, `locations`, `events`, `gridSnapshots` como mapas (O(1) para lookup).
+4. Ordena mensagens e grids por timestamp/`atMessageNumber`, reexecuta `sanitizeMessages` e retorna o `GameState` hidratado.
+5. Se encontrar duplicidades no log, salva automaticamente o estado limpo em background.
+
+---
+
+## 4. Diagrama lógico
 
 ```mermaid
 erDiagram
@@ -74,28 +52,33 @@ erDiagram
     GAMES ||--|{ LOCATIONS : contains
     GAMES ||--|{ MESSAGES : contains
     GAMES ||--|{ EVENTS : contains
-    
-    GAMES {
-        string id PK
-        string playerCharacterId FK
-        string currentLocationId FK
-    }
-    
+    GAMES ||--|{ GRIDS : contains
+
     CHARACTERS {
         string id PK
         string gameId FK
-        blob avatarBase64
+        json stats
+        json inventory
+    }
+
+    GRIDSNAPSHOTS {
+        string id PK
+        string gameId FK
+        number atMessageNumber
     }
 ```
 
-## ⚙️ Fluxo de Leitura/Escrita
+---
 
-1.  **Carregar Jogo (`loadGame`):**
-    *   O sistema busca 1 registro em `games`.
-    *   Usa o ID desse jogo para fazer um `getAll(ID)` nas outras 4 tabelas simultaneamente.
-    *   Monta um objeto `GameState` gigante na memória RAM para o React renderizar.
+## 5. Exportação / Importação
 
-2.  **Salvar Jogo (`saveGame`):**
-    *   O sistema abre uma transação `readwrite` que engloba as 5 tabelas.
-    *   Itera sobre os arrays da memória e insere/atualiza (`put`) cada registro em sua respectiva tabela.
-    *   Isso garante que se o navegador fechar no meio, o banco não corrompe (ACID properties do IndexedDB).
+- `dbService.exportGame(id)` produz `{ version: EXPORT_VERSION, exportedAt, game }` pronto para compartilhamento.
+- `dbService.importGame(file)` valida a versão, normaliza IDs e reusa a mesma rotina de `saveGame`.
+
+---
+
+## 6. Boas práticas
+
+- **Atualize DB_VERSION** sempre que adicionar nova store ou alterar o shape dos dados. O `onupgradeneeded` garante criação de índices ausentes.
+- **Evite dados derivados** nas stores; cálculos como `healthPercent` são feitos em runtime.
+- **Limpeza periódica:** campanhas longas podem acumular centenas de snapshots; considerar políticas de retenção (ex.: armazenar apenas a cada N turnos) quando `gridSnapshots` ultrapassar limites definidos no app.
