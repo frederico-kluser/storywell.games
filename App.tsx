@@ -10,7 +10,9 @@ import { LandingPage } from './components/LandingPage';
 import { CharacterZoomModal } from './components/CharacterZoomModal';
 import { StoryCreationLoader } from './components/StoryCreationLoader/StoryCreationLoader';
 import { ProcessingIndicator } from './components/ProcessingIndicator/ProcessingIndicator';
+import { SettingsModal } from './components/SettingsModal';
 import { useGameEngine } from './hooks/useGameEngine';
+import { dbService } from './services/db';
 import { useMessageQueue } from './hooks/useMessageQueue';
 import { useCardNavigation } from './hooks/useCardNavigation';
 import { useThemeColors } from './hooks/useThemeColors';
@@ -23,7 +25,6 @@ import {
 	MapPin,
 	Users,
 	Trash2,
-	LogOut,
 	Backpack,
 	X,
 	User,
@@ -144,6 +145,7 @@ const App: React.FC = () => {
 	const [showStatus, setShowStatus] = useState(false);
 	const [showVoiceSettings, setShowVoiceSettings] = useState(false);
 	const [showThemeColors, setShowThemeColors] = useState(false);
+	const [showSettings, setShowSettings] = useState(false);
 	const [importMessage, setImportMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 	const [zoomModalData, setZoomModalData] = useState<{ imageSrc: string; name: string } | null>(null);
 
@@ -351,7 +353,7 @@ const App: React.FC = () => {
 							<Volume2 className="w-5 h-5" />
 						</button>
 						<button
-							onClick={() => setShowApiKeyModal(true)}
+							onClick={() => setShowSettings(true)}
 							className="hover:opacity-70 transition-opacity"
 							style={{ color: colors.textSecondary }}
 							title={t.settings}
@@ -458,16 +460,9 @@ const App: React.FC = () => {
 				</div>
 
 				<div
-					className="p-4 flex items-center justify-between"
+					className="p-4 flex items-center justify-end"
 					style={{ borderTop: `2px solid ${colors.border}`, backgroundColor: colors.backgroundAccent }}
 				>
-					<button
-						onClick={handleLogout}
-						className="flex items-center gap-2 text-xs font-bold uppercase hover:opacity-70"
-						style={{ color: colors.textSecondary }}
-					>
-						<LogOut className="w-4 h-4" /> End Session
-					</button>
 					<span className="text-[10px] font-mono" style={{ color: colors.textSecondary }}>
 						v{version}
 					</span>
@@ -961,6 +956,25 @@ const App: React.FC = () => {
 				onVoiceChange={setSelectedVoice}
 				useTone={useTone}
 				onUseToneChange={setUseTone}
+			/>
+
+			{/* Settings Modal */}
+			<SettingsModal
+				isOpen={showSettings}
+				onClose={() => setShowSettings(false)}
+				onOpenVoiceSettings={() => setShowVoiceSettings(true)}
+				onDeleteDatabase={async () => {
+					await dbService.deleteAllGames();
+					// Clear local state after database deletion
+					setCurrentStoryId(null);
+					// Reload the stories list (will be empty)
+					const loadedStories = await dbService.loadGames();
+					// This will trigger a re-render with empty stories - we need to access setStories
+					// Since setStories is not exposed, we'll use handleLogout logic
+					window.location.reload();
+				}}
+				onDeleteApiKey={handleLogout}
+				t={t}
 			/>
 
 			{/* Theme Colors Modal */}

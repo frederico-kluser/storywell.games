@@ -274,6 +274,31 @@ export const dbService = {
   },
 
   /**
+   * Deletes all games and their related records from the database.
+   * Use with caution - this operation cannot be undone.
+   */
+  deleteAllGames: async (): Promise<void> => {
+    const db = await dbService.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(
+        [STORES.GAMES, STORES.CHARACTERS, STORES.LOCATIONS, STORES.MESSAGES, STORES.EVENTS, STORES.GRIDS],
+        'readwrite'
+      );
+
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+
+      // Clear all object stores
+      tx.objectStore(STORES.GAMES).clear();
+      tx.objectStore(STORES.CHARACTERS).clear();
+      tx.objectStore(STORES.LOCATIONS).clear();
+      tx.objectStore(STORES.MESSAGES).clear();
+      tx.objectStore(STORES.EVENTS).clear();
+      tx.objectStore(STORES.GRIDS).clear();
+    });
+  },
+
+  /**
    * Exports a game to a JSON object for download.
    * @param id - The Game ID to export.
    * @returns The exported game data with version info.
