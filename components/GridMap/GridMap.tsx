@@ -13,7 +13,7 @@
  * - Responsive grid sizing matching card dimensions
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { GridSnapshot, GridCharacterPosition, ThemeColors } from '../../types';
 
 const getAvatarSrc = (avatarBase64?: string) => {
@@ -255,6 +255,27 @@ export const GridMap: React.FC<GridMapProps> = ({
     return positions;
   }, [currentGrid, characterAvatars]);
 
+  const gridWrapperRef = useRef<HTMLDivElement | null>(null);
+  const [gridSize, setGridSize] = useState<number>(0);
+
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return;
+    const node = gridWrapperRef.current;
+    if (!node) return;
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      setGridSize(Math.min(width, height));
+    });
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  const computedGridSize = gridSize > 0 ? `${gridSize}px` : '100%';
+
   return (
     <div
       style={{
@@ -347,6 +368,7 @@ export const GridMap: React.FC<GridMapProps> = ({
 
           {/* Grid Container */}
           <div
+            ref={gridWrapperRef}
             style={{
               flex: 1,
               padding: '8px',
@@ -376,9 +398,11 @@ export const GridMap: React.FC<GridMapProps> = ({
                   gridTemplateColumns: 'repeat(10, 1fr)',
                   gridTemplateRows: 'repeat(10, 1fr)',
                   gap: '1px',
-                  width: '100%',
-                  maxWidth: '300px',
-                  aspectRatio: '1',
+                  width: computedGridSize,
+                  height: computedGridSize,
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  aspectRatio: gridSize > 0 ? undefined : '1',
                   backgroundColor: colors.border,
                   border: `2px solid ${colors.borderStrong}`,
                   borderRadius: '4px',
