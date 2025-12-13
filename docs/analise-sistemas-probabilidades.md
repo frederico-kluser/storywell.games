@@ -7,63 +7,101 @@ Este documento descreve, de forma reflexiva, como os três blocos que envolvem p
 
 ```
 [Fim de turno detectado]
-      ↓ observa
+
+      ↓ observa (vigia fim de turno)
+
 ActionInput (ActionInput.tsx)
-      ↓ chama
+
+      ↓ chama (aciona geração)
+
 `generateActionOptions`
-      ↓ persiste
+
+      ↓ persiste (guarda resposta)
+
 Memória + cache local
-      ↓ disponibiliza
+
+      ↓ disponibiliza (expõe ao jogador)
+
 Lista atualizada de sugestões
 ```
 2. **Jogador escolhe** – Ao tocar em uma opção, `ActionInput` aciona `rollFate` (também em `openaiClient.ts`) para definir se haverá evento bom, ruim ou neutro, mostra o `FateToast` e envia a ação+resultado ao hook `useGameEngine` por meio de `handleSendMessage`.
 
 ```
 Jogador toca na opção
-      ↓
+
+      ↓ repassa interação
+
 ActionInput chama `rollFate`
-      ↓
+
+      ↓ aciona rolagem
+
 `rollFate` avalia porcentagens e define evento
-      ↓
+
+      ↓ informa desfecho
+
 `FateToast` comunica o destino
-      ↓
+
+      ↓ encaminha resultado
+
 `handleSendMessage` envia ação + Fate ao `useGameEngine`
 ```
 3. **Entrada alternativa** – Se o jogador usar “Outro”, o mesmo componente chama `analyzeCustomAction` para calcular as porcentagens antes de confirmar e só então executa o fluxo acima.
 
 ```
 Jogador seleciona "Outro"
-      ↓
+
+      ↓ inicia análise
+
 ActionInput dispara `analyzeCustomAction`
-      ↓
+
+      ↓ exibe cálculo
+
 Modal mostra porcentagens + reasoning
-      ↓ confirma
+
+      ↓ confirma (usuário aceita)
+
 Jogador aceita os valores
-      ↓ retoma
+
+      ↓ retoma (volta ao fluxo)
+
 Fluxo volta para `rollFate` e `handleSendMessage`
 ```
 4. **Classificação/ajuste textual** – `useGameEngine.ts` roda `classifyAndProcessPlayerInput` (prompt `playerMessageProcessing.prompt.ts`) para garantir que a fala/ação final esteja no tom do personagem antes de ir para o GM.
 
 ```
 `useGameEngine` recebe ação + Fate
-      ↓
+
+      ↓ prepara normalização
+
 `classifyAndProcessPlayerInput`
-      ↓
+
+      ↓ ajusta estilo
+
 Texto ajustado ao tom/personagem
-      ↓
+
+      ↓ libera envio
+
 Conteúdo validado segue para o GM
 ```
 5. **Resolução narrativa** – `generateGameTurn` monta o `buildGameMasterPrompt`, injeta o `fateResult` e envia tudo ao GPT-4.1. A resposta volta estruturada (`GMResponse`) com mensagens, atualizações de stats/inventário/local e possíveis novos NPCs.
 
 ```
 `generateGameTurn` compõe `buildGameMasterPrompt`
-      ↓ inclui
+
+      ↓ inclui (insere contexto)
+
 `fateResult` + contexto completo
-      ↓ envia
+
+      ↓ envia (manda ao modelo)
+
 GPT-4.1 responde seguindo `gmResponseSchema`
-      ↓ valida
+
+      ↓ valida (confere schema)
+
 `GMResponse` aprovado
-      ↓ aplica
+
+      ↓ aplica (atualiza estado)
+
 Atualização de mensagens, stats, inventário e NPCs
 ```
 
@@ -85,18 +123,26 @@ Atualização de mensagens, stats, inventário e NPCs
 
 ```
 ActionInput / fetch / analyze / GM
-              ↓ registram spans
+
+              ↓ registram spans (coletam latência)
+
 Tracing leve coleta latência + custo
-              ↓ agrega
+
+              ↓ agrega (envia ao painel)
+
 Painel de observabilidade mostra gargalos
 ```
 2. Adicionar uma fila resiliente/offline (IndexedDB) para ações pendentes caso a rede caia após o jogador confirmar, garantindo consistência com o motor baseado em browser.
 
 ```
 Jogador confirma ação
-        ↓ enfileira
+
+        ↓ enfileira (garante backup)
+
 Registro é salvo na IndexedDB
-        ↓ verifica rede
+
+        ↓ verifica rede (teste online)
+
 Se offline → aguarda retry
 Se online → sincroniza com motor
 ```
@@ -104,26 +150,37 @@ Se online → sincroniza com motor
 
 ```
 Input do jogador
-      ↓ validações locais (spam, vazio, repetição)
+
+      ↓ validações locais (spam, vazio, repetição filtradas)
+
       ↙                 ↘
+
 Falhou → bloqueia e avisa   Passou → chama prompt/LLM
 ```
 4. Expor no UI (ou devtools internas) um painel que mostre qual prompt foi disparado por último e qual cache foi utilizado, ajudando QA a reproduzir problemas.
 
 ```
 Eventos das chamadas (prompt + cache)
-                ↓ alimentam
+
+                ↓ alimentam (registram uso)
+
 Painel devtools/UX interno
-                ↓ mostra
+
+                ↓ mostra (expõe métricas)
+
 Último prompt, cache hit/miss e tempo → QA reproduz fluxo
 ```
 5. Criar feature flags/versionamento de prompt para permitir rollout gradual de novas instruções sem precisar duplicar código em produção.
 
 ```
 Nova instrução de prompt
-        ↓ associada a feature flag/versão
+
+        ↓ associada a feature flag/versão (controla rollout)
+
 Ambiente decide flag ON/OFF
-        ↓
+
+        ↓ aplica seleção
+
 LLM recebe prompt antigo ou novo sem duplicar código
 ```
 
@@ -144,18 +201,26 @@ LLM recebe prompt antigo ou novo sem duplicar código
 
 ```
 `pacingState` + threads ativas
-              ↓
+
+              ↓ adicionam contexto
+
 Enriquecem `buildActionOptionsPrompt`
-              ↓
+
+              ↓ orientam variedade
+
 Modelo gera opções alinhadas ao ritmo
 ```
 2. Adicionar uma camada heurística pós-prompt que descarte ações repetidas em turnos próximos, usando hashing simples dos textos das últimas N opções.
 
 ```
 Opções retornadas pelo LLM
-        ↓
+
+        ↓ passam pelo filtro
+
 Hash/heurística compara com últimas N
-        ↓
+
+        ↓ evita repetição
+
 Duplicada? → remove/substitui
 Única? → segue para UI
 ```
@@ -163,31 +228,47 @@ Duplicada? → remove/substitui
 
 ```
 Configuração de gênero narrativo
-          ↓ define pesos
+
+          ↓ define pesos (regras globais)
+
 Builder aplica pesos às categorias
-          ↓
+
+          ↓ ajusta prompt
+
 Prompt força proporção diálogo/exploração/combate desejada
 ```
 4. Registrar telemetria das porcentagens escolhidas para detectar quando o modelo está tendendo demais a cenários neutros ou extremos, facilitando tuning.
 
 ```
 Jogador seleciona opção + porcentagens
-           ↓
+
+           ↓ envia métricas
+
 Telemetria registra good/bad/neutral
-           ↓
+
+           ↓ agrega histórico
+
 Dashboard analisa tendência neutra/extrema
-           ↓
+
+           ↓ sugere ajustes
+
 Time ajusta prompts/modelo conforme padrões
 ```
 5. Expandir os testes Jest mencionados no README para validar que `generateActionOptions` respeita formatos em PT/EN/ES e inclui as dicas obrigatórias, pegando regressões cedo.
 
 ```
 Casos de teste PT/EN/ES
-        ↓ alimentam
+
+        ↓ alimentam (simulam entradas)
+
 `generateActionOptions`
-        ↓ verificam
+
+        ↓ verificam (checam output)
+
 Formato + dicas obrigatórias
-        ↓
+
+        ↓ alerta regressão
+
 Falha? → acusa regressão cedo
 ```
 
@@ -208,49 +289,73 @@ Falha? → acusa regressão cedo
 
 ```
 Entrada "Outro" do jogador
-        ↓
+
+        ↓ dispara verificação
+
 Validador cruza stats/inventário
+
         ↙             ↘
+
 Inválido → mensagem imediata   Válido → chama `analyzeCustomAction`
 ```
 2. Persistir as análises confirmadas no IndexedDB (junto ao turno) para que futuros turnos possam auditar ou reaproveitar probabilidades semelhantes.
 
 ```
 Análise custom aprovada
-        ↓
+
+        ↓ persiste decisão
+
 Registro salvo no IndexedDB + turno
-        ↓
+
+        ↓ referencia ações
+
 Turnos futuros consultam histórico
-        ↓
+
+        ↓ reaproveitam dados
+
 Auditoria ou reaproveitamento das probabilidades
 ```
 3. Introduzir um limite mínimo/máximo configurável por camada (ex.: “ações furtivas não podem ter badChance < 20%”) para manter balanço entre gênero narrativo e risco.
 
 ```
 Configuração de limites por camada
-          ↓
+
+          ↓ define faixas
+
 `analyzeCustomAction` aplica clamp customizado
-          ↓
+
+          ↓ gera números seguros
+
 Probabilidades respeitam faixa segura por gênero
 ```
 4. Gerar sugestões alternativas automaticamente quando a análise retorna risco extremo (ex.: oferecer um plano B mais seguro sem precisar voltar para a lista padrão).
 
 ```
 `analyzeCustomAction` → risco extremo detectado
-                ↓
+
+                ↓ aciona fallback
+
 Gera plano B automático
-                ↓
+
+                ↓ sugere opção
+
 UI oferece alternativa segura sem sair do modal
 ```
 5. Acrescentar testes unitários que validem o builder com diferentes idiomas e configurações de grid para evitar regressões em campanhas sci-fi/fantasia.
 
 ```
 Casos de teste multi-idioma + grids variados
-        ↓ exercitam
+
+        ↓ exercitam (diversificam entradas)
+
 `buildCustomActionAnalysisPrompt`
-        ↓ conferem
+
+        ↓ conferem (validam estrutura)
+
 Strings obrigatórias e referências espaciais
-        ↓
+
+        ↓ alertam falhas
+
 Alarmam regressões antes do deploy
 ```
 
@@ -271,49 +376,73 @@ Alarmam regressões antes do deploy
 
 ```
 HeavyContext completo
-        ↓
+
+        ↓ prepara condensação
+
 Processo de compressão/rotacionamento
-        ↓
+
+        ↓ remove excessos
+
 Contexto resumido + instruções críticas
-        ↓
+
+        ↓ otimiza prompt
+
 Prompt do GM consome menos tokens
 ```
 2. Adicionar um campo `reasoning_log` opcional na resposta do GM para auditoria – útil quando precisamos entender por que determinado evento de Fate resultou em certo efeito.
 
 ```
 `generateGameTurn` solicita `reasoning_log`
-             ↓
+
+             ↓ pede justificativa
+
 LLM explica passo a passo a decisão
-             ↓
+
+             ↓ fornece rastreio
+
 Auditoria lê log e entende vínculo com Fate
 ```
 3. Rodar `buildNarrativeQualityAnalysisPrompt` automaticamente em turnos onde `fateResult` é “bad” para verificar se a punição não está desbalanceada (já que tal prompt existe segundo o README).
 
 ```
 Turno com `fateResult = bad`
-            ↓
+
+            ↓ sinaliza revisão
+
 Dispara `buildNarrativeQualityAnalysisPrompt`
-            ↓
+
+            ↓ avalia equilíbrio
+
 Checagem confirma severidade adequada
-            ↓
+
+            ↓ emite alerta
+
 Alertas quando punição está fora do esperado
 ```
 4. Criar tiers de modelos (ex.: gpt-4.1 vs gpt-4.1-mini) dependendo da complexidade do turno, conforme recomendado na seção “Sistema de Requisições à IA”, economizando custo.
 
 ```
 Avaliação de complexidade do turno
-          ↓ decide tier
+
+          ↓ decide tier (classifica esforço)
+
 Tier alto → gpt-4.1 | Tier baixo → gpt-4.1-mini
-          ↓
+
+          ↓ aplica escolha
+
 `generateGameTurn` chama modelo adequado e otimiza custo
 ```
 5. Automatizar a chamada de `gridUpdate.prompt.ts` logo após aplicar o `GMResponse` sempre que houver movimento implícito, garantindo que o mapa 10x10 permaneça fiel sem depender de ações manuais no hook.
 
 ```
 `GMResponse` aplicado
-        ↓ detecta movimento implícito
+
+        ↓ detecta movimento implícito (observa diffs)
+
 Aciona `gridUpdate.prompt.ts`
-        ↓
+
+        ↓ atualiza grid
+
 Mapa 10x10 é sincronizado automaticamente
 ```
 
@@ -333,49 +462,73 @@ Mapa 10x10 é sincronizado automaticamente
 
 ```
 `useGameEngine` expõe lastFateResult + heavyContext + prompt
-                    ↓
+
+                    ↓ alimenta painel
+
 Dashboard dev em `StoryCard`
-                    ↓
+
+                    ↓ revela insights
+
 Time visualiza estado crítico sem novas requisições
 ```
 2. **Manutenção Proativa do Heavy Context:** Introduzir um job automático (a cada X turnos) que chama `buildHeavyContextPrompt` para auditar consistência, removendo entradas obsoletas e documentando mudanças. Essa rotina pode ser disparada pelo hook quando `turnCount % X === 0`, garantindo que as dependências citadas aqui não degradem com o tempo.
 
 ```
 `turnCount % X === 0`
-          ↓
+
+          ↓ aciona rotina
+
 Hook dispara `buildHeavyContextPrompt`
-          ↓
+
+          ↓ revisa dados
+
 Audita, limpa e documenta heavyContext
 ```
 3. **Pipeline de Internacionalização para Prompts:** Antes de habilitar novos idiomas previstos no README (FR/RU/ZH), montar testes de snapshot para cada builder relevante (action options, análise custom, GM). Isso evita regressões silenciosas e cria confiança para expandir a matriz de idiomas.
 
 ```
 Novos idiomas planejados
-        ↓
+
+        ↓ entram no pipeline
+
 Testes de snapshot por builder
-        ↓
+
+        ↓ verificam strings
+
 Validação garante consistência multi-idioma
-        ↓
+
+        ↓ libera expansão
+
 Rollout seguro para FR/RU/ZH
 ```
 4. **Suite de Testes para Builders e Schemas:** Expandir `__tests__/services/openaiClient.test.ts` adicionando verificações diretas dos builders (strings chave, limites, seções obrigatórias). Cobrir também o parsing dos schemas (`gmResponseSchema`, `actionOptionsSchema`, `customActionAnalysisSchema`) para detectar incompatibilidades assim que surgirem.
 
 ```
 Testes unitários ampliados
-        ↓
+
+        ↓ exercitam cenários
+
 Executam builders + schemas
-        ↓
+
+        ↓ validam contratos
+
 Checam strings chave, limites e parsing
-        ↓
+
+        ↓ sinalizam falha
+
 Quebra detectada antes do merge
 ```
 5. **Versionamento Formal de Prompts:** Documentar e implementar um mecanismo de versionamento/flags nos builders (ex.: `PROMPT_VERSION` em `GameState.config`). Isso permite ativar novas instruções gradualmente por campanha ou universo, reduz risco em campanhas longas e segue o princípio de migrações descrito em `docs/ITEM_CURRENCY_SYSTEM_PROPOSAL.md`.
 
 ```
 Definir `PROMPT_VERSION`/flags nos builders
-              ↓
+
+              ↓ controla versões
+
 Campanhas escolhem versão ativa
-              ↓
+
+              ↓ aplicam política
+
 Rollout gradual aplica instruções novas sem romper legados
 ```
 
