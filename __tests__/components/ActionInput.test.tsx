@@ -309,4 +309,79 @@ describe('ActionInput', () => {
       expect(mockOnVoiceTranscription).toHaveBeenCalledWith('Voice transcribed text');
     });
   });
+
+  describe('mobile collapse', () => {
+    it('should show actions label on mobile layouts', async () => {
+      renderWithTheme(<ActionInput {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Look around')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      expect(screen.queryByText('Actions')).toBeInTheDocument();
+    });
+  });
+
+  describe('disabled states', () => {
+    it('should disable options when isProcessing is true', async () => {
+      const { rerender } = render(
+        <ThemeColorsProvider>
+          <ActionInput {...defaultProps} />
+        </ThemeColorsProvider>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Look around')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      rerender(
+        <ThemeColorsProvider>
+          <ActionInput {...defaultProps} isProcessing={true} />
+        </ThemeColorsProvider>
+      );
+
+      const lookAround = screen.getByText('Look around');
+      const optionButton = lookAround.closest('button');
+      expect(optionButton).toBeDisabled();
+    });
+  });
+
+  describe('background updates', () => {
+    it('should show context syncing badge when updating memory', async () => {
+      const { rerender } = render(
+        <ThemeColorsProvider>
+          <ActionInput {...defaultProps} />
+        </ThemeColorsProvider>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Look around')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      rerender(
+        <ThemeColorsProvider>
+          <ActionInput {...defaultProps} isUpdatingContext={true} />
+        </ThemeColorsProvider>
+      );
+
+      expect(screen.getByText(/Atualizando memória/)).toBeInTheDocument();
+    });
+  });
+
+  describe('caching', () => {
+    beforeEach(() => {
+      localStorage.clear();
+    });
+
+    it('should cache options in localStorage', async () => {
+      renderWithTheme(<ActionInput {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.getByText('Look around')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      const cacheKey = `storywell_options_cache_${defaultProps.activeStory.id}`;
+      expect(localStorage.getItem(cacheKey)).toBeTruthy();
+    });
+  });
 });
