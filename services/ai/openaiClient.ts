@@ -15,6 +15,7 @@ import {
 	NarrativeGenre,
 	GridSnapshot,
 	GridCharacterPosition,
+	GridElement,
 	GridPosition,
 	GridUpdateResponse,
 	NarrativeStyleMode,
@@ -1925,11 +1926,13 @@ export const updateGridPositions = async (
 	language: Language,
 	currentMessageNumber: number,
 ): Promise<GridUpdateResult> => {
-	// Get current grid positions from most recent snapshot
-	const currentGridPositions =
+	// Get current grid positions and elements from most recent snapshot
+	const latestSnapshot =
 		gameState.gridSnapshots && gameState.gridSnapshots.length > 0
-			? gameState.gridSnapshots[gameState.gridSnapshots.length - 1].characterPositions
+			? gameState.gridSnapshots[gameState.gridSnapshots.length - 1]
 			: undefined;
+	const currentGridPositions = latestSnapshot?.characterPositions;
+	const currentElements = latestSnapshot?.elements;
 
 	const charactersAtLocation: Character[] = Object.values(gameState.characters).filter(
 		(c) => c.locationId === gameState.currentLocationId,
@@ -1995,6 +1998,7 @@ export const updateGridPositions = async (
 		recentMessages: messagesForContext as GMResponseMessage[],
 		eventLog: recentResponse.stateUpdates.eventLog,
 		currentGridPositions,
+		currentElements,
 		language,
 	});
 
@@ -2027,73 +2031,79 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 
 		const parsed: GridUpdateResponse = JSON.parse(cleanJsonString(response.text));
 
-		if (!parsed.shouldUpdate || !parsed.characterPositions) {
+		// If no update needed
+		if (!parsed.shouldUpdate) {
+			return { updated: false };
+		}
+
+		// Check if there's actually any change data
+		const hasPositionChanges = parsed.characterPositions && parsed.characterPositions.length > 0;
+		const hasElementChanges = parsed.elements && parsed.elements.length > 0;
+		const hasRemovals = parsed.removedElements && parsed.removedElements.length > 0;
+
+		if (!hasPositionChanges && !hasElementChanges && !hasRemovals) {
 			return { updated: false };
 		}
 
 		const currentLocation = gameState.locations[gameState.currentLocationId];
 
-		const previousPositions = new Map<string, GridCharacterPosition>();
+		// ============================================================
+		// DELTA MERGE: Character Positions
+		// Start with ALL previous positions, then apply changes
+		// ============================================================
+		const mergedPositions = new Map<string, GridCharacterPosition>();
+
+		// Step 1: Copy all previous positions
 		(currentGridPositions || []).forEach((pos) => {
-			previousPositions.set(pos.characterId, pos);
+			mergedPositions.set(pos.characterId, { ...pos });
 		});
 
-		const providedPositions = new Map<string, GridCharacterPosition>();
-		parsed.characterPositions.forEach((pos) => {
-			if (!charactersAtLocationSet.has(pos.characterId)) {
-				return;
-			}
-			const character = gameState.characters[pos.characterId];
-			const normalizedPosition: GridPosition = {
-				x: clampCoordinate(pos.x),
-				y: clampCoordinate(pos.y),
-			};
-			providedPositions.set(pos.characterId, {
-				characterId: pos.characterId,
-				characterName: pos.characterName,
-				position: normalizedPosition,
-				isPlayer: !!pos.isPlayer,
-				avatarBase64: character?.avatarBase64 || previousPositions.get(pos.characterId)?.avatarBase64,
+		// Step 2: Apply ONLY the changes from the LLM response
+		if (parsed.characterPositions && parsed.characterPositions.length > 0) {
+			parsed.characterPositions.forEach((pos) => {
+				if (!charactersAtLocationSet.has(pos.characterId)) {
+					return;
+				}
+				const character = gameState.characters[pos.characterId];
+				const previousPos = mergedPositions.get(pos.characterId);
+				const normalizedPosition: GridPosition = {
+					x: clampCoordinate(pos.x),
+					y: clampCoordinate(pos.y),
+				};
+				mergedPositions.set(pos.characterId, {
+					characterId: pos.characterId,
+					characterName: pos.characterName,
+					position: normalizedPosition,
+					isPlayer: !!pos.isPlayer,
+					avatarBase64: character?.avatarBase64 || previousPos?.avatarBase64,
+				});
 			});
-		});
+		}
 
+		// Step 3: Ensure all characters at location have positions
 		const occupiedCells = new Set<string>();
-		providedPositions.forEach((value) => {
+		mergedPositions.forEach((value) => {
 			occupiedCells.add(getPositionKey(value.position));
 		});
 
 		let playerPosition: GridPosition | null = null;
 		if (playerCharacter) {
-			const providedPlayer = providedPositions.get(playerCharacter.id);
-			const previousPlayer = previousPositions.get(playerCharacter.id);
-			if (providedPlayer) {
-				playerPosition = providedPlayer.position;
-				providedPositions.set(playerCharacter.id, {
-					...providedPlayer,
+			const existingPlayer = mergedPositions.get(playerCharacter.id);
+			if (existingPlayer) {
+				playerPosition = existingPlayer.position;
+				// Ensure isPlayer flag is set
+				mergedPositions.set(playerCharacter.id, {
+					...existingPlayer,
 					isPlayer: true,
-					avatarBase64: providedPlayer.avatarBase64 || playerCharacter.avatarBase64 || previousPlayer?.avatarBase64,
+					avatarBase64: existingPlayer.avatarBase64 || playerCharacter.avatarBase64,
 				});
-				occupiedCells.add(getPositionKey(providedPlayer.position));
-			} else if (previousPlayer) {
-				playerPosition = {
-					x: clampCoordinate(previousPlayer.position.x),
-					y: clampCoordinate(previousPlayer.position.y),
-				};
-				providedPositions.set(playerCharacter.id, {
-					characterId: playerCharacter.id,
-					characterName: playerCharacter.name,
-					position: playerPosition,
-					isPlayer: true,
-					avatarBase64: previousPlayer.avatarBase64 || playerCharacter.avatarBase64,
-				});
-				occupiedCells.add(getPositionKey(playerPosition));
 			}
 		}
 
 		if (!playerPosition) {
 			playerPosition = { x: 5, y: 5 };
 			if (playerCharacter) {
-				providedPositions.set(playerCharacter.id, {
+				mergedPositions.set(playerCharacter.id, {
 					characterId: playerCharacter.id,
 					characterName: playerCharacter.name,
 					position: playerPosition,
@@ -2104,53 +2114,108 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 			occupiedCells.add(getPositionKey(playerPosition));
 		}
 
-		const ensurePositionForCharacter = (char: Character) => {
-			const existing = providedPositions.get(char.id);
-			if (existing) {
+		// Ensure new characters at location get positions
+		charactersAtLocation.forEach((char) => {
+			if (mergedPositions.has(char.id)) {
+				// Update avatar if missing
+				const existing = mergedPositions.get(char.id)!;
 				if (!existing.avatarBase64 && char.avatarBase64) {
-					providedPositions.set(char.id, {
-						...existing,
-						avatarBase64: char.avatarBase64,
-					});
+					mergedPositions.set(char.id, { ...existing, avatarBase64: char.avatarBase64 });
 				}
 				return;
 			}
 
-			const previous = previousPositions.get(char.id);
-			if (previous) {
-				const normalizedPrevPosition: GridPosition = {
-					x: clampCoordinate(previous.position.x),
-					y: clampCoordinate(previous.position.y),
-				};
-				providedPositions.set(char.id, {
-					characterId: char.id,
-					characterName: previous.characterName || char.name,
-					position: normalizedPrevPosition,
-					isPlayer: char.isPlayer,
-					avatarBase64: previous.avatarBase64 || char.avatarBase64,
-				});
-				occupiedCells.add(getPositionKey(normalizedPrevPosition));
-				return;
-			}
-
+			// New character needs a position
 			const spawnPosition = findNearestAvailablePosition(playerPosition as GridPosition, occupiedCells);
 			occupiedCells.add(getPositionKey(spawnPosition));
-			providedPositions.set(char.id, {
+			mergedPositions.set(char.id, {
 				characterId: char.id,
 				characterName: char.name,
 				position: spawnPosition,
 				isPlayer: char.isPlayer,
 				avatarBase64: char.avatarBase64,
 			});
-		};
-
-		charactersAtLocation.forEach((char) => ensurePositionForCharacter(char));
+		});
 
 		const characterPositions: GridCharacterPosition[] = charactersAtLocation
-			.map((char) => providedPositions.get(char.id))
+			.map((char) => mergedPositions.get(char.id))
 			.filter((pos): pos is GridCharacterPosition => Boolean(pos));
 
-		if (characterPositions.length === 0) {
+		// ============================================================
+		// DELTA MERGE: Elements
+		// Start with previous elements, apply additions/updates, then removals
+		// ============================================================
+		const mergedElements = new Map<string, GridElement>();
+
+		// Step 1: Copy all previous elements
+		(currentElements || []).forEach((elem) => {
+			mergedElements.set(elem.symbol, { ...elem });
+		});
+
+		// Step 2: Remove elements that were destroyed/removed
+		if (parsed.removedElements && parsed.removedElements.length > 0) {
+			parsed.removedElements.forEach((symbol) => {
+				const normalizedSymbol = symbol.toUpperCase().charAt(0);
+				mergedElements.delete(normalizedSymbol);
+			});
+		}
+
+		// Step 3: Add or update elements from LLM response
+		if (parsed.elements && parsed.elements.length > 0) {
+			const usedSymbols = new Set<string>(mergedElements.keys());
+
+			parsed.elements.forEach((elem) => {
+				// Ensure symbol is a single capital letter
+				let symbol = (elem.symbol || 'X').toUpperCase().charAt(0);
+				if (!/^[A-Z]$/.test(symbol)) {
+					symbol = 'X';
+				}
+
+				// Check if this is an update to existing element or new element
+				const existingElement = mergedElements.get(symbol);
+
+				if (existingElement) {
+					// Update existing element (position or description changed)
+					mergedElements.set(symbol, {
+						...existingElement,
+						name: elem.name || existingElement.name,
+						description: elem.description || existingElement.description,
+						position: {
+							x: clampCoordinate(elem.x),
+							y: clampCoordinate(elem.y),
+						},
+					});
+				} else {
+					// New element - avoid duplicate symbols
+					if (usedSymbols.has(symbol)) {
+						for (let c = 65; c <= 90; c++) {
+							const letter = String.fromCharCode(c);
+							if (!usedSymbols.has(letter)) {
+								symbol = letter;
+								break;
+							}
+						}
+					}
+					usedSymbols.add(symbol);
+
+					mergedElements.set(symbol, {
+						id: `elem_${symbol}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+						symbol,
+						name: elem.name || 'Unknown',
+						description: elem.description || '',
+						position: {
+							x: clampCoordinate(elem.x),
+							y: clampCoordinate(elem.y),
+						},
+					});
+				}
+			});
+		}
+
+		const processedElements: GridElement[] = Array.from(mergedElements.values());
+
+		// If no characters and no elements, don't update
+		if (characterPositions.length === 0 && processedElements.length === 0) {
 			return { updated: false };
 		}
 
@@ -2162,6 +2227,7 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 			locationId: gameState.currentLocationId,
 			locationName: currentLocation?.name || 'Unknown',
 			characterPositions,
+			elements: processedElements.length > 0 ? processedElements : undefined,
 		};
 
 		console.log(

@@ -2,19 +2,21 @@
  * @fileoverview GridMap Component - 10x10 Map Grid with 3D Flip Animation
  *
  * This component displays a 10x10 grid map showing character positions
- * in the current location. It integrates with the card navigation system
- * and shows historical grid states based on the current message number.
+ * and scene elements in the current location. It integrates with the card
+ * navigation system and shows historical grid states based on the current
+ * message number.
  *
  * Features:
  * - 3D flip animation to reveal the map
  * - Blinking player character indicator
  * - Character avatars displayed on grid cells
+ * - Scene elements displayed as letters with popup on click
  * - Historical grid view based on current card/message
  * - Responsive grid sizing matching card dimensions
  */
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { GridSnapshot, GridCharacterPosition, ThemeColors } from '../../types';
+import { GridSnapshot, GridCharacterPosition, GridElement, ThemeColors } from '../../types';
 
 const getAvatarSrc = (avatarBase64?: string) => {
   if (!avatarBase64) return undefined;
@@ -73,8 +75,10 @@ const GridCell: React.FC<{
   x: number;
   y: number;
   characters: GridCharacterPosition[];
+  elements: GridElement[];
   colors: ThemeColors;
-}> = ({ x, y, characters, colors }) => {
+  onElementClick: (element: GridElement) => void;
+}> = ({ x, y, characters, elements, colors, onElementClick }) => {
   const [blinkState, setBlinkState] = useState(true);
 
   // Find characters at this position
@@ -82,11 +86,18 @@ const GridCell: React.FC<{
     (c) => c.position.x === x && c.position.y === y
   );
 
+  // Find elements at this position
+  const elementsAtPosition = elements.filter(
+    (e) => e.position.x === x && e.position.y === y
+  );
+
   const hasPlayer = charsAtPosition.some((c) => c.isPlayer);
   const playerChar = charsAtPosition.find((c) => c.isPlayer);
   const npcChars = charsAtPosition.filter((c) => !c.isPlayer);
   const playerAvatarSrc = playerChar ? getAvatarSrc(playerChar.avatarBase64) : undefined;
   const firstNpcAvatarSrc = npcChars.length > 0 ? getAvatarSrc(npcChars[0].avatarBase64) : undefined;
+  const hasElement = elementsAtPosition.length > 0;
+  const firstElement = elementsAtPosition[0];
 
   // Blinking effect for player
   useEffect(() => {
@@ -101,17 +112,26 @@ const GridCell: React.FC<{
 
   // Determine cell styling based on content
   const isOccupied = charsAtPosition.length > 0;
-  const borderColor = isOccupied ? colors.borderStrong : colors.border;
+  const borderColor = isOccupied ? colors.borderStrong : hasElement ? colors.warning : colors.border;
   const bgColor = hasPlayer
     ? blinkState
       ? colors.buttonPrimary
       : colors.backgroundAccent
     : isOccupied
     ? colors.backgroundSecondary
+    : hasElement
+    ? `${colors.warning}22`  // Semi-transparent warning color for elements
     : 'transparent';
+
+  const handleClick = () => {
+    if (hasElement && firstElement) {
+      onElementClick(firstElement);
+    }
+  };
 
   return (
     <div
+      onClick={handleClick}
       style={{
         width: '100%',
         aspectRatio: '1',
@@ -123,13 +143,48 @@ const GridCell: React.FC<{
         position: 'relative',
         overflow: 'hidden',
         transition: 'background-color 0.2s ease',
+        cursor: hasElement ? 'pointer' : 'default',
       }}
       title={
         charsAtPosition.length > 0
           ? charsAtPosition.map((c) => c.characterName).join(', ')
+          : hasElement
+          ? `${firstElement?.name}: ${firstElement?.description}`
           : `(${x}, ${y})`
       }
     >
+      {/* Element symbol (shown behind characters if both present) */}
+      {hasElement && !hasPlayer && charsAtPosition.length === 0 && (
+        <span
+          style={{
+            fontSize: '14px',
+            fontWeight: 'bold',
+            color: colors.warning,
+            textShadow: `0 0 2px ${colors.background}`,
+          }}
+        >
+          {firstElement?.symbol}
+        </span>
+      )}
+      {/* Element indicator when character is also present */}
+      {hasElement && (hasPlayer || charsAtPosition.length > 0) && (
+        <span
+          style={{
+            position: 'absolute',
+            top: '1px',
+            left: '1px',
+            fontSize: '8px',
+            fontWeight: 'bold',
+            color: colors.warning,
+            backgroundColor: colors.background,
+            padding: '0 2px',
+            borderRadius: '2px',
+            lineHeight: '1',
+          }}
+        >
+          {firstElement?.symbol}
+        </span>
+      )}
       {/* Player avatar */}
       {playerAvatarSrc && (
         <img
@@ -206,6 +261,27 @@ const GridCell: React.FC<{
           )}
         </>
       )}
+      {/* Badge for multiple elements */}
+      {elementsAtPosition.length > 1 && (
+        <span
+          style={{
+            position: 'absolute',
+            bottom: '2px',
+            left: '2px',
+            fontSize: '8px',
+            backgroundColor: colors.warning,
+            color: '#fff',
+            borderRadius: '50%',
+            width: '14px',
+            height: '14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          +{elementsAtPosition.length - 1}
+        </span>
+      )}
     </div>
   );
 };
@@ -225,6 +301,9 @@ export const GridMap: React.FC<GridMapProps> = ({
   characterAvatars,
   t,
 }) => {
+  // State for element popup
+  const [selectedElement, setSelectedElement] = useState<GridElement | null>(null);
+
   // Get the appropriate grid snapshot for the current message
   const currentGrid = useMemo(
     () => getGridForMessage(gridSnapshots, currentMessageNumber),
@@ -254,6 +333,21 @@ export const GridMap: React.FC<GridMapProps> = ({
     }
     return positions;
   }, [currentGrid, characterAvatars]);
+
+  // Elements from current grid snapshot
+  const elements = useMemo(() => {
+    return currentGrid?.elements || [];
+  }, [currentGrid]);
+
+  // Handle element click - show popup
+  const handleElementClick = (element: GridElement) => {
+    setSelectedElement(element);
+  };
+
+  // Close popup
+  const closePopup = () => {
+    setSelectedElement(null);
+  };
 
   const gridWrapperRef = useRef<HTMLDivElement | null>(null);
   const [gridSize, setGridSize] = useState<number>(0);
@@ -407,7 +501,9 @@ export const GridMap: React.FC<GridMapProps> = ({
                     x={x}
                     y={y}
                     characters={characters}
+                    elements={elements}
                     colors={colors}
+                    onElementClick={handleElementClick}
                   />
                 ))}
               </div>
@@ -425,13 +521,13 @@ export const GridMap: React.FC<GridMapProps> = ({
           </div>
 
           {/* Legend */}
-          {currentGrid && characters.length > 0 && (
+          {currentGrid && (characters.length > 0 || elements.length > 0) && (
             <div
               style={{
                 padding: '8px 12px',
                 borderTop: `1px solid ${colors.border}`,
                 backgroundColor: colors.backgroundSecondary,
-                maxHeight: '100px',
+                maxHeight: '120px',
                 overflowY: 'auto',
               }}
             >
@@ -443,6 +539,7 @@ export const GridMap: React.FC<GridMapProps> = ({
                   fontSize: '11px',
                 }}
               >
+                {/* Characters */}
                 {characters.map((char) => {
                   const avatarSrc = getAvatarSrc(char.avatarBase64);
                   return (
@@ -502,6 +599,146 @@ export const GridMap: React.FC<GridMapProps> = ({
                     </div>
                   );
                 })}
+                {/* Elements */}
+                {elements.map((elem) => (
+                  <div
+                    key={elem.id}
+                    onClick={() => handleElementClick(elem)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                      padding: '2px 6px',
+                      backgroundColor: `${colors.warning}33`,
+                      color: colors.text,
+                      borderRadius: '4px',
+                      border: `1px solid ${colors.warning}`,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: '16px',
+                        height: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        color: colors.warning,
+                      }}
+                    >
+                      {elem.symbol}
+                    </span>
+                    <span>{elem.name}</span>
+                    <span style={{ opacity: 0.6 }}>
+                      ({elem.position.x}, {elem.position.y})
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Element Popup */}
+          {selectedElement && (
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 100,
+              }}
+              onClick={closePopup}
+            >
+              <div
+                style={{
+                  backgroundColor: colors.background,
+                  border: `2px solid ${colors.warning}`,
+                  borderRadius: '8px',
+                  padding: '16px',
+                  maxWidth: '280px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginBottom: '12px',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '20px',
+                      fontWeight: 'bold',
+                      color: colors.warning,
+                      backgroundColor: `${colors.warning}22`,
+                      borderRadius: '4px',
+                    }}
+                  >
+                    {selectedElement.symbol}
+                  </span>
+                  <div>
+                    <h4
+                      style={{
+                        margin: 0,
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                        color: colors.text,
+                      }}
+                    >
+                      {selectedElement.name}
+                    </h4>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        color: colors.textSecondary,
+                      }}
+                    >
+                      ({selectedElement.position.x}, {selectedElement.position.y})
+                    </span>
+                  </div>
+                </div>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: '13px',
+                    color: colors.textSecondary,
+                    lineHeight: '1.4',
+                  }}
+                >
+                  {selectedElement.description}
+                </p>
+                <button
+                  onClick={closePopup}
+                  style={{
+                    marginTop: '12px',
+                    width: '100%',
+                    padding: '8px',
+                    backgroundColor: colors.buttonSecondary,
+                    color: colors.buttonSecondaryText,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontSize: '12px',
+                  }}
+                >
+                  {t.close || 'Close'}
+                </button>
               </div>
             </div>
           )}

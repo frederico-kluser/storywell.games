@@ -12,6 +12,7 @@ jest.mock('lucide-react', () => ({
   AlertTriangle: () => <span data-testid="alert-icon">Alert</span>,
   Loader2: () => <span data-testid="loader-icon">Loading</span>,
   Edit3: () => <span data-testid="edit-icon">Edit</span>,
+  Palette: () => <span data-testid="palette-icon">Palette</span>,
 }));
 
 const mockTranslations = {

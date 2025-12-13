@@ -6,10 +6,10 @@ exports[`SettingsModal rendering should match snapshot when open 1`] = `
     class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
   >
     <div
-      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md shadow-[12px_12px_0px_rgba(0,0,0,1)] relative"
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md max-h-[90vh] shadow-[12px_12px_0px_rgba(0,0,0,1)] relative flex flex-col"
     >
       <div
-        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center flex-shrink-0"
       >
         <h2
           class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
@@ -32,7 +32,7 @@ exports[`SettingsModal rendering should match snapshot when open 1`] = `
         </button>
       </div>
       <div
-        class="p-4 space-y-3"
+        class="p-4 space-y-3 overflow-y-scroll flex-1"
       >
         <button
           class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-stone-300 hover:border-stone-900"
@@ -58,6 +58,34 @@ exports[`SettingsModal rendering should match snapshot when open 1`] = `
               class="text-xs text-stone-500"
             >
               Adjust tone presets or inject a custom writing brief.
+            </p>
+          </div>
+        </button>
+        <button
+          class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-dashed border-stone-200 cursor-not-allowed opacity-60"
+          disabled=""
+        >
+          <div
+            class="w-12 h-12 flex items-center justify-center transition-colors bg-stone-50"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+          </div>
+          <div
+            class="text-left flex-1"
+          >
+            <h3
+              class="font-bold uppercase text-stone-900"
+            >
+              Theme Colors
+            </h3>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Start a story to customize its theme.
             </p>
           </div>
         </button>
@@ -144,7 +172,7 @@ exports[`SettingsModal rendering should match snapshot when open 1`] = `
         </button>
       </div>
       <div
-        class="p-4 border-t-2 border-stone-300 bg-stone-50"
+        class="p-4 border-t-2 border-stone-300 bg-stone-50 flex-shrink-0"
       >
         <button
           class="w-full py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
@@ -164,10 +192,10 @@ exports[`SettingsModal rendering should match snapshot with delete database conf
       class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
     >
       <div
-        class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md shadow-[12px_12px_0px_rgba(0,0,0,1)] relative"
+        class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-md max-h-[90vh] shadow-[12px_12px_0px_rgba(0,0,0,1)] relative flex flex-col"
       >
         <div
-          class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+          class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center flex-shrink-0"
         >
           <h2
             class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
@@ -190,7 +218,7 @@ exports[`SettingsModal rendering should match snapshot with delete database conf
           </button>
         </div>
         <div
-          class="p-4 space-y-3"
+          class="p-4 space-y-3 overflow-y-scroll flex-1"
         >
           <button
             class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-stone-300 hover:border-stone-900"
@@ -216,6 +244,34 @@ exports[`SettingsModal rendering should match snapshot with delete database conf
                 class="text-xs text-stone-500"
               >
                 Adjust tone presets or inject a custom writing brief.
+              </p>
+            </div>
+          </button>
+          <button
+            class="w-full p-4 border-2 bg-white transition-all flex items-center gap-4 group border-dashed border-stone-200 cursor-not-allowed opacity-60"
+            disabled=""
+          >
+            <div
+              class="w-12 h-12 flex items-center justify-center transition-colors bg-stone-50"
+            >
+              <span
+                data-testid="palette-icon"
+              >
+                Palette
+              </span>
+            </div>
+            <div
+              class="text-left flex-1"
+            >
+              <h3
+                class="font-bold uppercase text-stone-900"
+              >
+                Theme Colors
+              </h3>
+              <p
+                class="text-xs text-stone-500"
+              >
+                Start a story to customize its theme.
               </p>
             </div>
           </button>
@@ -312,7 +368,7 @@ exports[`SettingsModal rendering should match snapshot with delete database conf
           </button>
         </div>
         <div
-          class="p-4 border-t-2 border-stone-300 bg-stone-50"
+          class="p-4 border-t-2 border-stone-300 bg-stone-50 flex-shrink-0"
         >
           <button
             class="w-full py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"

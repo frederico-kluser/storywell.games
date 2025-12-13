@@ -510,6 +510,22 @@ export interface GridCharacterPosition {
 }
 
 /**
+ * An element/object on the grid (door, chest, tree, etc.)
+ */
+export interface GridElement {
+	/** Unique ID for this element */
+	id: string;
+	/** Single letter symbol to display on grid (A-Z) */
+	symbol: string;
+	/** Name of the element (e.g., "Oak Door", "Treasure Chest") */
+	name: string;
+	/** Description shown in popup when clicked */
+	description: string;
+	/** Grid position */
+	position: GridPosition;
+}
+
+/**
  * A snapshot of the grid state at a specific point in the story.
  * Each snapshot is associated with a message/card number.
  */
@@ -528,15 +544,18 @@ export interface GridSnapshot {
 	locationName: string;
 	/** Array of character positions on the grid */
 	characterPositions: GridCharacterPosition[];
+	/** Scene elements on the grid (doors, chests, trees, etc.) */
+	elements?: GridElement[];
 }
 
 /**
  * Response from the grid update prompt.
+ * Note: This is a DELTA response - only contains items that CHANGED.
  */
 export interface GridUpdateResponse {
 	/** Whether the grid should be updated */
 	shouldUpdate: boolean;
-	/** Array of character positions if update is needed */
+	/** Characters whose positions CHANGED (delta only - not all characters) */
 	characterPositions?: {
 		characterId: string;
 		characterName: string;
@@ -544,6 +563,16 @@ export interface GridUpdateResponse {
 		y: number;
 		isPlayer: boolean;
 	}[];
-	/** Brief explanation of why positions changed */
+	/** NEW or MOVED elements only (delta only - not all elements) */
+	elements?: {
+		symbol: string;
+		name: string;
+		description: string;
+		x: number;
+		y: number;
+	}[];
+	/** Symbols of elements that were REMOVED from the scene */
+	removedElements?: string[];
+	/** Brief explanation of what changed */
 	reasoning?: string;
 }
