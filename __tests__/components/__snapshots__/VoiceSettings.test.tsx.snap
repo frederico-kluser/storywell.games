@@ -1,0 +1,1465 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VoiceSettings rendering should match snapshot when open 1`] = `
+<div>
+  <div
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-2xl shadow-[12px_12px_0px_rgba(0,0,0,1)] relative max-h-[90vh] flex flex-col"
+    >
+      <div
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+      >
+        <h2
+          class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
+        >
+          <span
+            data-testid="volume-icon"
+          >
+            Volume
+          </span>
+          Voice Settings
+        </h2>
+        <button
+          class="text-white/70 hover:text-white transition-colors"
+        >
+          <span
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4 bg-white border-b-2 border-stone-300"
+      >
+        <div
+          class="flex items-center justify-between"
+        >
+          <div>
+            <label
+              class="block text-xs font-bold text-stone-600 uppercase mb-1"
+            >
+              Voice Tone
+            </label>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Expressive voice with emotional tones (gpt-4o-mini-tts)
+            </p>
+          </div>
+          <button
+            class="relative w-14 h-7 rounded-full transition-colors bg-stone-800"
+          >
+            <div
+              class="absolute top-1 w-5 h-5 bg-white rounded-full transition-transform shadow translate-x-8"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="p-4 bg-white border-b-2 border-stone-300"
+      >
+        <label
+          class="block text-xs font-bold text-stone-600 uppercase mb-2"
+        >
+          Preview Text
+        </label>
+        <input
+          class="w-full bg-stone-50 border-2 border-stone-300 p-3 text-stone-900 focus:border-stone-900 outline-none font-mono text-sm"
+          placeholder="Type text to preview..."
+          type="text"
+          value="Hello! This is a preview of how I sound. Each voice has its own unique character and personality."
+        />
+      </div>
+      <div
+        class="flex-1 overflow-y-auto p-4"
+      >
+        <div
+          class="grid gap-3"
+        >
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                >
+                  <span
+                    data-testid="check-icon"
+                  >
+                    Check
+                  </span>
+                </div>
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-white"
+                  >
+                    Alloy
+                  </h3>
+                  <p
+                    class="text-xs text-stone-300"
+                  >
+                    Neutral, balanced, versatile
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-white/20 hover:bg-white/30 text-white disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Ash
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Warm, conversational, friendly
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Ballad
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Expressive, melodic, storytelling
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Coral
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Clear, professional, engaging
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Echo
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Warm, soft, comforting
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Fable
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Dramatic, British accent, theatrical
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Nova
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Energetic, bright, youthful
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Onyx
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Deep, authoritative, masculine
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Sage
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Calm, wise, measured
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Shimmer
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Gentle, soft, feminine
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Verse
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Poetic, artistic, expressive
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-4 border-t-2 border-stone-300 bg-stone-50 flex justify-between items-center"
+      >
+        <p
+          class="text-xs text-stone-500 font-mono"
+        >
+          Selected: 
+          <span
+            class="font-bold text-stone-900"
+          >
+            Alloy
+          </span>
+        </p>
+        <button
+          class="py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`VoiceSettings rendering should match snapshot with different selected voice 1`] = `
+<div>
+  <div
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-2xl shadow-[12px_12px_0px_rgba(0,0,0,1)] relative max-h-[90vh] flex flex-col"
+    >
+      <div
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+      >
+        <h2
+          class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
+        >
+          <span
+            data-testid="volume-icon"
+          >
+            Volume
+          </span>
+          Voice Settings
+        </h2>
+        <button
+          class="text-white/70 hover:text-white transition-colors"
+        >
+          <span
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4 bg-white border-b-2 border-stone-300"
+      >
+        <div
+          class="flex items-center justify-between"
+        >
+          <div>
+            <label
+              class="block text-xs font-bold text-stone-600 uppercase mb-1"
+            >
+              Voice Tone
+            </label>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Expressive voice with emotional tones (gpt-4o-mini-tts)
+            </p>
+          </div>
+          <button
+            class="relative w-14 h-7 rounded-full transition-colors bg-stone-800"
+          >
+            <div
+              class="absolute top-1 w-5 h-5 bg-white rounded-full transition-transform shadow translate-x-8"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="p-4 bg-white border-b-2 border-stone-300"
+      >
+        <label
+          class="block text-xs font-bold text-stone-600 uppercase mb-2"
+        >
+          Preview Text
+        </label>
+        <input
+          class="w-full bg-stone-50 border-2 border-stone-300 p-3 text-stone-900 focus:border-stone-900 outline-none font-mono text-sm"
+          placeholder="Type text to preview..."
+          type="text"
+          value="Hello! This is a preview of how I sound. Each voice has its own unique character and personality."
+        />
+      </div>
+      <div
+        class="flex-1 overflow-y-auto p-4"
+      >
+        <div
+          class="grid gap-3"
+        >
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Alloy
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Neutral, balanced, versatile
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Ash
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Warm, conversational, friendly
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Ballad
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Expressive, melodic, storytelling
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Coral
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Clear, professional, engaging
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Echo
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Warm, soft, comforting
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Fable
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Dramatic, British accent, theatrical
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                >
+                  <span
+                    data-testid="check-icon"
+                  >
+                    Check
+                  </span>
+                </div>
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-white"
+                  >
+                    Nova
+                  </h3>
+                  <p
+                    class="text-xs text-stone-300"
+                  >
+                    Energetic, bright, youthful
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-white/20 hover:bg-white/30 text-white disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Onyx
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Deep, authoritative, masculine
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Sage
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Calm, wise, measured
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Shimmer
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Gentle, soft, feminine
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Verse
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Poetic, artistic, expressive
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-4 border-t-2 border-stone-300 bg-stone-50 flex justify-between items-center"
+      >
+        <p
+          class="text-xs text-stone-500 font-mono"
+        >
+          Selected: 
+          <span
+            class="font-bold text-stone-900"
+          >
+            Nova
+          </span>
+        </p>
+        <button
+          class="py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`VoiceSettings rendering should match snapshot with useTone disabled 1`] = `
+<div>
+  <div
+    class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+  >
+    <div
+      class="bg-[#f5f5f4] border-2 border-stone-900 w-full max-w-2xl shadow-[12px_12px_0px_rgba(0,0,0,1)] relative max-h-[90vh] flex flex-col"
+    >
+      <div
+        class="p-5 border-b-2 border-stone-900 bg-stone-800 flex justify-between items-center"
+      >
+        <h2
+          class="text-xl font-black text-white flex items-center gap-3 uppercase tracking-tight"
+        >
+          <span
+            data-testid="volume-icon"
+          >
+            Volume
+          </span>
+          Voice Settings
+        </h2>
+        <button
+          class="text-white/70 hover:text-white transition-colors"
+        >
+          <span
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4 bg-white border-b-2 border-stone-300"
+      >
+        <div
+          class="flex items-center justify-between"
+        >
+          <div>
+            <label
+              class="block text-xs font-bold text-stone-600 uppercase mb-1"
+            >
+              Voice Tone
+            </label>
+            <p
+              class="text-xs text-stone-500"
+            >
+              Standard voice without tone (tts-1)
+            </p>
+          </div>
+          <button
+            class="relative w-14 h-7 rounded-full transition-colors bg-stone-300"
+          >
+            <div
+              class="absolute top-1 w-5 h-5 bg-white rounded-full transition-transform shadow translate-x-1"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="p-4 bg-white border-b-2 border-stone-300"
+      >
+        <label
+          class="block text-xs font-bold text-stone-600 uppercase mb-2"
+        >
+          Preview Text
+        </label>
+        <input
+          class="w-full bg-stone-50 border-2 border-stone-300 p-3 text-stone-900 focus:border-stone-900 outline-none font-mono text-sm"
+          placeholder="Type text to preview..."
+          type="text"
+          value="Hello! This is a preview of how I sound. Each voice has its own unique character and personality."
+        />
+      </div>
+      <div
+        class="flex-1 overflow-y-auto p-4"
+      >
+        <div
+          class="grid gap-3"
+        >
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-stone-800 border-stone-800 text-white shadow-[4px_4px_0px_#a8a29e]"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div
+                  class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                >
+                  <span
+                    data-testid="check-icon"
+                  >
+                    Check
+                  </span>
+                </div>
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-white"
+                  >
+                    Alloy
+                  </h3>
+                  <p
+                    class="text-xs text-stone-300"
+                  >
+                    Neutral, balanced, versatile
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-white/20 hover:bg-white/30 text-white disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Ash
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Warm, conversational, friendly
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Ballad
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Expressive, melodic, storytelling
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Coral
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Clear, professional, engaging
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Echo
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Warm, soft, comforting
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Fable
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Dramatic, British accent, theatrical
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Nova
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Energetic, bright, youthful
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Onyx
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Deep, authoritative, masculine
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Sage
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Calm, wise, measured
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Shimmer
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Gentle, soft, feminine
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+          <div
+            class="p-4 border-2 transition-all cursor-pointer bg-white border-stone-300 hover:border-stone-900 text-stone-700"
+          >
+            <div
+              class="flex items-center justify-between"
+            >
+              <div
+                class="flex items-center gap-3"
+              >
+                <div>
+                  <h3
+                    class="font-bold uppercase text-lg text-stone-900"
+                  >
+                    Verse
+                  </h3>
+                  <p
+                    class="text-xs text-stone-500"
+                  >
+                    Poetic, artistic, expressive
+                  </p>
+                </div>
+              </div>
+              <button
+                class="p-3 transition-colors bg-stone-100 hover:bg-stone-200 text-stone-700 disabled:opacity-50"
+                title="Preview voice"
+              >
+                <span
+                  data-testid="play-icon"
+                >
+                  Play
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-4 border-t-2 border-stone-300 bg-stone-50 flex justify-between items-center"
+      >
+        <p
+          class="text-xs text-stone-500 font-mono"
+        >
+          Selected: 
+          <span
+            class="font-bold text-stone-900"
+          >
+            Alloy
+          </span>
+        </p>
+        <button
+          class="py-2 px-6 bg-stone-900 text-white font-bold uppercase tracking-widest hover:bg-stone-700 transition-colors text-sm"
+        >
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;

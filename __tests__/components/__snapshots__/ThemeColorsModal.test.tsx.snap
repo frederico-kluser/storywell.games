@@ -1,0 +1,536 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ThemeColorsModal rendering should match snapshot when open 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+    style="background-color: rgba(0, 0, 0, 0.5);"
+  >
+    <div
+      class="w-full max-w-md relative animate-fade-in"
+      style="background-color: rgb(255, 255, 255); border: 2px solid #1c1917; box-shadow: 8px 8px 0px #1c1917;"
+    >
+      <div
+        class="p-4 flex justify-between items-center"
+        style="border-bottom: 2px solid #d6d3d1; background-color: rgb(231, 229, 228);"
+      >
+        <h2
+          class="text-xl font-bold uppercase flex items-center gap-2"
+          style="color: rgb(28, 25, 23);"
+        >
+          <span
+            data-testid="palette-icon"
+          >
+            Palette
+          </span>
+          Theme Style
+        </h2>
+        <button
+          class="p-1 transition-colors hover:opacity-70"
+          style="color: rgb(120, 113, 108);"
+        >
+          <span
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-6 space-y-4"
+      >
+        <div>
+          <label
+            class="text-sm font-bold uppercase mb-2 block"
+            style="color: rgb(120, 113, 108);"
+          >
+            Current Palette
+          </label>
+          <div
+            class="flex gap-1 flex-wrap"
+          >
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(245, 245, 244); border: 1px solid #d6d3d1;"
+              title="#f5f5f4"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1;"
+              title="#ffffff"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(231, 229, 228); border: 1px solid #d6d3d1;"
+              title="#e7e5e4"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(28, 25, 23); border: 1px solid #d6d3d1;"
+              title="#1c1917"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(28, 25, 23); border: 1px solid #d6d3d1;"
+              title="#1c1917"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(22, 101, 52); border: 1px solid #d6d3d1;"
+              title="#166534"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(217, 119, 6); border: 1px solid #d6d3d1;"
+              title="#d97706"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(220, 38, 38); border: 1px solid #d6d3d1;"
+              title="#dc2626"
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            class="text-sm font-bold uppercase mb-2 block flex items-center gap-2"
+            style="color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="type-icon"
+            >
+              Type
+            </span>
+            Current Font
+          </label>
+          <div
+            class="p-3 rounded-sm"
+            style="background-color: rgb(245, 245, 244); border: 2px solid #d6d3d1;"
+          >
+            <p
+              class="text-lg mb-1"
+              style="font-family: 'VT323', monospace; color: rgb(28, 25, 23);"
+            >
+              VT323
+            </p>
+            <p
+              class="text-xs"
+              style="color: rgb(120, 113, 108);"
+            >
+              RETRO
+               — 
+              Retro terminal style font
+            </p>
+          </div>
+        </div>
+        <div>
+          <label
+            class="text-sm font-bold uppercase mb-2 block"
+            style="color: rgb(120, 113, 108);"
+          >
+            Custom Considerations (Optional)
+          </label>
+          <textarea
+            class="w-full p-3 text-sm resize-none outline-none transition-all"
+            placeholder="e.g., 'darker tones', 'more vibrant colors', 'cyberpunk neon style', 'use a pixel font'..."
+            rows="3"
+            style="background-color: rgb(245, 245, 244); border: 2px solid #d6d3d1; color: rgb(28, 25, 23); opacity: 1;"
+          />
+        </div>
+        <div
+          class="flex gap-3"
+        >
+          <button
+            class="flex-1 py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition-all"
+            style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #1c1917; box-shadow: 3px 3px 0px #1c1917; opacity: 1;"
+          >
+            <span
+              data-testid="refresh-icon"
+            >
+              Refresh
+            </span>
+            Quick Regenerate
+          </button>
+          <button
+            class="flex-1 py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition-all"
+            disabled=""
+            style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #1c1917; box-shadow: 3px 3px 0px #1c1917; opacity: 0.5;"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+            Apply Custom
+          </button>
+        </div>
+        <p
+          class="text-xs text-center"
+          style="color: rgb(120, 113, 108);"
+        >
+          Regenerating will create a new color palette and select a matching font based on the universe theme.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ThemeColorsModal rendering should match snapshot while generating 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+    style="background-color: rgba(0, 0, 0, 0.5);"
+  >
+    <div
+      class="w-full max-w-md relative animate-fade-in"
+      style="background-color: rgb(255, 255, 255); border: 2px solid #1c1917; box-shadow: 8px 8px 0px #1c1917;"
+    >
+      <div
+        class="p-4 flex justify-between items-center"
+        style="border-bottom: 2px solid #d6d3d1; background-color: rgb(231, 229, 228);"
+      >
+        <h2
+          class="text-xl font-bold uppercase flex items-center gap-2"
+          style="color: rgb(28, 25, 23);"
+        >
+          <span
+            data-testid="palette-icon"
+          >
+            Palette
+          </span>
+          Theme Style
+        </h2>
+        <button
+          class="p-1 transition-colors hover:opacity-70"
+          style="color: rgb(120, 113, 108);"
+        >
+          <span
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-6 space-y-4"
+      >
+        <div>
+          <label
+            class="text-sm font-bold uppercase mb-2 block"
+            style="color: rgb(120, 113, 108);"
+          >
+            Current Palette
+          </label>
+          <div
+            class="flex gap-1 flex-wrap"
+          >
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(245, 245, 244); border: 1px solid #d6d3d1;"
+              title="#f5f5f4"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1;"
+              title="#ffffff"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(231, 229, 228); border: 1px solid #d6d3d1;"
+              title="#e7e5e4"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(28, 25, 23); border: 1px solid #d6d3d1;"
+              title="#1c1917"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(28, 25, 23); border: 1px solid #d6d3d1;"
+              title="#1c1917"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(22, 101, 52); border: 1px solid #d6d3d1;"
+              title="#166534"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(217, 119, 6); border: 1px solid #d6d3d1;"
+              title="#d97706"
+            />
+            <div
+              class="w-8 h-8 rounded-sm"
+              style="background-color: rgb(220, 38, 38); border: 1px solid #d6d3d1;"
+              title="#dc2626"
+            />
+          </div>
+        </div>
+        <div>
+          <label
+            class="text-sm font-bold uppercase mb-2 block flex items-center gap-2"
+            style="color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="type-icon"
+            >
+              Type
+            </span>
+            Current Font
+          </label>
+          <div
+            class="p-3 rounded-sm"
+            style="background-color: rgb(245, 245, 244); border: 2px solid #d6d3d1;"
+          >
+            <p
+              class="text-lg mb-1"
+              style="font-family: 'VT323', monospace; color: rgb(28, 25, 23);"
+            >
+              VT323
+            </p>
+            <p
+              class="text-xs"
+              style="color: rgb(120, 113, 108);"
+            >
+              RETRO
+               — 
+              Retro terminal style font
+            </p>
+          </div>
+        </div>
+        <div>
+          <label
+            class="text-sm font-bold uppercase mb-2 block"
+            style="color: rgb(120, 113, 108);"
+          >
+            Custom Considerations (Optional)
+          </label>
+          <textarea
+            class="w-full p-3 text-sm resize-none outline-none transition-all"
+            disabled=""
+            placeholder="e.g., 'darker tones', 'more vibrant colors', 'cyberpunk neon style', 'use a pixel font'..."
+            rows="3"
+            style="background-color: rgb(245, 245, 244); border: 2px solid #d6d3d1; color: rgb(28, 25, 23); opacity: 0.5;"
+          />
+        </div>
+        <div
+          class="flex gap-3"
+        >
+          <button
+            class="flex-1 py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition-all"
+            disabled=""
+            style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #1c1917; box-shadow: 3px 3px 0px #1c1917; opacity: 0.5;"
+          >
+            <span
+              data-testid="loader-icon"
+            >
+              Loading
+            </span>
+            Quick Regenerate
+          </button>
+          <button
+            class="flex-1 py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition-all"
+            disabled=""
+            style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #1c1917; box-shadow: 3px 3px 0px #1c1917; opacity: 0.5;"
+          >
+            <span
+              data-testid="loader-icon"
+            >
+              Loading
+            </span>
+            Apply Custom
+          </button>
+        </div>
+        <p
+          class="text-xs text-center"
+          style="color: rgb(120, 113, 108);"
+        >
+          Regenerating will create a new color palette and select a matching font based on the universe theme.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ThemeColorsModal rendering should match snapshot with user input 1`] = `
+<body
+  style="background-color: rgb(245, 245, 244); color: rgb(28, 25, 23);"
+>
+  <div>
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
+      style="background-color: rgba(0, 0, 0, 0.5);"
+    >
+      <div
+        class="w-full max-w-md relative animate-fade-in"
+        style="background-color: rgb(255, 255, 255); border: 2px solid #1c1917; box-shadow: 8px 8px 0px #1c1917;"
+      >
+        <div
+          class="p-4 flex justify-between items-center"
+          style="border-bottom: 2px solid #d6d3d1; background-color: rgb(231, 229, 228);"
+        >
+          <h2
+            class="text-xl font-bold uppercase flex items-center gap-2"
+            style="color: rgb(28, 25, 23);"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+            Theme Style
+          </h2>
+          <button
+            class="p-1 transition-colors hover:opacity-70"
+            style="color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="x-icon"
+            >
+              X
+            </span>
+          </button>
+        </div>
+        <div
+          class="p-6 space-y-4"
+        >
+          <div>
+            <label
+              class="text-sm font-bold uppercase mb-2 block"
+              style="color: rgb(120, 113, 108);"
+            >
+              Current Palette
+            </label>
+            <div
+              class="flex gap-1 flex-wrap"
+            >
+              <div
+                class="w-8 h-8 rounded-sm"
+                style="background-color: rgb(245, 245, 244); border: 1px solid #d6d3d1;"
+                title="#f5f5f4"
+              />
+              <div
+                class="w-8 h-8 rounded-sm"
+                style="background-color: rgb(255, 255, 255); border: 1px solid #d6d3d1;"
+                title="#ffffff"
+              />
+              <div
+                class="w-8 h-8 rounded-sm"
+                style="background-color: rgb(231, 229, 228); border: 1px solid #d6d3d1;"
+                title="#e7e5e4"
+              />
+              <div
+                class="w-8 h-8 rounded-sm"
+                style="background-color: rgb(28, 25, 23); border: 1px solid #d6d3d1;"
+                title="#1c1917"
+              />
+              <div
+                class="w-8 h-8 rounded-sm"
+                style="background-color: rgb(28, 25, 23); border: 1px solid #d6d3d1;"
+                title="#1c1917"
+              />
+              <div
+                class="w-8 h-8 rounded-sm"
+                style="background-color: rgb(22, 101, 52); border: 1px solid #d6d3d1;"
+                title="#166534"
+              />
+              <div
+                class="w-8 h-8 rounded-sm"
+                style="background-color: rgb(217, 119, 6); border: 1px solid #d6d3d1;"
+                title="#d97706"
+              />
+              <div
+                class="w-8 h-8 rounded-sm"
+                style="background-color: rgb(220, 38, 38); border: 1px solid #d6d3d1;"
+                title="#dc2626"
+              />
+            </div>
+          </div>
+          <div>
+            <label
+              class="text-sm font-bold uppercase mb-2 block flex items-center gap-2"
+              style="color: rgb(120, 113, 108);"
+            >
+              <span
+                data-testid="type-icon"
+              >
+                Type
+              </span>
+              Current Font
+            </label>
+            <div
+              class="p-3 rounded-sm"
+              style="background-color: rgb(245, 245, 244); border: 2px solid #d6d3d1;"
+            >
+              <p
+                class="text-lg mb-1"
+                style="font-family: 'VT323', monospace; color: rgb(28, 25, 23);"
+              >
+                VT323
+              </p>
+              <p
+                class="text-xs"
+                style="color: rgb(120, 113, 108);"
+              >
+                RETRO
+                 — 
+                Retro terminal style font
+              </p>
+            </div>
+          </div>
+          <div>
+            <label
+              class="text-sm font-bold uppercase mb-2 block"
+              style="color: rgb(120, 113, 108);"
+            >
+              Custom Considerations (Optional)
+            </label>
+            <textarea
+              class="w-full p-3 text-sm resize-none outline-none transition-all"
+              placeholder="e.g., 'darker tones', 'more vibrant colors', 'cyberpunk neon style', 'use a pixel font'..."
+              rows="3"
+              style="background-color: rgb(245, 245, 244); border: 2px solid #d6d3d1; color: rgb(28, 25, 23); opacity: 1;"
+            >
+              cyberpunk neon style
+            </textarea>
+          </div>
+          <div
+            class="flex gap-3"
+          >
+            <button
+              class="flex-1 py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition-all"
+              style="background-color: rgb(231, 229, 228); color: rgb(28, 25, 23); border: 2px solid #1c1917; box-shadow: 3px 3px 0px #1c1917; opacity: 1;"
+            >
+              <span
+                data-testid="refresh-icon"
+              >
+                Refresh
+              </span>
+              Quick Regenerate
+            </button>
+            <button
+              class="flex-1 py-3 font-bold uppercase text-sm flex items-center justify-center gap-2 transition-all"
+              style="background-color: rgb(28, 25, 23); color: rgb(255, 255, 255); border: 2px solid #1c1917; box-shadow: 3px 3px 0px #1c1917; opacity: 1;"
+            >
+              <span
+                data-testid="palette-icon"
+              >
+                Palette
+              </span>
+              Apply Custom
+            </button>
+          </div>
+          <p
+            class="text-xs text-center"
+            style="color: rgb(120, 113, 108);"
+          >
+            Regenerating will create a new color palette and select a matching font based on the universe theme.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

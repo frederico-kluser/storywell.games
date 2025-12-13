@@ -1,0 +1,1381 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StoryCreationLoader snapshots should match snapshot for avatar phase 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md"
+    style="background-color: rgba(245, 245, 244, 0.941);"
+  >
+    <div
+      class="w-full max-w-lg mx-4 p-6 md:p-8 border-2"
+      style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; box-shadow: 8px 8px 0px #1c1917;"
+    >
+      <div
+        class="flex flex-col items-center mb-8"
+      >
+        <div
+          class="relative mb-4"
+        >
+          <div
+            class="absolute inset-0 rounded-full border-4 border-t-transparent animate-spin"
+            style="border-color: #1c191730; border-top-color: transparent; width: 80px; height: 80px; animation-duration: 3s;"
+          />
+          <div
+            class="w-20 h-20 rounded-full flex items-center justify-center animate-pulse"
+            style="background-color: rgb(28, 25, 23);"
+          >
+            <span
+              data-testid="image-icon"
+            >
+              Image
+            </span>
+          </div>
+        </div>
+        <h2
+          class="text-xl md:text-2xl font-black uppercase tracking-wide text-center"
+          style="color: rgb(28, 25, 23);"
+        >
+          Avatar
+        </h2>
+        <p
+          class="text-sm md:text-base mt-2 text-center"
+          style="color: rgb(120, 113, 108);"
+        >
+          Generating character portrait...
+        </p>
+      </div>
+      <div
+        class="mb-6"
+      >
+        <div
+          class="h-3 rounded-full overflow-hidden"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+            style="width: 83.33333333333334%; background-color: rgb(22, 101, 52);"
+          >
+            <div
+              class="absolute inset-0 animate-shimmer"
+              style="animation: shimmer 1.5s infinite;"
+            />
+          </div>
+        </div>
+        <div
+          class="flex justify-between mt-2"
+        >
+          <span
+            class="text-xs font-medium"
+            style="color: rgb(120, 113, 108);"
+          >
+            5
+             / 
+            6
+          </span>
+          <span
+            class="text-sm font-bold"
+            style="color: rgb(28, 25, 23);"
+          >
+            83
+            %
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid grid-cols-6 gap-2 mb-6"
+      >
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="sparkles-icon"
+            >
+              Sparkles
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Initializing
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Theme
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="mappin-icon"
+            >
+              MapPin
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            World
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="users-icon"
+            >
+              Users
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Characters
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 scale-110"
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ring-2 ring-offset-2"
+            style="background-color: rgb(28, 25, 23); color: white;"
+          >
+            <span
+              data-testid="image-icon"
+            >
+              Image
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight "
+            style="color: rgb(28, 25, 23);"
+          >
+            Avatar
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="book-icon"
+            >
+              Book
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Opening
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-center p-3 rounded-lg animate-fade-in"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="flex items-center justify-center gap-2"
+        >
+          <span
+            data-testid="wand-icon"
+          >
+            Wand
+          </span>
+          <span
+            class="text-xs md:text-sm italic"
+            style="color: rgb(120, 113, 108);"
+          >
+            Tip: Every choice shapes your destiny
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCreationLoader snapshots should match snapshot for characters phase 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md"
+    style="background-color: rgba(245, 245, 244, 0.941);"
+  >
+    <div
+      class="w-full max-w-lg mx-4 p-6 md:p-8 border-2"
+      style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; box-shadow: 8px 8px 0px #1c1917;"
+    >
+      <div
+        class="flex flex-col items-center mb-8"
+      >
+        <div
+          class="relative mb-4"
+        >
+          <div
+            class="absolute inset-0 rounded-full border-4 border-t-transparent animate-spin"
+            style="border-color: #1c191730; border-top-color: transparent; width: 80px; height: 80px; animation-duration: 3s;"
+          />
+          <div
+            class="w-20 h-20 rounded-full flex items-center justify-center animate-pulse"
+            style="background-color: rgb(28, 25, 23);"
+          >
+            <span
+              data-testid="users-icon"
+            >
+              Users
+            </span>
+          </div>
+        </div>
+        <h2
+          class="text-xl md:text-2xl font-black uppercase tracking-wide text-center"
+          style="color: rgb(28, 25, 23);"
+        >
+          Characters
+        </h2>
+        <p
+          class="text-sm md:text-base mt-2 text-center"
+          style="color: rgb(120, 113, 108);"
+        >
+          Bringing characters to life...
+        </p>
+      </div>
+      <div
+        class="mb-6"
+      >
+        <div
+          class="h-3 rounded-full overflow-hidden"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+            style="width: 66.66666666666666%; background-color: rgb(22, 101, 52);"
+          >
+            <div
+              class="absolute inset-0 animate-shimmer"
+              style="animation: shimmer 1.5s infinite;"
+            />
+          </div>
+        </div>
+        <div
+          class="flex justify-between mt-2"
+        >
+          <span
+            class="text-xs font-medium"
+            style="color: rgb(120, 113, 108);"
+          >
+            4
+             / 
+            6
+          </span>
+          <span
+            class="text-sm font-bold"
+            style="color: rgb(28, 25, 23);"
+          >
+            67
+            %
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid grid-cols-6 gap-2 mb-6"
+      >
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="sparkles-icon"
+            >
+              Sparkles
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Initializing
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Theme
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="mappin-icon"
+            >
+              MapPin
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            World
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 scale-110"
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ring-2 ring-offset-2"
+            style="background-color: rgb(28, 25, 23); color: white;"
+          >
+            <span
+              data-testid="users-icon"
+            >
+              Users
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight "
+            style="color: rgb(28, 25, 23);"
+          >
+            Characters
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="image-icon"
+            >
+              Image
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Avatar
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="book-icon"
+            >
+              Book
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Opening
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-center p-3 rounded-lg animate-fade-in"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="flex items-center justify-center gap-2"
+        >
+          <span
+            data-testid="wand-icon"
+          >
+            Wand
+          </span>
+          <span
+            class="text-xs md:text-sm italic"
+            style="color: rgb(120, 113, 108);"
+          >
+            Tip: Every choice shapes your destiny
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCreationLoader snapshots should match snapshot for colors phase 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md"
+    style="background-color: rgba(245, 245, 244, 0.941);"
+  >
+    <div
+      class="w-full max-w-lg mx-4 p-6 md:p-8 border-2"
+      style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; box-shadow: 8px 8px 0px #1c1917;"
+    >
+      <div
+        class="flex flex-col items-center mb-8"
+      >
+        <div
+          class="relative mb-4"
+        >
+          <div
+            class="absolute inset-0 rounded-full border-4 border-t-transparent animate-spin"
+            style="border-color: #1c191730; border-top-color: transparent; width: 80px; height: 80px; animation-duration: 3s;"
+          />
+          <div
+            class="w-20 h-20 rounded-full flex items-center justify-center animate-pulse"
+            style="background-color: rgb(28, 25, 23);"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+          </div>
+        </div>
+        <h2
+          class="text-xl md:text-2xl font-black uppercase tracking-wide text-center"
+          style="color: rgb(28, 25, 23);"
+        >
+          Theme Colors
+        </h2>
+        <p
+          class="text-sm md:text-base mt-2 text-center"
+          style="color: rgb(120, 113, 108);"
+        >
+          Creating your unique visual palette...
+        </p>
+      </div>
+      <div
+        class="mb-6"
+      >
+        <div
+          class="h-3 rounded-full overflow-hidden"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+            style="width: 33.33333333333333%; background-color: rgb(22, 101, 52);"
+          >
+            <div
+              class="absolute inset-0 animate-shimmer"
+              style="animation: shimmer 1.5s infinite;"
+            />
+          </div>
+        </div>
+        <div
+          class="flex justify-between mt-2"
+        >
+          <span
+            class="text-xs font-medium"
+            style="color: rgb(120, 113, 108);"
+          >
+            2
+             / 
+            6
+          </span>
+          <span
+            class="text-sm font-bold"
+            style="color: rgb(28, 25, 23);"
+          >
+            33
+            %
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid grid-cols-6 gap-2 mb-6"
+      >
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="sparkles-icon"
+            >
+              Sparkles
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Initializing
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 scale-110"
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ring-2 ring-offset-2"
+            style="background-color: rgb(28, 25, 23); color: white;"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight "
+            style="color: rgb(28, 25, 23);"
+          >
+            Theme
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="mappin-icon"
+            >
+              MapPin
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            World
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="users-icon"
+            >
+              Users
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Characters
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="image-icon"
+            >
+              Image
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Avatar
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="book-icon"
+            >
+              Book
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Opening
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-center p-3 rounded-lg animate-fade-in"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="flex items-center justify-center gap-2"
+        >
+          <span
+            data-testid="wand-icon"
+          >
+            Wand
+          </span>
+          <span
+            class="text-xs md:text-sm italic"
+            style="color: rgb(120, 113, 108);"
+          >
+            Tip: Every choice shapes your destiny
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCreationLoader snapshots should match snapshot for finalizing phase 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md"
+    style="background-color: rgba(245, 245, 244, 0.941);"
+  >
+    <div
+      class="w-full max-w-lg mx-4 p-6 md:p-8 border-2"
+      style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; box-shadow: 8px 8px 0px #1c1917;"
+    >
+      <div
+        class="flex flex-col items-center mb-8"
+      >
+        <div
+          class="relative mb-4"
+        >
+          <div
+            class="absolute inset-0 rounded-full border-4 border-t-transparent animate-spin"
+            style="border-color: #1c191730; border-top-color: transparent; width: 80px; height: 80px; animation-duration: 3s;"
+          />
+          <div
+            class="w-20 h-20 rounded-full flex items-center justify-center animate-pulse"
+            style="background-color: rgb(28, 25, 23);"
+          >
+            <span
+              data-testid="book-icon"
+            >
+              Book
+            </span>
+          </div>
+        </div>
+        <h2
+          class="text-xl md:text-2xl font-black uppercase tracking-wide text-center"
+          style="color: rgb(28, 25, 23);"
+        >
+          Opening Scene
+        </h2>
+        <p
+          class="text-sm md:text-base mt-2 text-center"
+          style="color: rgb(120, 113, 108);"
+        >
+          Writing your first chapter...
+        </p>
+      </div>
+      <div
+        class="mb-6"
+      >
+        <div
+          class="h-3 rounded-full overflow-hidden"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+            style="width: 100%; background-color: rgb(22, 101, 52);"
+          >
+            <div
+              class="absolute inset-0 animate-shimmer"
+              style="animation: shimmer 1.5s infinite;"
+            />
+          </div>
+        </div>
+        <div
+          class="flex justify-between mt-2"
+        >
+          <span
+            class="text-xs font-medium"
+            style="color: rgb(120, 113, 108);"
+          >
+            6
+             / 
+            6
+          </span>
+          <span
+            class="text-sm font-bold"
+            style="color: rgb(28, 25, 23);"
+          >
+            100
+            %
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid grid-cols-6 gap-2 mb-6"
+      >
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="sparkles-icon"
+            >
+              Sparkles
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Initializing
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Theme
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="mappin-icon"
+            >
+              MapPin
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            World
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="users-icon"
+            >
+              Users
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Characters
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="image-icon"
+            >
+              Image
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Avatar
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 scale-110"
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ring-2 ring-offset-2"
+            style="background-color: rgb(28, 25, 23); color: white;"
+          >
+            <span
+              data-testid="book-icon"
+            >
+              Book
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight "
+            style="color: rgb(28, 25, 23);"
+          >
+            Opening
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-center p-3 rounded-lg animate-fade-in"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="flex items-center justify-center gap-2"
+        >
+          <span
+            data-testid="wand-icon"
+          >
+            Wand
+          </span>
+          <span
+            class="text-xs md:text-sm italic"
+            style="color: rgb(120, 113, 108);"
+          >
+            Tip: Every choice shapes your destiny
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCreationLoader snapshots should match snapshot for initializing phase 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md"
+    style="background-color: rgba(245, 245, 244, 0.941);"
+  >
+    <div
+      class="w-full max-w-lg mx-4 p-6 md:p-8 border-2"
+      style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; box-shadow: 8px 8px 0px #1c1917;"
+    >
+      <div
+        class="flex flex-col items-center mb-8"
+      >
+        <div
+          class="relative mb-4"
+        >
+          <div
+            class="absolute inset-0 rounded-full border-4 border-t-transparent animate-spin"
+            style="border-color: #1c191730; border-top-color: transparent; width: 80px; height: 80px; animation-duration: 3s;"
+          />
+          <div
+            class="w-20 h-20 rounded-full flex items-center justify-center animate-pulse"
+            style="background-color: rgb(28, 25, 23);"
+          >
+            <span
+              data-testid="sparkles-icon"
+            >
+              Sparkles
+            </span>
+          </div>
+        </div>
+        <h2
+          class="text-xl md:text-2xl font-black uppercase tracking-wide text-center"
+          style="color: rgb(28, 25, 23);"
+        >
+          Initializing
+        </h2>
+        <p
+          class="text-sm md:text-base mt-2 text-center"
+          style="color: rgb(120, 113, 108);"
+        >
+          Starting up the story engine...
+        </p>
+      </div>
+      <div
+        class="mb-6"
+      >
+        <div
+          class="h-3 rounded-full overflow-hidden"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+            style="width: 16.666666666666664%; background-color: rgb(22, 101, 52);"
+          >
+            <div
+              class="absolute inset-0 animate-shimmer"
+              style="animation: shimmer 1.5s infinite;"
+            />
+          </div>
+        </div>
+        <div
+          class="flex justify-between mt-2"
+        >
+          <span
+            class="text-xs font-medium"
+            style="color: rgb(120, 113, 108);"
+          >
+            1
+             / 
+            6
+          </span>
+          <span
+            class="text-sm font-bold"
+            style="color: rgb(28, 25, 23);"
+          >
+            17
+            %
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid grid-cols-6 gap-2 mb-6"
+      >
+        <div
+          class="flex flex-col items-center transition-all duration-300 scale-110"
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ring-2 ring-offset-2"
+            style="background-color: rgb(28, 25, 23); color: white;"
+          >
+            <span
+              data-testid="sparkles-icon"
+            >
+              Sparkles
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight "
+            style="color: rgb(28, 25, 23);"
+          >
+            Initializing
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Theme
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="mappin-icon"
+            >
+              MapPin
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            World
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="users-icon"
+            >
+              Users
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Characters
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="image-icon"
+            >
+              Image
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Avatar
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="book-icon"
+            >
+              Book
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Opening
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-center p-3 rounded-lg animate-fade-in"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="flex items-center justify-center gap-2"
+        >
+          <span
+            data-testid="wand-icon"
+          >
+            Wand
+          </span>
+          <span
+            class="text-xs md:text-sm italic"
+            style="color: rgb(120, 113, 108);"
+          >
+            Tip: Every choice shapes your destiny
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`StoryCreationLoader snapshots should match snapshot for world phase 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md"
+    style="background-color: rgba(245, 245, 244, 0.941);"
+  >
+    <div
+      class="w-full max-w-lg mx-4 p-6 md:p-8 border-2"
+      style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; box-shadow: 8px 8px 0px #1c1917;"
+    >
+      <div
+        class="flex flex-col items-center mb-8"
+      >
+        <div
+          class="relative mb-4"
+        >
+          <div
+            class="absolute inset-0 rounded-full border-4 border-t-transparent animate-spin"
+            style="border-color: #1c191730; border-top-color: transparent; width: 80px; height: 80px; animation-duration: 3s;"
+          />
+          <div
+            class="w-20 h-20 rounded-full flex items-center justify-center animate-pulse"
+            style="background-color: rgb(28, 25, 23);"
+          >
+            <span
+              data-testid="mappin-icon"
+            >
+              MapPin
+            </span>
+          </div>
+        </div>
+        <h2
+          class="text-xl md:text-2xl font-black uppercase tracking-wide text-center"
+          style="color: rgb(28, 25, 23);"
+        >
+          World Building
+        </h2>
+        <p
+          class="text-sm md:text-base mt-2 text-center"
+          style="color: rgb(120, 113, 108);"
+        >
+          Crafting locations and lore...
+        </p>
+      </div>
+      <div
+        class="mb-6"
+      >
+        <div
+          class="h-3 rounded-full overflow-hidden"
+          style="background-color: rgb(214, 211, 209);"
+        >
+          <div
+            class="h-full rounded-full transition-all duration-700 ease-out relative overflow-hidden"
+            style="width: 50%; background-color: rgb(22, 101, 52);"
+          >
+            <div
+              class="absolute inset-0 animate-shimmer"
+              style="animation: shimmer 1.5s infinite;"
+            />
+          </div>
+        </div>
+        <div
+          class="flex justify-between mt-2"
+        >
+          <span
+            class="text-xs font-medium"
+            style="color: rgb(120, 113, 108);"
+          >
+            3
+             / 
+            6
+          </span>
+          <span
+            class="text-sm font-bold"
+            style="color: rgb(28, 25, 23);"
+          >
+            50
+            %
+          </span>
+        </div>
+      </div>
+      <div
+        class="grid grid-cols-6 gap-2 mb-6"
+      >
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="sparkles-icon"
+            >
+              Sparkles
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Initializing
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(22, 101, 52); color: white;"
+          >
+            <span
+              data-testid="palette-icon"
+            >
+              Palette
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Theme
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 scale-110"
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 ring-2 ring-offset-2"
+            style="background-color: rgb(28, 25, 23); color: white;"
+          >
+            <span
+              data-testid="mappin-icon"
+            >
+              MapPin
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight "
+            style="color: rgb(28, 25, 23);"
+          >
+            World
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="users-icon"
+            >
+              Users
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Characters
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="image-icon"
+            >
+              Image
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Avatar
+          </span>
+        </div>
+        <div
+          class="flex flex-col items-center transition-all duration-300 "
+        >
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 "
+            style="background-color: rgb(214, 211, 209); color: rgb(120, 113, 108);"
+          >
+            <span
+              data-testid="book-icon"
+            >
+              Book
+            </span>
+          </div>
+          <span
+            class="text-[8px] md:text-[10px] mt-1 uppercase font-bold text-center leading-tight opacity-60"
+            style="color: rgb(120, 113, 108);"
+          >
+            Opening
+          </span>
+        </div>
+      </div>
+      <div
+        class="text-center p-3 rounded-lg animate-fade-in"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="flex items-center justify-center gap-2"
+        >
+          <span
+            data-testid="wand-icon"
+          >
+            Wand
+          </span>
+          <span
+            class="text-xs md:text-sm italic"
+            style="color: rgb(120, 113, 108);"
+          >
+            Tip: Every choice shapes your destiny
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

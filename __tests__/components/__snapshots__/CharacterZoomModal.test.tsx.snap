@@ -1,0 +1,154 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CharacterZoomModal rendering should match snapshot when open 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+    style="background-color: rgba(28, 25, 23, 0.6);"
+  >
+    <div
+      class="relative max-w-lg w-full animate-fade-in"
+      style="background-color: rgb(245, 245, 244); border: 2px solid #1c1917; box-shadow: 12px 12px 0px #1c1917;"
+    >
+      <div
+        class="p-4 flex items-center justify-between"
+        style="background-color: rgb(255, 255, 255); border-bottom: 2px solid #d6d3d1;"
+      >
+        <h2
+          class="text-lg font-black uppercase tracking-wide truncate"
+          style="color: rgb(28, 25, 23);"
+        >
+          Gandalf the Grey
+        </h2>
+        <button
+          class="p-1 transition-colors hover:opacity-70"
+          style="color: rgb(28, 25, 23);"
+        >
+          <span
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="w-full aspect-square border-2 overflow-hidden"
+          style="border-color: #1c1917; box-shadow: 4px 4px 0px #1c1917;"
+        >
+          <img
+            alt="Gandalf the Grey"
+            class="w-full h-full object-cover"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg=="
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CharacterZoomModal rendering should match snapshot with URL image 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+    style="background-color: rgba(28, 25, 23, 0.6);"
+  >
+    <div
+      class="relative max-w-lg w-full animate-fade-in"
+      style="background-color: rgb(245, 245, 244); border: 2px solid #1c1917; box-shadow: 12px 12px 0px #1c1917;"
+    >
+      <div
+        class="p-4 flex items-center justify-between"
+        style="background-color: rgb(255, 255, 255); border-bottom: 2px solid #d6d3d1;"
+      >
+        <h2
+          class="text-lg font-black uppercase tracking-wide truncate"
+          style="color: rgb(28, 25, 23);"
+        >
+          Gandalf the Grey
+        </h2>
+        <button
+          class="p-1 transition-colors hover:opacity-70"
+          style="color: rgb(28, 25, 23);"
+        >
+          <span
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="w-full aspect-square border-2 overflow-hidden"
+          style="border-color: #1c1917; box-shadow: 4px 4px 0px #1c1917;"
+        >
+          <img
+            alt="Gandalf the Grey"
+            class="w-full h-full object-cover"
+            src="https://example.com/avatar.png"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CharacterZoomModal rendering should match snapshot with different character name 1`] = `
+<div>
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+    style="background-color: rgba(28, 25, 23, 0.6);"
+  >
+    <div
+      class="relative max-w-lg w-full animate-fade-in"
+      style="background-color: rgb(245, 245, 244); border: 2px solid #1c1917; box-shadow: 12px 12px 0px #1c1917;"
+    >
+      <div
+        class="p-4 flex items-center justify-between"
+        style="background-color: rgb(255, 255, 255); border-bottom: 2px solid #d6d3d1;"
+      >
+        <h2
+          class="text-lg font-black uppercase tracking-wide truncate"
+          style="color: rgb(28, 25, 23);"
+        >
+          Aragorn
+        </h2>
+        <button
+          class="p-1 transition-colors hover:opacity-70"
+          style="color: rgb(28, 25, 23);"
+        >
+          <span
+            data-testid="x-icon"
+          >
+            X
+          </span>
+        </button>
+      </div>
+      <div
+        class="p-4"
+        style="background-color: rgb(231, 229, 228);"
+      >
+        <div
+          class="w-full aspect-square border-2 overflow-hidden"
+          style="border-color: #1c1917; box-shadow: 4px 4px 0px #1c1917;"
+        >
+          <img
+            alt="Aragorn"
+            class="w-full h-full object-cover"
+            src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg=="
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

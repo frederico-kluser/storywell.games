@@ -3,6 +3,7 @@ import { ActionOption } from '../types';
 const OPTIONS_CACHE_KEY = 'storywell_options_cache';
 
 const memoryCache: Record<string, CachedActionOptions> = {};
+const storageMirror: Record<string, string | null> = {};
 const pendingRequests: Record<string, Promise<ActionOption[]>> = {};
 
 const getStorageKey = (storyId: string) => `${OPTIONS_CACHE_KEY}_${storyId}`;
@@ -13,29 +14,40 @@ export interface CachedActionOptions {
 }
 
 export const getCachedActionOptions = (storyId: string): CachedActionOptions | null => {
-	if (memoryCache[storyId]) {
-		return memoryCache[storyId];
-	}
+	const storageKey = getStorageKey(storyId);
 
 	try {
-		const cached = localStorage.getItem(getStorageKey(storyId));
-		if (cached) {
-			const parsed = JSON.parse(cached) as CachedActionOptions;
-			memoryCache[storyId] = parsed;
-			return parsed;
+		const cached = localStorage.getItem(storageKey);
+		if (!cached) {
+			delete memoryCache[storyId];
+			storageMirror[storyId] = null;
+			return null;
 		}
+
+		if (memoryCache[storyId] && storageMirror[storyId] === cached) {
+			return memoryCache[storyId];
+		}
+
+		const parsed = JSON.parse(cached) as CachedActionOptions;
+		memoryCache[storyId] = parsed;
+		storageMirror[storyId] = cached;
+		return parsed;
 	} catch (error) {
+		delete memoryCache[storyId];
+		storageMirror[storyId] = null;
 		console.error('Failed to read options cache:', error);
+		return null;
 	}
-	return null;
 };
 
 export const saveCachedActionOptions = (storyId: string, lastMessageId: string, options: ActionOption[]): void => {
 	const payload: CachedActionOptions = { lastMessageId, options };
+	const serialized = JSON.stringify(payload);
 	memoryCache[storyId] = payload;
+	storageMirror[storyId] = serialized;
 
 	try {
-		localStorage.setItem(getStorageKey(storyId), JSON.stringify(payload));
+		localStorage.setItem(getStorageKey(storyId), serialized);
 	} catch (error) {
 		console.error('Failed to save options cache:', error);
 	}

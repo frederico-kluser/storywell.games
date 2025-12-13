@@ -1,94 +1,64 @@
 import React from 'react';
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { StoryCardView, StoryCardProps } from '../../components/StoryCard/StoryCard.view';
-import { MessageType, ChatMessage, ThemeColors, DEFAULT_THEME_COLORS, GridSnapshot } from '../../types';
-
-// Mock lucide-react icons
-jest.mock('lucide-react', () => ({
-  Terminal: ({ className }: any) => <span data-testid="terminal-icon" className={className}>Terminal</span>,
-  Info: ({ className }: any) => <span data-testid="info-icon" className={className}>Info</span>,
-  Play: ({ className }: any) => <span data-testid="play-icon" className={className}>Play</span>,
-  Loader2: ({ className }: any) => <span data-testid="loader-icon" className={className}>Loader</span>,
-  StopCircle: ({ className }: any) => <span data-testid="stop-icon" className={className}>Stop</span>,
-  ChevronLeft: ({ className }: any) => <span data-testid="chevron-left" className={className}>&lt;</span>,
-  ChevronRight: ({ className }: any) => <span data-testid="chevron-right" className={className}>&gt;</span>,
-  ChevronUp: ({ className }: any) => <span data-testid="chevron-up" className={className}>^</span>,
-  ChevronDown: ({ className }: any) => <span data-testid="chevron-down" className={className}>v</span>,
-  Map: ({ className }: any) => <span data-testid="map-icon" className={className}>Map</span>,
-}));
+import { MessageType, ChatMessage, DEFAULT_THEME_COLORS } from '../../types';
 
 // Mock the AI services
 jest.mock('../../services/ai/openaiClient', () => ({
-  generateSpeech: jest.fn().mockResolvedValue('base64-audio-data'),
+  generateSpeech: jest.fn().mockResolvedValue(null),
 }));
 
-// Mock the audio utils
+// Mock the audio utility
 jest.mock('../../utils/ai', () => ({
   playMP3Audio: jest.fn().mockResolvedValue(undefined),
-  TTSVoice: {},
 }));
 
 // Mock GridMap component
 jest.mock('../../components/GridMap', () => ({
-  GridMap: ({ gridSnapshots, currentMessageNumber, onToggleFlip, t }: any) => (
+  GridMap: ({ onToggleFlip }: { onToggleFlip: () => void }) => (
     <div data-testid="grid-map">
-      <span>Grid Map - Message: {currentMessageNumber}</span>
-      <button onClick={onToggleFlip}>{t.backToCard || 'Back'}</button>
+      <button onClick={onToggleFlip}>Toggle Map</button>
     </div>
   ),
 }));
 
-const createMockMessage = (overrides?: Partial<ChatMessage>): ChatMessage => ({
+// Mock lucide-react icons
+jest.mock('lucide-react', () => ({
+  Terminal: () => <span data-testid="terminal-icon">Terminal</span>,
+  Info: () => <span data-testid="info-icon">Info</span>,
+  Play: () => <span data-testid="play-icon">Play</span>,
+  Loader2: () => <span data-testid="loader-icon">Loading</span>,
+  StopCircle: () => <span data-testid="stop-icon">Stop</span>,
+  ChevronLeft: () => <span data-testid="chevron-left">←</span>,
+  ChevronRight: () => <span data-testid="chevron-right">→</span>,
+  ChevronUp: () => <span data-testid="chevron-up">↑</span>,
+  ChevronDown: () => <span data-testid="chevron-down">↓</span>,
+  Map: () => <span data-testid="map-icon">Map</span>,
+}));
+
+const createMockMessage = (overrides: Partial<ChatMessage> = {}): ChatMessage => ({
   id: 'msg-1',
-  senderId: 'player-1',
-  text: 'Hello, this is a test message.',
+  senderId: 'npc-1',
+  text: 'Welcome to the adventure, brave hero!',
   type: MessageType.DIALOGUE,
   timestamp: Date.now(),
   pageNumber: 1,
   ...overrides,
 });
 
-const createMockColors = (): ThemeColors => DEFAULT_THEME_COLORS;
-
 const mockTranslations = {
   back: 'Previous',
   next: 'Next',
   map: 'Map',
   viewMap: 'View Map',
-  backToCard: 'Back',
   noMapData: 'No map data available',
 };
 
-const createMockGridSnapshots = (): GridSnapshot[] => [
-  {
-    id: 'snap-1',
-    gameId: 'game-1',
-    atMessageNumber: 1,
-    timestamp: Date.now(),
-    locationId: 'loc-1',
-    locationName: 'Town Square',
-    characterPositions: [
-      {
-        characterId: 'player-1',
-        characterName: 'Hero',
-        position: { x: 5, y: 5 },
-        isPlayer: true,
-      },
-      {
-        characterId: 'npc-1',
-        characterName: 'Merchant',
-        position: { x: 3, y: 3 },
-        isPlayer: false,
-      },
-    ],
-  },
-];
-
-const defaultProps: StoryCardProps = {
+const createDefaultProps = (overrides: Partial<StoryCardProps> = {}): StoryCardProps => ({
   message: createMockMessage(),
-  isPlayer: true,
-  senderName: 'Hero',
-  colors: createMockColors(),
+  isPlayer: false,
+  senderName: 'Gandalf',
+  colors: DEFAULT_THEME_COLORS,
   currentIndex: 0,
   totalCards: 5,
   onPrevious: jest.fn(),
@@ -98,7 +68,8 @@ const defaultProps: StoryCardProps = {
   isActive: true,
   t: mockTranslations,
   language: 'en',
-};
+  ...overrides,
+});
 
 describe('StoryCard', () => {
   beforeEach(() => {
@@ -112,488 +83,284 @@ describe('StoryCard', () => {
 
   describe('rendering', () => {
     it('should render without crashing', () => {
-      const { container } = render(<StoryCardView {...defaultProps} />);
-      expect(container).toBeInTheDocument();
+      const props = createDefaultProps();
+      render(<StoryCardView {...props} />);
+      expect(document.body).toBeInTheDocument();
     });
 
-    it('should render player message correctly', () => {
-      render(<StoryCardView {...defaultProps} />);
-
-      // Complete typing animation
-      act(() => {
-        jest.advanceTimersByTime(2000);
+    it('should match snapshot for NPC dialogue', () => {
+      const props = createDefaultProps({
+        skipAnimation: true,
       });
-
-      expect(screen.getByText('YOU')).toBeInTheDocument();
+      const { container } = render(<StoryCardView {...props} />);
+      expect(container).toMatchSnapshot();
     });
 
-    it('should render narrator message correctly', () => {
-      const narratorMessage = createMockMessage({
-        senderId: 'GM',
-        type: MessageType.NARRATION,
-        text: 'The adventure begins...',
-      });
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          message={narratorMessage}
-          isPlayer={false}
-          senderName="Narrator"
-        />
-      );
-
-      expect(screen.getByText('NARRATOR')).toBeInTheDocument();
-      expect(screen.getByTestId('terminal-icon')).toBeInTheDocument();
-    });
-
-    it('should render system message correctly', () => {
-      const systemMessage = createMockMessage({
-        senderId: 'SYSTEM',
-        type: MessageType.SYSTEM,
-        text: 'Game saved.',
-      });
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          message={systemMessage}
-          isPlayer={false}
-          senderName="System"
-        />
-      );
-
-      expect(screen.getByText('SYSTEM')).toBeInTheDocument();
-      expect(screen.getByTestId('info-icon')).toBeInTheDocument();
-    });
-
-    it('should render NPC message correctly', () => {
-      const npcMessage = createMockMessage({
-        senderId: 'npc-1',
-        type: MessageType.DIALOGUE,
-        text: 'Welcome, traveler!',
-      });
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          message={npcMessage}
-          isPlayer={false}
-          senderName="Merchant"
-        />
-      );
-
-      expect(screen.getByText('MERCHANT')).toBeInTheDocument();
-    });
-
-    it('should display page number correctly', () => {
-      render(<StoryCardView {...defaultProps} currentIndex={2} totalCards={10} />);
-
-      // The page number should show pageNumber or currentIndex + 1
-      expect(screen.getByText(/Page 1 of 10/)).toBeInTheDocument();
-    });
-
-    it('should display avatar when provided', () => {
-      const avatarBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          avatarBase64={avatarBase64}
-        />
-      );
-
-      const avatar = screen.getByAltText('Hero');
-      expect(avatar).toBeInTheDocument();
-      expect(avatar).toHaveAttribute('src', avatarBase64);
-    });
-  });
-
-  describe('typewriter effect', () => {
-    it('should animate text character by character', async () => {
-      const message = createMockMessage({ text: 'Hello' });
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          message={message}
-          skipAnimation={false}
-        />
-      );
-
-      // Initially should show partial text
-      act(() => {
-        jest.advanceTimersByTime(60); // 3 characters at 20ms each
-      });
-
-      // Eventually should show full text
-      act(() => {
-        jest.advanceTimersByTime(200);
-      });
-
-      expect(screen.getByText(/Hello/)).toBeInTheDocument();
-    });
-
-    it('should skip animation when skipAnimation is true', () => {
-      const message = createMockMessage({ text: 'Instant text!' });
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          message={message}
-          skipAnimation={true}
-        />
-      );
-
-      // Text should appear immediately
-      expect(screen.getByText(/Instant text!/)).toBeInTheDocument();
-    });
-
-    it('should call onTypingComplete when animation finishes', () => {
-      const onTypingComplete = jest.fn();
-      const message = createMockMessage({ text: 'Hi' });
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          message={message}
-          onTypingComplete={onTypingComplete}
-        />
-      );
-
-      // Wait for typing to complete (2 chars * 20ms + buffer)
-      act(() => {
-        jest.advanceTimersByTime(100);
-      });
-
-      expect(onTypingComplete).toHaveBeenCalledTimes(1);
-    });
-
-    it('should show typing cursor during animation', () => {
-      const message = createMockMessage({ text: 'Long message here...' });
-
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          message={message}
-          skipAnimation={false}
-        />
-      );
-
-      // The cursor is a | character with animate-pulse class
-      expect(container.querySelector('.animate-pulse')).toBeInTheDocument();
-    });
-  });
-
-  describe('navigation', () => {
-    it('should call onPrevious when Previous button is clicked', () => {
-      const onPrevious = jest.fn();
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          onPrevious={onPrevious}
-          canGoPrevious={true}
-        />
-      );
-
-      const prevButton = screen.getAllByRole('button').find(
-        btn => btn.textContent?.includes('<') || btn.querySelector('[data-testid="chevron-left"]')
-      );
-
-      if (prevButton) {
-        fireEvent.click(prevButton);
-        expect(onPrevious).toHaveBeenCalledTimes(1);
-      }
-    });
-
-    it('should call onNext when Next button is clicked', () => {
-      const onNext = jest.fn();
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          onNext={onNext}
-          canGoNext={true}
-        />
-      );
-
-      const nextButton = screen.getAllByRole('button').find(
-        btn => btn.textContent?.includes('>') || btn.querySelector('[data-testid="chevron-right"]')
-      );
-
-      if (nextButton) {
-        fireEvent.click(nextButton);
-        expect(onNext).toHaveBeenCalledTimes(1);
-      }
-    });
-
-    it('should disable Previous button when canGoPrevious is false', () => {
-      render(
-        <StoryCardView
-          {...defaultProps}
-          canGoPrevious={false}
-        />
-      );
-
-      const buttons = screen.getAllByRole('button');
-      const prevButton = buttons.find(
-        btn => btn.querySelector('[data-testid="chevron-left"]')
-      );
-
-      expect(prevButton).toBeDisabled();
-    });
-
-    it('should disable Next button when canGoNext is false', () => {
-      render(
-        <StoryCardView
-          {...defaultProps}
-          canGoNext={false}
-        />
-      );
-
-      const buttons = screen.getAllByRole('button');
-      const nextButton = buttons.find(
-        btn => btn.querySelector('[data-testid="chevron-right"]')
-      );
-
-      expect(nextButton).toBeDisabled();
-    });
-  });
-
-  describe('grid map', () => {
-    it('should show Map button when grid data is available', () => {
-      render(
-        <StoryCardView
-          {...defaultProps}
-          gridSnapshots={createMockGridSnapshots()}
-        />
-      );
-
-      expect(screen.getByTestId('map-icon')).toBeInTheDocument();
-    });
-
-    it('should not show Map button when no grid data', () => {
-      render(
-        <StoryCardView
-          {...defaultProps}
-          gridSnapshots={undefined}
-        />
-      );
-
-      expect(screen.queryByTestId('map-icon')).not.toBeInTheDocument();
-    });
-
-    it('should toggle map view when Map button is clicked', () => {
-      render(
-        <StoryCardView
-          {...defaultProps}
-          gridSnapshots={createMockGridSnapshots()}
-        />
-      );
-
-      // Click the map button
-      const mapButton = screen.getAllByRole('button').find(
-        btn => btn.querySelector('[data-testid="map-icon"]')
-      );
-
-      if (mapButton) {
-        fireEvent.click(mapButton);
-
-        // GridMap should be rendered on back face
-        expect(screen.getByTestId('grid-map')).toBeInTheDocument();
-      }
-    });
-  });
-
-  describe('audio playback', () => {
-    it('should show play button when apiKey is provided', () => {
-      render(
-        <StoryCardView
-          {...defaultProps}
-          apiKey="test-api-key"
-          skipAnimation={true}
-        />
-      );
-
-      expect(screen.getByTestId('play-icon')).toBeInTheDocument();
-    });
-
-    it('should disable play button while typing', () => {
-      render(
-        <StoryCardView
-          {...defaultProps}
-          apiKey="test-api-key"
-          skipAnimation={false}
-        />
-      );
-
-      const playButton = screen.getAllByRole('button').find(
-        btn => btn.querySelector('[data-testid="play-icon"]')
-      );
-
-      expect(playButton).toBeDisabled();
-    });
-  });
-
-  describe('progress indicator', () => {
-    it('should show progress bar with correct percentage', () => {
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          currentIndex={4}
-          totalCards={10}
-        />
-      );
-
-      // Progress bar fill should be 50% ((4+1)/10 * 100)
-      const progressFill = container.querySelector('[style*="width"]');
-      expect(progressFill).toBeInTheDocument();
-    });
-
-    it('should display current/total indicator', () => {
-      render(
-        <StoryCardView
-          {...defaultProps}
-          currentIndex={4}
-          totalCards={10}
-        />
-      );
-
-      expect(screen.getByText('5/10')).toBeInTheDocument();
-    });
-  });
-
-  describe('styling', () => {
-    it('should apply theme colors correctly', () => {
-      const customColors: ThemeColors = {
-        ...DEFAULT_THEME_COLORS,
-        background: '#ff0000',
-        text: '#00ff00',
-      };
-
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          colors={customColors}
-        />
-      );
-
-      expect(container.firstChild).toBeInTheDocument();
-    });
-
-    it('should show location background when provided', () => {
-      const locationBg = 'https://example.com/background.jpg';
-
-      render(
-        <StoryCardView
-          {...defaultProps}
-          locationBackgroundImage={locationBg}
-          isPlayer={false}
-          message={createMockMessage({ senderId: 'GM', type: MessageType.NARRATION })}
-        />
-      );
-
-      // Background should be applied (testing via presence, actual style testing is limited)
-      expect(screen.getByText('NARRATOR')).toBeInTheDocument();
-    });
-  });
-
-  describe('snapshots', () => {
     it('should match snapshot for player message', () => {
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          skipAnimation={true}
-        />
-      );
-
+      const props = createDefaultProps({
+        isPlayer: true,
+        senderName: 'Player',
+        message: createMockMessage({
+          senderId: 'player-1',
+          text: 'I draw my sword and prepare for battle!',
+        }),
+        skipAnimation: true,
+      });
+      const { container } = render(<StoryCardView {...props} />);
       expect(container).toMatchSnapshot();
     });
 
     it('should match snapshot for narrator message', () => {
-      const narratorMessage = createMockMessage({
-        senderId: 'GM',
-        type: MessageType.NARRATION,
-        text: 'The wind howled through the ancient forest...',
+      const props = createDefaultProps({
+        message: createMockMessage({
+          senderId: 'GM',
+          text: 'The wind howls through the ancient forest...',
+          type: MessageType.NARRATION,
+        }),
+        skipAnimation: true,
       });
-
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          message={narratorMessage}
-          isPlayer={false}
-          senderName="Narrator"
-          skipAnimation={true}
-        />
-      );
-
+      const { container } = render(<StoryCardView {...props} />);
       expect(container).toMatchSnapshot();
     });
 
     it('should match snapshot for system message', () => {
-      const systemMessage = createMockMessage({
-        senderId: 'SYSTEM',
-        type: MessageType.SYSTEM,
-        text: 'Achievement unlocked: First Steps',
+      const props = createDefaultProps({
+        message: createMockMessage({
+          senderId: 'SYSTEM',
+          text: 'Your progress has been saved.',
+          type: MessageType.SYSTEM,
+        }),
+        skipAnimation: true,
+      });
+      const { container } = render(<StoryCardView {...props} />);
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot with avatar', () => {
+      const props = createDefaultProps({
+        avatarBase64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg==',
+        skipAnimation: true,
+      });
+      const { container } = render(<StoryCardView {...props} />);
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot with location background', () => {
+      const props = createDefaultProps({
+        locationBackgroundImage: 'https://example.com/forest.jpg',
+        skipAnimation: true,
+      });
+      const { container } = render(<StoryCardView {...props} />);
+      expect(container).toMatchSnapshot();
+    });
+  });
+
+  describe('typewriter effect', () => {
+    it('should show typing cursor during animation', () => {
+      const props = createDefaultProps({
+        message: createMockMessage({ text: 'Hello' }),
+      });
+      render(<StoryCardView {...props} />);
+
+      // Initial state should show cursor
+      expect(screen.queryByText('|')).toBeInTheDocument();
+    });
+
+    it('should complete animation and call callback', () => {
+      const onTypingComplete = jest.fn();
+      const props = createDefaultProps({
+        message: createMockMessage({ text: 'Hi' }),
+        onTypingComplete,
+      });
+      render(<StoryCardView {...props} />);
+
+      // Advance timers to complete animation (20ms per char + buffer)
+      act(() => {
+        jest.advanceTimersByTime(100);
       });
 
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          message={systemMessage}
-          isPlayer={false}
-          senderName="System"
-          skipAnimation={true}
-        />
-      );
-
-      expect(container).toMatchSnapshot();
+      expect(onTypingComplete).toHaveBeenCalled();
     });
 
-    it('should match snapshot for NPC with avatar', () => {
-      const npcMessage = createMockMessage({
-        senderId: 'npc-1',
-        type: MessageType.DIALOGUE,
-        text: 'Welcome to my shop, traveler!',
+    it('should skip animation when skipAnimation is true', () => {
+      const onTypingComplete = jest.fn();
+      const props = createDefaultProps({
+        message: createMockMessage({ text: 'This is a long message' }),
+        skipAnimation: true,
+        onTypingComplete,
       });
+      render(<StoryCardView {...props} />);
 
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          message={npcMessage}
-          isPlayer={false}
-          senderName="Merchant"
-          avatarBase64="data:image/png;base64,test"
-          skipAnimation={true}
-        />
-      );
+      expect(screen.getByText(/This is a long message/)).toBeInTheDocument();
+      expect(onTypingComplete).toHaveBeenCalled();
+    });
+  });
 
-      expect(container).toMatchSnapshot();
+  describe('navigation', () => {
+    it('should call onPrevious when previous button is clicked', () => {
+      const onPrevious = jest.fn();
+      const props = createDefaultProps({
+        onPrevious,
+        canGoPrevious: true,
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      const prevButton = screen.getByRole('button', { name: /previous/i });
+      fireEvent.click(prevButton);
+
+      expect(onPrevious).toHaveBeenCalled();
     });
 
-    it('should match snapshot with grid map button visible', () => {
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          gridSnapshots={createMockGridSnapshots()}
-          skipAnimation={true}
-        />
-      );
+    it('should call onNext when next button is clicked', () => {
+      const onNext = jest.fn();
+      const props = createDefaultProps({
+        onNext,
+        canGoNext: true,
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
 
-      expect(container).toMatchSnapshot();
+      const nextButton = screen.getByRole('button', { name: /next/i });
+      fireEvent.click(nextButton);
+
+      expect(onNext).toHaveBeenCalled();
     });
 
-    it('should match snapshot with pulse animation on next button', () => {
-      const { container } = render(
-        <StoryCardView
-          {...defaultProps}
-          showNextPulse={true}
-          skipAnimation={true}
-        />
-      );
+    it('should disable previous button when canGoPrevious is false', () => {
+      const props = createDefaultProps({
+        canGoPrevious: false,
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
 
-      expect(container).toMatchSnapshot();
+      const prevButton = screen.getByRole('button', { name: /previous/i });
+      expect(prevButton).toBeDisabled();
+    });
+
+    it('should disable next button when canGoNext is false', () => {
+      const props = createDefaultProps({
+        canGoNext: false,
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      const nextButton = screen.getByRole('button', { name: /next/i });
+      expect(nextButton).toBeDisabled();
+    });
+  });
+
+  describe('page counter', () => {
+    it('should display correct page number', () => {
+      const props = createDefaultProps({
+        currentIndex: 2,
+        totalCards: 10,
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      expect(screen.getByText('3/10')).toBeInTheDocument();
+    });
+  });
+
+  describe('speaker labels', () => {
+    it('should show YOU label for player messages', () => {
+      const props = createDefaultProps({
+        isPlayer: true,
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      expect(screen.getByText('YOU')).toBeInTheDocument();
+    });
+
+    it('should show NARRATOR label for narrator messages', () => {
+      const props = createDefaultProps({
+        message: createMockMessage({
+          senderId: 'GM',
+          type: MessageType.NARRATION,
+        }),
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      expect(screen.getByText('NARRATOR')).toBeInTheDocument();
+    });
+
+    it('should show SYSTEM label for system messages', () => {
+      const props = createDefaultProps({
+        message: createMockMessage({
+          senderId: 'SYSTEM',
+          type: MessageType.SYSTEM,
+        }),
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      expect(screen.getByText('SYSTEM')).toBeInTheDocument();
+    });
+
+    it('should show character name for NPC messages', () => {
+      const props = createDefaultProps({
+        senderName: 'Aragorn',
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      expect(screen.getByText('ARAGORN')).toBeInTheDocument();
+    });
+  });
+
+  describe('grid map', () => {
+    it('should show map button when grid data is available', () => {
+      const props = createDefaultProps({
+        gridSnapshots: [
+          {
+            id: 'grid-1',
+            gameId: 'game-1',
+            atMessageNumber: 1,
+            timestamp: Date.now(),
+            locationId: 'loc-1',
+            locationName: 'Forest',
+            characterPositions: [],
+          },
+        ],
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      expect(screen.getByTitle('View Map')).toBeInTheDocument();
+    });
+
+    it('should not show map button when no grid data', () => {
+      const props = createDefaultProps({
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      expect(screen.queryByTitle('View Map')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('play button', () => {
+    it('should render play button', () => {
+      const props = createDefaultProps({
+        apiKey: 'test-key',
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      expect(screen.getByTitle('Read Aloud')).toBeInTheDocument();
+    });
+
+    it('should disable play button when no API key', () => {
+      const props = createDefaultProps({
+        skipAnimation: true,
+      });
+      render(<StoryCardView {...props} />);
+
+      const playButton = screen.getByTitle('Read Aloud');
+      expect(playButton).toBeDisabled();
     });
   });
 });

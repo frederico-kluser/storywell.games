@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VoiceInput rendering should match snapshot in idle state 1`] = `
+<div>
+  <button
+    class="p-2 transition-all flex-shrink-0 relative border  border-transparent hover:border-green-500 text-green-700 hover:text-green-400"
+    title="VOICE_INPUT_MODULE"
+  >
+    <span
+      data-testid="mic-icon"
+    >
+      Mic
+    </span>
+  </button>
+</div>
+`;
+
+exports[`VoiceInput rendering should match snapshot when disabled 1`] = `
+<div>
+  <button
+    class="p-2 transition-all flex-shrink-0 relative border  border-transparent hover:border-green-500 text-green-700 hover:text-green-400"
+    disabled=""
+    title="VOICE_INPUT_MODULE"
+  >
+    <span
+      data-testid="mic-icon"
+    >
+      Mic
+    </span>
+  </button>
+</div>
+`;
+
+exports[`VoiceInput rendering should match snapshot with custom className 1`] = `
+<div>
+  <button
+    class="p-2 transition-all flex-shrink-0 relative border custom-voice-class border-transparent hover:border-green-500 text-green-700 hover:text-green-400"
+    title="VOICE_INPUT_MODULE"
+  >
+    <span
+      data-testid="mic-icon"
+    >
+      Mic
+    </span>
+  </button>
+</div>
+`;

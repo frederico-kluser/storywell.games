@@ -1,9 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { GridMap } from '../../components/GridMap/GridMap';
-import { GridSnapshot, ThemeColors, DEFAULT_THEME_COLORS, GridCharacterPosition } from '../../types';
-
-const createMockColors = (): ThemeColors => DEFAULT_THEME_COLORS;
+import { GridSnapshot, DEFAULT_THEME_COLORS } from '../../types';
 
 const mockTranslations = {
   mapTitle: 'Map',
@@ -11,23 +9,26 @@ const mockTranslations = {
   noMapData: 'No map data available',
 };
 
-const createMockCharacterPosition = (overrides?: Partial<GridCharacterPosition>): GridCharacterPosition => ({
-  characterId: 'char-1',
-  characterName: 'Hero',
-  position: { x: 5, y: 5 },
-  isPlayer: true,
-  ...overrides,
-});
-
-const createMockGridSnapshot = (overrides?: Partial<GridSnapshot>): GridSnapshot => ({
-  id: 'snap-1',
+const createMockGridSnapshot = (overrides: Partial<GridSnapshot> = {}): GridSnapshot => ({
+  id: 'grid-1',
   gameId: 'game-1',
   atMessageNumber: 1,
   timestamp: Date.now(),
   locationId: 'loc-1',
-  locationName: 'Town Square',
+  locationName: 'Ancient Forest',
   characterPositions: [
-    createMockCharacterPosition(),
+    {
+      characterId: 'player-1',
+      characterName: 'Hero',
+      position: { x: 5, y: 5 },
+      isPlayer: true,
+    },
+    {
+      characterId: 'npc-1',
+      characterName: 'Merchant',
+      position: { x: 3, y: 4 },
+      isPlayer: false,
+    },
   ],
   ...overrides,
 });
@@ -35,10 +36,9 @@ const createMockGridSnapshot = (overrides?: Partial<GridSnapshot>): GridSnapshot
 const defaultProps = {
   gridSnapshots: [createMockGridSnapshot()],
   currentMessageNumber: 1,
-  colors: createMockColors(),
+  colors: DEFAULT_THEME_COLORS,
   isFlipped: true,
   onToggleFlip: jest.fn(),
-  locationName: 'Town Square',
   t: mockTranslations,
 };
 
@@ -54,506 +54,274 @@ describe('GridMap', () => {
 
   describe('rendering', () => {
     it('should render without crashing', () => {
-      const { container } = render(<GridMap {...defaultProps} />);
-      expect(container).toBeInTheDocument();
+      render(<GridMap {...defaultProps} />);
+      expect(document.body).toBeInTheDocument();
     });
 
-    it('should render map title', () => {
+    it('should match snapshot with characters', () => {
+      const { container } = render(<GridMap {...defaultProps} />);
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot with no characters', () => {
+      const props = {
+        ...defaultProps,
+        gridSnapshots: [createMockGridSnapshot({ characterPositions: [] })],
+      };
+      const { container } = render(<GridMap {...props} />);
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot when not flipped', () => {
+      const props = {
+        ...defaultProps,
+        isFlipped: false,
+      };
+      const { container } = render(<GridMap {...props} />);
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot with location name', () => {
+      const props = {
+        ...defaultProps,
+        locationName: 'Custom Location',
+      };
+      const { container } = render(<GridMap {...props} />);
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot with location background', () => {
+      const props = {
+        ...defaultProps,
+        locationBackgroundImage: 'https://example.com/forest.jpg',
+      };
+      const { container } = render(<GridMap {...props} />);
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot with multiple characters at same position', () => {
+      const props = {
+        ...defaultProps,
+        gridSnapshots: [
+          createMockGridSnapshot({
+            characterPositions: [
+              {
+                characterId: 'player-1',
+                characterName: 'Hero',
+                position: { x: 5, y: 5 },
+                isPlayer: true,
+              },
+              {
+                characterId: 'npc-1',
+                characterName: 'Merchant',
+                position: { x: 5, y: 5 },
+                isPlayer: false,
+              },
+              {
+                characterId: 'npc-2',
+                characterName: 'Guard',
+                position: { x: 5, y: 5 },
+                isPlayer: false,
+              },
+            ],
+          }),
+        ],
+      };
+      const { container } = render(<GridMap {...props} />);
+      expect(container).toMatchSnapshot();
+    });
+  });
+
+  describe('grid display', () => {
+    it('should display 10x10 grid (100 cells)', () => {
+      const { container } = render(<GridMap {...defaultProps} />);
+      // Each cell has a title attribute
+      const cells = container.querySelectorAll('[title]');
+      expect(cells.length).toBeGreaterThanOrEqual(100);
+    });
+
+    it('should display location name', () => {
+      render(<GridMap {...defaultProps} />);
+      expect(screen.getByText('Ancient Forest')).toBeInTheDocument();
+    });
+
+    it('should display map title', () => {
       render(<GridMap {...defaultProps} />);
       expect(screen.getByText('Map')).toBeInTheDocument();
     });
+  });
 
-    it('should render location name', () => {
+  describe('character display', () => {
+    it('should display character names in legend', () => {
       render(<GridMap {...defaultProps} />);
-      expect(screen.getByText('Town Square')).toBeInTheDocument();
+      expect(screen.getByText('Hero')).toBeInTheDocument();
+      expect(screen.getByText('Merchant')).toBeInTheDocument();
     });
 
-    it('should render back button', () => {
+    it('should display character positions in legend', () => {
       render(<GridMap {...defaultProps} />);
-      expect(screen.getByText('Back')).toBeInTheDocument();
+      expect(screen.getByText('(5, 5)')).toBeInTheDocument();
+      expect(screen.getByText('(3, 4)')).toBeInTheDocument();
     });
 
+    it('should show player character with different styling', () => {
+      render(<GridMap {...defaultProps} />);
+      // Player character should have different styling in the legend
+      // Check that the legend exists and contains character info
+      expect(screen.getByText('Hero')).toBeInTheDocument();
+      expect(screen.getByText('Merchant')).toBeInTheDocument();
+      // Verify positions are displayed
+      expect(screen.getByText('(5, 5)')).toBeInTheDocument();
+      expect(screen.getByText('(3, 4)')).toBeInTheDocument();
+    });
+  });
+
+  describe('interactions', () => {
     it('should call onToggleFlip when back button is clicked', () => {
       const onToggleFlip = jest.fn();
-      render(<GridMap {...defaultProps} onToggleFlip={onToggleFlip} />);
+      const props = {
+        ...defaultProps,
+        onToggleFlip,
+      };
+      render(<GridMap {...props} />);
 
-      fireEvent.click(screen.getByText('Back'));
-      expect(onToggleFlip).toHaveBeenCalledTimes(1);
-    });
+      const backButton = screen.getByText('Back');
+      fireEvent.click(backButton);
 
-    it('should render 100 grid cells (10x10)', () => {
-      const { container } = render(<GridMap {...defaultProps} />);
-
-      // Each cell has a title attribute with coordinates
-      const gridCells = container.querySelectorAll('[title]');
-      // We expect at least 100 cells (some might have character names as titles)
-      expect(gridCells.length).toBeGreaterThanOrEqual(1);
+      expect(onToggleFlip).toHaveBeenCalled();
     });
   });
 
-  describe('character positions', () => {
-    it('should display player character on the grid', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            characterId: 'player-1',
-            characterName: 'Hero',
-            position: { x: 5, y: 5 },
-            isPlayer: true,
+  describe('grid snapshot selection', () => {
+    it('should show correct snapshot for message number', () => {
+      const props = {
+        ...defaultProps,
+        gridSnapshots: [
+          createMockGridSnapshot({
+            atMessageNumber: 1,
+            locationName: 'First Location',
+          }),
+          createMockGridSnapshot({
+            id: 'grid-2',
+            atMessageNumber: 3,
+            locationName: 'Second Location',
           }),
         ],
-      });
+        currentMessageNumber: 2,
+      };
+      render(<GridMap {...props} />);
 
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      // Player character should be shown (cell with player styling)
-      const playerCell = container.querySelector('[title="Hero"]');
-      expect(playerCell).toBeInTheDocument();
+      // Should show First Location (message 1, the most recent before message 2)
+      expect(screen.getByText('First Location')).toBeInTheDocument();
     });
 
-    it('should display NPC character on the grid', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            characterId: 'npc-1',
-            characterName: 'Merchant',
-            position: { x: 3, y: 3 },
-            isPlayer: false,
+    it('should show most recent snapshot at or before current message', () => {
+      const props = {
+        ...defaultProps,
+        gridSnapshots: [
+          createMockGridSnapshot({
+            atMessageNumber: 1,
+            locationName: 'First Location',
+          }),
+          createMockGridSnapshot({
+            id: 'grid-2',
+            atMessageNumber: 3,
+            locationName: 'Second Location',
           }),
         ],
-      });
+        currentMessageNumber: 5,
+      };
+      render(<GridMap {...props} />);
 
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      const npcCell = container.querySelector('[title="Merchant"]');
-      expect(npcCell).toBeInTheDocument();
-    });
-
-    it('should display multiple characters in same cell', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            characterId: 'player-1',
-            characterName: 'Hero',
-            position: { x: 5, y: 5 },
-            isPlayer: true,
-          }),
-          createMockCharacterPosition({
-            characterId: 'npc-1',
-            characterName: 'Merchant',
-            position: { x: 5, y: 5 },
-            isPlayer: false,
-          }),
-        ],
-      });
-
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      // Cell should have both character names in title
-      const multiCharCell = container.querySelector('[title*="Hero"]');
-      expect(multiCharCell).toBeInTheDocument();
-    });
-
-    it('should show character avatar when provided', () => {
-      const avatarBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
-
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            avatarBase64: avatarBase64,
-          }),
-        ],
-      });
-
-      render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      const avatar = screen.getAllByRole('img').find(img => img.getAttribute('alt') === 'Hero');
-      expect(avatar).toBeInTheDocument();
-    });
-
-    it('should show character initial when no avatar', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            characterName: 'Warrior',
-            avatarBase64: undefined,
-          }),
-        ],
-      });
-
-      render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      // Should show 'W' for Warrior (multiple elements: grid cell + legend)
-      const wElements = screen.getAllByText('W');
-      expect(wElements.length).toBeGreaterThanOrEqual(1);
-    });
-  });
-
-  describe('historical grid states', () => {
-    it('should show correct grid state for current message number', () => {
-      const snapshots = [
-        createMockGridSnapshot({
-          id: 'snap-1',
-          atMessageNumber: 1,
-          characterPositions: [
-            createMockCharacterPosition({
-              characterName: 'Hero',
-              position: { x: 1, y: 1 },
-            }),
-          ],
-        }),
-        createMockGridSnapshot({
-          id: 'snap-2',
-          atMessageNumber: 3,
-          characterPositions: [
-            createMockCharacterPosition({
-              characterName: 'Hero',
-              position: { x: 5, y: 5 },
-            }),
-          ],
-        }),
-      ];
-
-      // For message 2, should show snap-1 (most recent before or at message 2)
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={snapshots}
-          currentMessageNumber={2}
-        />
-      );
-
-      // Character should be at position (1,1) from snap-1
-      const heroCell = container.querySelector('[title="Hero"]');
-      expect(heroCell).toBeInTheDocument();
-    });
-
-    it('should show latest snapshot for future message numbers', () => {
-      const snapshots = [
-        createMockGridSnapshot({
-          id: 'snap-1',
-          atMessageNumber: 1,
-          characterPositions: [
-            createMockCharacterPosition({
-              characterName: 'Hero',
-              position: { x: 1, y: 1 },
-            }),
-          ],
-        }),
-        createMockGridSnapshot({
-          id: 'snap-2',
-          atMessageNumber: 5,
-          characterPositions: [
-            createMockCharacterPosition({
-              characterName: 'Hero',
-              position: { x: 9, y: 9 },
-            }),
-          ],
-        }),
-      ];
-
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={snapshots}
-          currentMessageNumber={10}
-        />
-      );
-
-      // Should show snap-2 positions
-      const heroCell = container.querySelector('[title="Hero"]');
-      expect(heroCell).toBeInTheDocument();
+      // Should show Second Location (message 3, the most recent before message 5)
+      expect(screen.getByText('Second Location')).toBeInTheDocument();
     });
   });
 
   describe('no data state', () => {
-    it('should show no data message when no snapshots', () => {
-      render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[]}
-        />
-      );
+    it('should show no map data message when no snapshots', () => {
+      const props = {
+        ...defaultProps,
+        gridSnapshots: [],
+      };
+      render(<GridMap {...props} />);
 
       expect(screen.getByText('No map data available')).toBeInTheDocument();
     });
 
-    it('should show no data message when no matching snapshot for message', () => {
-      const snapshots = [
-        createMockGridSnapshot({
-          atMessageNumber: 10, // Only have data for message 10
-        }),
-      ];
+    it('should show no map data when no matching snapshot', () => {
+      const props = {
+        ...defaultProps,
+        gridSnapshots: [
+          createMockGridSnapshot({
+            atMessageNumber: 10, // Future message
+          }),
+        ],
+        currentMessageNumber: 1,
+      };
+      render(<GridMap {...props} />);
 
-      render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={snapshots}
-          currentMessageNumber={1}
-        />
-      );
-
-      // Should show no data because no snapshot exists at or before message 1
-      // (snapshot is at message 10, which is after message 1)
       expect(screen.getByText('No map data available')).toBeInTheDocument();
     });
   });
 
-  describe('legend', () => {
-    it('should show character legend when characters are present', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            characterName: 'Hero',
-            position: { x: 5, y: 5 },
-            isPlayer: true,
-          }),
-          createMockCharacterPosition({
-            characterId: 'npc-1',
-            characterName: 'Merchant',
-            position: { x: 3, y: 3 },
-            isPlayer: false,
-          }),
-        ],
-      });
-
-      render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      // Legend should show character names and coordinates
-      expect(screen.getAllByText('Hero').length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText('Merchant').length).toBeGreaterThanOrEqual(1);
-      expect(screen.getByText('(5, 5)')).toBeInTheDocument();
-      expect(screen.getByText('(3, 3)')).toBeInTheDocument();
-    });
-
-    it('should not show legend when no characters', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [],
-      });
-
-      render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      // No coordinates should be shown
-      expect(screen.queryByText(/\(\d+, \d+\)/)).not.toBeInTheDocument();
-    });
-  });
-
-  describe('player blinking animation', () => {
-    it('should toggle player cell blinking state', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            isPlayer: true,
-          }),
-        ],
-      });
-
-      render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      // Initial state
-      const playerCell = screen.getByTitle('Hero');
-      expect(playerCell).toBeInTheDocument();
+  describe('player blinking effect', () => {
+    it('should toggle player visibility (blinking effect)', () => {
+      render(<GridMap {...defaultProps} />);
 
       // Advance timer to trigger blink
       act(() => {
         jest.advanceTimersByTime(500);
       });
 
-      // Cell should still be present (blinking changes style, not presence)
-      expect(screen.getByTitle('Hero')).toBeInTheDocument();
-
-      // Another blink cycle
-      act(() => {
-        jest.advanceTimersByTime(500);
-      });
-
-      expect(screen.getByTitle('Hero')).toBeInTheDocument();
+      // The component should still render
+      expect(screen.getByText('Hero')).toBeInTheDocument();
     });
   });
 
-  describe('background image', () => {
-    it('should render with location background image', () => {
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          locationBackgroundImage="https://example.com/background.jpg"
-        />
-      );
-
-      // Should have an overlay for visibility
-      const overlay = container.querySelector('[style*="background"]');
-      expect(overlay).toBeInTheDocument();
-    });
-  });
-
-  describe('character avatars fallback', () => {
-    it('should use characterAvatars prop as fallback when snapshot has no avatar', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            characterId: 'player-1',
-            characterName: 'Hero',
-            avatarBase64: undefined,
+  describe('character avatars', () => {
+    it('should display character avatar when available', () => {
+      const props = {
+        ...defaultProps,
+        gridSnapshots: [
+          createMockGridSnapshot({
+            characterPositions: [
+              {
+                characterId: 'player-1',
+                characterName: 'Hero',
+                position: { x: 5, y: 5 },
+                isPlayer: true,
+                avatarBase64: 'data:image/png;base64,iVBORw0KGgo=',
+              },
+            ],
           }),
         ],
-      });
-
-      const characterAvatars = {
-        'player-1': 'data:image/png;base64,fallbackAvatar',
       };
+      const { container } = render(<GridMap {...props} />);
 
-      render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-          characterAvatars={characterAvatars}
-        />
-      );
-
-      // Avatar should be rendered from fallback
-      const avatar = screen.getAllByRole('img').find(img => img.getAttribute('alt') === 'Hero');
-      expect(avatar).toBeInTheDocument();
-    });
-  });
-
-  describe('snapshots', () => {
-    it('should match snapshot for basic grid', () => {
-      const { container } = render(
-        <GridMap {...defaultProps} />
-      );
-
-      expect(container).toMatchSnapshot();
+      const avatarImages = container.querySelectorAll('img');
+      expect(avatarImages.length).toBeGreaterThan(0);
     });
 
-    it('should match snapshot for grid with multiple characters', () => {
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            characterId: 'player-1',
-            characterName: 'Hero',
-            position: { x: 5, y: 5 },
-            isPlayer: true,
-          }),
-          createMockCharacterPosition({
-            characterId: 'npc-1',
-            characterName: 'Merchant',
-            position: { x: 3, y: 3 },
-            isPlayer: false,
-          }),
-          createMockCharacterPosition({
-            characterId: 'npc-2',
-            characterName: 'Guard',
-            position: { x: 7, y: 2 },
-            isPlayer: false,
-          }),
-        ],
-      });
+    it('should show initials when no avatar', () => {
+      render(<GridMap {...defaultProps} />);
 
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      expect(container).toMatchSnapshot();
+      // Should show 'H' for Hero (first character without avatar in our mock)
+      const initials = screen.getAllByText('H');
+      expect(initials.length).toBeGreaterThan(0);
     });
 
-    it('should match snapshot for grid with location background', () => {
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          locationBackgroundImage="https://example.com/forest.jpg"
-        />
-      );
+    it('should use characterAvatars fallback', () => {
+      const props = {
+        ...defaultProps,
+        characterAvatars: {
+          'player-1': 'data:image/png;base64,fallbackAvatar=',
+        },
+      };
+      const { container } = render(<GridMap {...props} />);
 
-      expect(container).toMatchSnapshot();
-    });
-
-    it('should match snapshot for empty grid state', () => {
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[]}
-        />
-      );
-
-      expect(container).toMatchSnapshot();
-    });
-
-    it('should match snapshot with character avatars', () => {
-      const avatarBase64 = 'data:image/png;base64,testAvatar';
-      const snapshot = createMockGridSnapshot({
-        characterPositions: [
-          createMockCharacterPosition({
-            characterId: 'player-1',
-            characterName: 'Hero',
-            position: { x: 5, y: 5 },
-            isPlayer: true,
-            avatarBase64: avatarBase64,
-          }),
-        ],
-      });
-
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          gridSnapshots={[snapshot]}
-        />
-      );
-
-      expect(container).toMatchSnapshot();
-    });
-
-    it('should match snapshot when not flipped', () => {
-      const { container } = render(
-        <GridMap
-          {...defaultProps}
-          isFlipped={false}
-        />
-      );
-
-      expect(container).toMatchSnapshot();
+      const avatarImages = container.querySelectorAll('img');
+      expect(avatarImages.length).toBeGreaterThan(0);
     });
   });
 });

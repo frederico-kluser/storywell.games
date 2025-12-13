@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ChatBubble snapshots should match snapshot for NPC with avatar 1`] = `
+exports[`ChatBubble rendering should match snapshot for NPC dialogue 1`] = `
 <div>
   <div
     class="flex flex-col md:flex-row w-full mt-4 md:mt-8 md:space-x-6 max-w-5xl mx-auto px-2 md:px-0 items-start md:justify-start"
@@ -9,18 +9,18 @@ exports[`ChatBubble snapshots should match snapshot for NPC with avatar 1`] = `
       class="flex-shrink-0 flex md:flex-col items-center gap-2 mb-2 md:mb-0 md:mt-2 flex-row md:flex-col"
     >
       <div
-        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-white cursor-pointer hover:opacity-80 transition-opacity"
+        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-white "
       >
-        <img
-          alt="Merchant"
-          class="w-full h-full object-cover"
-          src="data:image/png;base64,test"
-        />
+        <span
+          class="text-lg md:text-2xl font-bold text-stone-800"
+        >
+          V
+        </span>
       </div>
       <span
         class="text-[10px] font-bold text-stone-500 uppercase tracking-widest max-w-[80px] truncate"
       >
-        Merchant
+        Village Elder
       </span>
     </div>
     <div
@@ -35,7 +35,6 @@ exports[`ChatBubble snapshots should match snapshot for NPC with avatar 1`] = `
           title="Read Aloud"
         >
           <span
-            class="w-4 h-4"
             data-testid="play-icon"
           >
             Play
@@ -44,7 +43,7 @@ exports[`ChatBubble snapshots should match snapshot for NPC with avatar 1`] = `
         <p
           class="text-base md:text-xl leading-relaxed whitespace-pre-wrap font-mono pr-8"
         >
-          Welcome to my shop, traveler!
+          Greetings, traveler! Welcome to our village.
         </p>
       </div>
       <div
@@ -55,7 +54,7 @@ exports[`ChatBubble snapshots should match snapshot for NPC with avatar 1`] = `
 </div>
 `;
 
-exports[`ChatBubble snapshots should match snapshot for narrator message 1`] = `
+exports[`ChatBubble rendering should match snapshot for narrator message 1`] = `
 <div>
   <div
     class="flex justify-center my-4 md:my-8 animate-fade-in w-full"
@@ -67,7 +66,6 @@ exports[`ChatBubble snapshots should match snapshot for narrator message 1`] = `
         class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#fafaf9] px-3 md:px-4 border border-stone-300 text-[10px] md:text-xs font-bold uppercase text-stone-500 flex items-center gap-1 md:gap-2 rounded-full"
       >
         <span
-          class="w-3 h-3"
           data-testid="terminal-icon"
         >
           Terminal
@@ -80,7 +78,6 @@ exports[`ChatBubble snapshots should match snapshot for narrator message 1`] = `
         title="Read Aloud"
       >
         <span
-          class="w-4 h-4"
           data-testid="play-icon"
         >
           Play
@@ -94,7 +91,7 @@ exports[`ChatBubble snapshots should match snapshot for narrator message 1`] = `
         >
           “
         </span>
-        The wind howled through the ancient forest...
+        The sun sets over the distant mountains...
         <span
           class="text-2xl md:text-3xl text-stone-300 leading-none align-middle ml-1 md:ml-2"
         >
@@ -106,7 +103,7 @@ exports[`ChatBubble snapshots should match snapshot for narrator message 1`] = `
 </div>
 `;
 
-exports[`ChatBubble snapshots should match snapshot for player message 1`] = `
+exports[`ChatBubble rendering should match snapshot for player message 1`] = `
 <div>
   <div
     class="flex flex-col md:flex-row w-full mt-4 md:mt-8 md:space-x-6 max-w-5xl mx-auto px-2 md:px-0 items-end md:justify-end"
@@ -141,7 +138,6 @@ exports[`ChatBubble snapshots should match snapshot for player message 1`] = `
           title="Read Aloud"
         >
           <span
-            class="w-4 h-4"
             data-testid="play-icon"
           >
             Play
@@ -150,7 +146,7 @@ exports[`ChatBubble snapshots should match snapshot for player message 1`] = `
         <p
           class="text-base md:text-xl leading-relaxed whitespace-pre-wrap font-mono pr-8"
         >
-          Hello, this is a test message.
+          I seek adventure and glory!
         </p>
       </div>
       <div
@@ -161,62 +157,7 @@ exports[`ChatBubble snapshots should match snapshot for player message 1`] = `
 </div>
 `;
 
-exports[`ChatBubble snapshots should match snapshot for player with avatar 1`] = `
-<div>
-  <div
-    class="flex flex-col md:flex-row w-full mt-4 md:mt-8 md:space-x-6 max-w-5xl mx-auto px-2 md:px-0 items-end md:justify-end"
-  >
-    <div
-      class="flex-shrink-0 flex md:flex-col items-center gap-2 mb-2 md:mb-0 md:mt-2 flex-row-reverse md:flex-col order-first md:order-last"
-    >
-      <div
-        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-stone-200 cursor-pointer hover:opacity-80 transition-opacity"
-      >
-        <img
-          alt="Hero"
-          class="w-full h-full object-cover"
-          src="data:image/png;base64,playerAvatar"
-        />
-      </div>
-      <span
-        class="text-[10px] font-bold text-stone-500 uppercase tracking-widest max-w-[80px] truncate"
-      >
-        PLAYER
-      </span>
-    </div>
-    <div
-      class="relative w-full md:max-w-[70%]"
-    >
-      <div
-        class="relative px-4 md:px-8 py-4 md:py-6 border-2 shadow-[4px_4px_0px_rgba(0,0,0,0.1)] md:shadow-[6px_6px_0px_rgba(0,0,0,0.1)] min-h-[3rem] md:min-h-[4rem] bg-stone-800 border-stone-900 text-white"
-      >
-        <button
-          class="absolute top-2 right-2 p-1.5 rounded-full transition-colors border border-stone-700 text-stone-400 hover:text-white hover:bg-stone-700 disabled:opacity-30"
-          disabled=""
-          title="Read Aloud"
-        >
-          <span
-            class="w-4 h-4"
-            data-testid="play-icon"
-          >
-            Play
-          </span>
-        </button>
-        <p
-          class="text-base md:text-xl leading-relaxed whitespace-pre-wrap font-mono pr-8"
-        >
-          Hello, this is a test message.
-        </p>
-      </div>
-      <div
-        class="hidden md:block absolute top-6 w-4 h-4 border-t-2 border-l-2 transform rotate-45 bg-stone-800 border-stone-900 -right-2.5"
-      />
-    </div>
-  </div>
-</div>
-`;
-
-exports[`ChatBubble snapshots should match snapshot for system message 1`] = `
+exports[`ChatBubble rendering should match snapshot for system message 1`] = `
 <div>
   <div
     class="flex justify-center my-4 md:my-6 animate-fade-in w-full px-2 md:px-0"
@@ -228,7 +169,6 @@ exports[`ChatBubble snapshots should match snapshot for system message 1`] = `
         class="flex items-center gap-2 font-bold mb-1 text-blue-700 uppercase text-[10px] md:text-xs"
       >
         <span
-          class="w-3 h-3 md:w-4 md:h-4"
           data-testid="info-icon"
         >
           Info
@@ -238,48 +178,48 @@ exports[`ChatBubble snapshots should match snapshot for system message 1`] = `
       <p
         class="leading-relaxed whitespace-pre-wrap"
       >
-        Achievement unlocked: First Steps
+        Game autosaved.
       </p>
     </div>
   </div>
 </div>
 `;
 
-exports[`ChatBubble snapshots should match snapshot with API key (play button visible) 1`] = `
+exports[`ChatBubble rendering should match snapshot with avatar URL 1`] = `
 <div>
   <div
-    class="flex flex-col md:flex-row w-full mt-4 md:mt-8 md:space-x-6 max-w-5xl mx-auto px-2 md:px-0 items-end md:justify-end"
+    class="flex flex-col md:flex-row w-full mt-4 md:mt-8 md:space-x-6 max-w-5xl mx-auto px-2 md:px-0 items-start md:justify-start"
   >
     <div
-      class="flex-shrink-0 flex md:flex-col items-center gap-2 mb-2 md:mb-0 md:mt-2 flex-row-reverse md:flex-col order-first md:order-last"
+      class="flex-shrink-0 flex md:flex-col items-center gap-2 mb-2 md:mb-0 md:mt-2 flex-row md:flex-col"
     >
       <div
-        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-stone-200 "
+        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-white cursor-pointer hover:opacity-80 transition-opacity"
       >
-        <span
-          class="text-lg md:text-2xl font-bold text-stone-500"
-        >
-          YOU
-        </span>
+        <img
+          alt="Village Elder"
+          class="w-full h-full object-cover"
+          src="https://example.com/avatar.png"
+        />
       </div>
       <span
         class="text-[10px] font-bold text-stone-500 uppercase tracking-widest max-w-[80px] truncate"
       >
-        PLAYER
+        Village Elder
       </span>
     </div>
     <div
       class="relative w-full md:max-w-[70%]"
     >
       <div
-        class="relative px-4 md:px-8 py-4 md:py-6 border-2 shadow-[4px_4px_0px_rgba(0,0,0,0.1)] md:shadow-[6px_6px_0px_rgba(0,0,0,0.1)] min-h-[3rem] md:min-h-[4rem] bg-stone-800 border-stone-900 text-white"
+        class="relative px-4 md:px-8 py-4 md:py-6 border-2 shadow-[4px_4px_0px_rgba(0,0,0,0.1)] md:shadow-[6px_6px_0px_rgba(0,0,0,0.1)] min-h-[3rem] md:min-h-[4rem] bg-white border-stone-300 text-stone-900"
       >
         <button
-          class="absolute top-2 right-2 p-1.5 rounded-full transition-colors border border-stone-700 text-stone-400 hover:text-white hover:bg-stone-700 disabled:opacity-30"
+          class="absolute top-2 right-2 p-1.5 rounded-full transition-colors border border-stone-200 text-stone-400 hover:text-stone-900 hover:bg-stone-100 disabled:opacity-30"
+          disabled=""
           title="Read Aloud"
         >
           <span
-            class="w-4 h-4"
             data-testid="play-icon"
           >
             Play
@@ -288,11 +228,65 @@ exports[`ChatBubble snapshots should match snapshot with API key (play button vi
         <p
           class="text-base md:text-xl leading-relaxed whitespace-pre-wrap font-mono pr-8"
         >
-          Hello, this is a test message.
+          Greetings, traveler! Welcome to our village.
         </p>
       </div>
       <div
-        class="hidden md:block absolute top-6 w-4 h-4 border-t-2 border-l-2 transform rotate-45 bg-stone-800 border-stone-900 -right-2.5"
+        class="hidden md:block absolute top-6 w-4 h-4 border-t-2 border-l-2 transform rotate-45 bg-white border-stone-300 -left-2.5"
+      />
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ChatBubble rendering should match snapshot with avatar base64 1`] = `
+<div>
+  <div
+    class="flex flex-col md:flex-row w-full mt-4 md:mt-8 md:space-x-6 max-w-5xl mx-auto px-2 md:px-0 items-start md:justify-start"
+  >
+    <div
+      class="flex-shrink-0 flex md:flex-col items-center gap-2 mb-2 md:mb-0 md:mt-2 flex-row md:flex-col"
+    >
+      <div
+        class="h-10 w-10 md:h-16 md:w-16 flex items-center justify-center border-2 border-stone-900 shadow-[2px_2px_0px_#a8a29e] md:shadow-[4px_4px_0px_#a8a29e] overflow-hidden relative bg-white cursor-pointer hover:opacity-80 transition-opacity"
+      >
+        <img
+          alt="Village Elder"
+          class="w-full h-full object-cover"
+          src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg=="
+        />
+      </div>
+      <span
+        class="text-[10px] font-bold text-stone-500 uppercase tracking-widest max-w-[80px] truncate"
+      >
+        Village Elder
+      </span>
+    </div>
+    <div
+      class="relative w-full md:max-w-[70%]"
+    >
+      <div
+        class="relative px-4 md:px-8 py-4 md:py-6 border-2 shadow-[4px_4px_0px_rgba(0,0,0,0.1)] md:shadow-[6px_6px_0px_rgba(0,0,0,0.1)] min-h-[3rem] md:min-h-[4rem] bg-white border-stone-300 text-stone-900"
+      >
+        <button
+          class="absolute top-2 right-2 p-1.5 rounded-full transition-colors border border-stone-200 text-stone-400 hover:text-stone-900 hover:bg-stone-100 disabled:opacity-30"
+          disabled=""
+          title="Read Aloud"
+        >
+          <span
+            data-testid="play-icon"
+          >
+            Play
+          </span>
+        </button>
+        <p
+          class="text-base md:text-xl leading-relaxed whitespace-pre-wrap font-mono pr-8"
+        >
+          Greetings, traveler! Welcome to our village.
+        </p>
+      </div>
+      <div
+        class="hidden md:block absolute top-6 w-4 h-4 border-t-2 border-l-2 transform rotate-45 bg-white border-stone-300 -left-2.5"
       />
     </div>
   </div>

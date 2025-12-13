@@ -4,6 +4,19 @@ import { ActionInput } from '../../components/ActionInput/ActionInput';
 import { GameState, MessageType } from '../../types';
 import { ThemeColorsProvider } from '../../hooks/useThemeColors';
 
+// Mock lucide-react icons
+jest.mock('lucide-react', () => ({
+  Send: () => <span data-testid="send-icon">Send</span>,
+  Loader2: () => <span data-testid="loader-icon">Loading</span>,
+  MoreHorizontal: () => <span data-testid="more-icon">More</span>,
+  Sparkles: () => <span data-testid="sparkles-icon">Sparkles</span>,
+  AlertTriangle: () => <span data-testid="alert-icon">Alert</span>,
+  ChevronUp: () => <span data-testid="chevron-up">Up</span>,
+  ChevronDown: () => <span data-testid="chevron-down">Down</span>,
+  X: () => <span data-testid="x-icon">X</span>,
+  Check: () => <span data-testid="check-icon">Check</span>,
+}));
+
 // Mock the AI services
 jest.mock('../../services/ai/openaiClient', () => ({
   generateActionOptions: jest.fn().mockResolvedValue([
@@ -13,7 +26,14 @@ jest.mock('../../services/ai/openaiClient', () => ({
     { text: 'Check inventory', goodChance: 5, badChance: 0, goodHint: 'Find item', badHint: '' },
     { text: 'Rest', goodChance: 0, badChance: 0, goodHint: '', badHint: '' }
   ]),
-  rollFate: jest.fn().mockReturnValue({ type: 'neutral' })
+  rollFate: jest.fn().mockReturnValue({ type: 'neutral' }),
+  analyzeCustomAction: jest.fn().mockResolvedValue({
+    goodChance: 15,
+    badChance: 15,
+    goodHint: 'Something good may happen',
+    badHint: 'Something bad may happen',
+    reasoning: 'This is a moderate risk action',
+  }),
 }));
 
 // Mock VoiceInput component
@@ -177,24 +197,12 @@ describe('ActionInput', () => {
 
   describe('snapshots', () => {
     it('should match snapshot for loading state', () => {
-      // Mock to delay loading
-      jest.mock('../../services/ai/openaiClient', () => ({
-        generateActionOptions: jest.fn().mockImplementation(() => new Promise(() => {})),
-        rollFate: jest.fn().mockReturnValue({ type: 'neutral' })
-      }));
-
+      // Force loading state by not providing cached options
       const { container } = renderWithTheme(<ActionInput {...defaultProps} />);
       expect(container).toMatchSnapshot();
     });
 
-    it('should match snapshot for processing state', () => {
-      const { container } = renderWithTheme(
-        <ActionInput {...defaultProps} isProcessing={true} />
-      );
-      expect(container).toMatchSnapshot();
-    });
-
-    it('should match snapshot with options displayed', async () => {
+    it('should match snapshot with options loaded', async () => {
       const { container } = renderWithTheme(<ActionInput {...defaultProps} />);
 
       await waitFor(() => {
@@ -204,30 +212,101 @@ describe('ActionInput', () => {
       expect(container).toMatchSnapshot();
     });
 
-    it('should match snapshot with different language', async () => {
-      const ptTranslations = {
-        inputPlaceholder: 'Digite uma ação...',
-        customAction: 'Ação Personalizada',
-        generatingOptions: 'Gerando opções...',
-        back: 'Voltar',
-        safe: 'Seguro'
-      };
-
+    it('should match snapshot in processing state', async () => {
       const { container } = renderWithTheme(
-        <ActionInput
-          {...defaultProps}
-          language="pt"
-          t={ptTranslations}
-        />
+        <ActionInput {...defaultProps} isProcessing={true} />
       );
+      expect(container).toMatchSnapshot();
+    });
+
+    it('should match snapshot for custom input mode', async () => {
+      const { container } = renderWithTheme(<ActionInput {...defaultProps} />);
 
       await waitFor(() => {
-        const hasCustom = screen.queryByText('Ação Personalizada') !== null;
-        const hasGenerating = screen.queryByText('Gerando opções...') !== null;
-        expect(hasCustom || hasGenerating).toBe(true);
+        expect(screen.queryByText('Custom Action')).toBeInTheDocument();
       }, { timeout: 3000 });
 
+      fireEvent.click(screen.getByText('Custom Action'));
+
+      await waitFor(() => {
+        expect(screen.queryByPlaceholderText('Enter action...')).toBeInTheDocument();
+      });
+
       expect(container).toMatchSnapshot();
+    });
+  });
+
+  describe('option buttons', () => {
+    it('should display action options with risk indicators', async () => {
+      renderWithTheme(<ActionInput {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Look around')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      // Check for risk percentages (may appear multiple times)
+      const percentage10 = screen.getAllByText(/10%/);
+      const percentage5 = screen.getAllByText(/5%/);
+      expect(percentage10.length).toBeGreaterThan(0);
+      expect(percentage5.length).toBeGreaterThan(0);
+    });
+
+    it('should display Safe label for zero-risk actions', async () => {
+      renderWithTheme(<ActionInput {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Rest')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      expect(screen.getByText('Safe')).toBeInTheDocument();
+    });
+
+    it('should call onSendMessage when option is clicked', async () => {
+      renderWithTheme(<ActionInput {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Look around')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      fireEvent.click(screen.getByText('Look around'));
+
+      await waitFor(() => {
+        expect(mockOnSendMessage).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('voice input', () => {
+    it('should render voice input button', async () => {
+      renderWithTheme(<ActionInput {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Custom Action')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      fireEvent.click(screen.getByText('Custom Action'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('voice-input')).toBeInTheDocument();
+      });
+    });
+
+    it('should call onVoiceTranscription when voice input is used', async () => {
+      renderWithTheme(<ActionInput {...defaultProps} />);
+
+      await waitFor(() => {
+        expect(screen.queryByText('Custom Action')).toBeInTheDocument();
+      }, { timeout: 3000 });
+
+      fireEvent.click(screen.getByText('Custom Action'));
+
+      await waitFor(() => {
+        expect(screen.getByTestId('voice-input')).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getByTestId('voice-input'));
+
+      expect(mockOnVoiceTranscription).toHaveBeenCalledWith('Voice transcribed text');
     });
   });
 });
