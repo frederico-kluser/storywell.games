@@ -47,6 +47,21 @@ jest.mock('../../services/ai/openaiClient', () => ({
         eventLog: 'Story started'
       }
     },
+    heavyContextSeed: {
+      mainMission: 'Survive',
+      currentMission: 'Wake up',
+      activeProblems: [],
+      currentConcerns: [],
+      importantNotes: []
+    },
+    gridSeed: {
+      locationId: 'loc-1',
+      locationName: 'Start',
+      playerPosition: { x: 5, y: 5 },
+      characters: [{ id: 'player-1', name: 'Hero', x: 5, y: 5, isPlayer: true }],
+      elements: []
+    },
+    telemetry: [],
     universeContext: 'A fantasy world full of adventure.'
   }),
   generateGameTurn: jest.fn().mockResolvedValue({

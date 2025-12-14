@@ -682,6 +682,7 @@ export const useGameEngine = (): UseGameEngineReturn => {
 				locations: locsMap,
 				messages: [],
 				events: [],
+		heavyContext: initResult.heavyContextSeed,
 				universeContext, // Store the generated universe narrative context
 				themeColors, // Store the generated theme colors
 				gridSnapshots: [], // Initialize empty grid snapshots array
@@ -753,7 +754,7 @@ export const useGameEngine = (): UseGameEngineReturn => {
 			newState.messages = sanitizeMessages(newMessages);
 
 			// Create initial grid snapshot for the new story
-			const initialGridSnapshot = createInitialGridSnapshot(newState, newMessages.length);
+			const initialGridSnapshot = createInitialGridSnapshot(newState, newMessages.length, initResult.gridSeed);
 			newState.gridSnapshots = [initialGridSnapshot];
 			console.log('[Grid] Created initial grid snapshot for new story');
 

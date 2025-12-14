@@ -116,6 +116,41 @@ export {
 } from './storyInitialization.prompt';
 
 // =============================================================================
+// MODULAR STORY INIT PROMPTS
+// =============================================================================
+
+export {
+  buildStoryBlueprintPrompt,
+  storyBlueprintSchema,
+  type StoryBlueprintPromptParams,
+  type StoryBlueprint,
+  buildStartingLocationPrompt,
+  startingLocationSchema,
+  type StartingLocationPromptParams,
+  type StartingLocationDetail,
+  buildPlayerSheetPrompt,
+  playerSheetSchema,
+  type PlayerSheetPromptParams,
+  type PlayerSheetDetail,
+  buildSupportingNPCsPrompt,
+  supportingNPCsSchema,
+  type SupportingNPCsPromptParams,
+  type SupportingNPCsResponse,
+  buildOpeningNarrationPrompt,
+  openingNarrationSchema,
+  type OpeningNarrationPromptParams,
+  type OpeningNarrationResponse,
+  buildQuestHooksPrompt,
+  questHooksSchema,
+  type QuestHooksPromptParams,
+  type QuestHooksResponse,
+  buildGridSeedPrompt,
+  gridSeedSchema,
+  type GridSeedPromptParams,
+  type GridSeedResponse,
+} from './initialization';
+
+// =============================================================================
 // PLAYER MESSAGE PROCESSING PROMPT
 // =============================================================================
 

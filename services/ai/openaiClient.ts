@@ -25,7 +25,6 @@ import { languageInfo } from '../../i18n/locales';
 import {
 	gmResponseSchema,
 	buildGameMasterPrompt,
-	buildStoryInitializationPrompt,
 	buildOnboardingPrompt,
 	buildPlayerMessageProcessingPrompt,
 	buildActionOptionsPrompt,
@@ -68,6 +67,8 @@ import {
 } from '../../utils/ai';
 import { cleanJsonString } from '../../utils/helpers';
 import { processAIInventoryResponse, normalizeInventory } from '../../utils/inventory';
+
+import { runStoryInitializationPipeline, type StoryInitializationTelemetryEntry, type InitializationGridSeed } from './storyInitialization';
 
 /**
  * Configuração de modelos por tipo de tarefa.
@@ -1458,6 +1459,12 @@ export interface StoryInitializationResult {
 	gmResponse: GMResponse;
 	/** The generated universe narrative context */
 	universeContext: string;
+	/** Seeded heavy context information */
+	heavyContextSeed?: HeavyContext;
+	/** Optional tactical grid seed to prime the first snapshot */
+	gridSeed?: InitializationGridSeed;
+	/** Telemetry entries for each LLM/job phase */
+	telemetry: StoryInitializationTelemetryEntry[];
 }
 
 /**
@@ -1474,82 +1481,66 @@ export const initializeStory = async (
 	config: any,
 	language: Language,
 ): Promise<StoryInitializationResult> => {
-	const prompt = buildStoryInitializationPrompt({ config, language });
-	const schemaInstruction = `\n\nYou MUST respond with a valid JSON object following this exact schema:\n${JSON.stringify(
-		gmResponseSchema,
-		null,
-		2,
-	)}`;
-
-	const messages: LLMMessage[] = [
-		{
-			role: 'system',
-			content:
-				'You are a game master creating the initial state for a new RPG adventure. Always respond with valid JSON.' +
-				schemaInstruction,
-		},
-		{
-			role: 'user',
-			content: prompt,
-		},
-	];
-
 	const storyStyleMode: NarrativeStyleMode = config.narrativeStyleMode ?? 'auto';
 	const customNarrativeStyle = storyStyleMode === 'custom' ? config.customNarrativeStyle?.trim() : undefined;
 	const genreForUniverse = storyStyleMode === 'custom' ? undefined : config.genre;
 
-	// Run story initialization and universe context generation in parallel
-	const [storyResponse, universeContext] = await Promise.all([
-		queryLLM(apiKey, messages, {
-			model: MODEL_CONFIG.storyInitialization, // gpt-4.1 - criação inicial do mundo
-			responseFormat: 'json',
-		}),
-		generateUniverseContext(apiKey, config.universeName, config.universeType as 'original' | 'existing', language, {
+	const pipelinePromise = runStoryInitializationPipeline({
+		apiKey,
+		config,
+		language,
+		enableGridSeed: config.combatStyle === 'tactical',
+		generateAvatar: async ({ name, description }) => {
+			try {
+				return await generateCharacterAvatar(
+					apiKey,
+					name,
+					description || config.playerDesc,
+					config.universeName,
+					config.visualStyle,
+				);
+			} catch (error) {
+				console.warn('Could not generate initial avatar, continuing story...', error);
+				throw error;
+			}
+		},
+	});
+
+	const universePromise = generateUniverseContext(
+		apiKey,
+		config.universeName,
+		config.universeType as 'original' | 'existing',
+		language,
+		{
 			genre: genreForUniverse,
 			narrativeStyleMode: storyStyleMode,
 			customNarrativeStyle,
-		}),
-	]);
+		},
+	);
 
 	try {
-		const cleanedText = cleanJsonString(storyResponse.text!);
-		const raw = JSON.parse(cleanedText);
-		const result = transformRawResponse(raw);
-		// Generate Player Avatar
-		if (result.stateUpdates.newCharacters && result.stateUpdates.newCharacters.length > 0) {
-			// Try to match player by name, otherwise assume it's the first character generated
-			const playerChar =
-				result.stateUpdates.newCharacters.find(
-					(c) =>
-						c.name.toLowerCase().includes(config.playerName.toLowerCase()) ||
-						config.playerName.toLowerCase().includes(c.name.toLowerCase()),
-				) || result.stateUpdates.newCharacters[0];
-
-			if (playerChar) {
-				try {
-					const avatarBase64 = await generateCharacterAvatar(
-						apiKey,
-						playerChar.name,
-						playerChar.description,
-						config.universeName,
-						config.visualStyle,
-					);
-					playerChar.avatarBase64 = avatarBase64;
-				} catch (e) {
-					console.warn('Could not generate initial avatar, continuing story...', e);
-				}
-			}
+		const [pipeline, universeContext] = await Promise.all([pipelinePromise, universePromise]);
+		if (pipeline.telemetry?.length) {
+			const summary = pipeline.telemetry
+				.map((entry) => `${entry.phase}:${entry.durationMs}${entry.success ? '' : ' (fallback)'}`)
+				.join(', ');
+			console.log(`[Story Init] Phase timings → ${summary}`);
 		}
 
 		return {
-			gmResponse: result,
+			gmResponse: pipeline.gmResponse,
 			universeContext,
+			heavyContextSeed: pipeline.heavyContextSeed,
+			gridSeed: pipeline.gridSeed,
+			telemetry: pipeline.telemetry,
 		};
-	} catch (e) {
-		console.error('Error parsing initialization response:', e);
-		throw new Error('Failed to parse world generation data. Please try again.');
+	} catch (error) {
+		console.error('Story initialization pipeline failed:', error);
+		throw new Error('Failed to initialize story. Please try again.');
 	}
 };
+
+
 
 /**
  * Generates 5 contextual action options with probability data based on the current game state.
@@ -2342,49 +2333,75 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 	}
 };
 
-export const createInitialGridSnapshot = (gameState: GameState, messageNumber: number): GridSnapshot => {
+export const createInitialGridSnapshot = (
+	gameState: GameState,
+	messageNumber: number,
+	seed?: InitializationGridSeed,
+): GridSnapshot => {
+	const clamp = (value: number) => Math.max(0, Math.min(9, Math.round(value)));
 	const currentLocation = gameState.locations[gameState.currentLocationId];
 	const charactersAtLocation = Object.values(gameState.characters).filter(
 		(c) => c.locationId === gameState.currentLocationId,
 	);
 
-	// Place player in center, other characters around
-	const characterPositions: GridCharacterPosition[] = charactersAtLocation.map((char, index) => {
-		let x: number, y: number;
-
-		if (char.isPlayer) {
-			// Player starts at center
-			x = 5;
-			y = 5;
-		} else {
-			// NPCs are placed around the player
-			// Simple circle placement around center
-			const angle = (index * 2 * Math.PI) / Math.max(charactersAtLocation.length - 1, 1);
-			const radius = 2;
-			x = Math.round(5 + radius * Math.cos(angle));
-			y = Math.round(5 + radius * Math.sin(angle));
-			// Clamp to grid bounds
-			x = Math.max(0, Math.min(9, x));
-			y = Math.max(0, Math.min(9, y));
-		}
-
-		return {
-			characterId: char.id,
-			characterName: char.name,
-			position: { x, y },
-			isPlayer: char.isPlayer,
-			avatarBase64: char.avatarBase64,
-		};
+	const seededPositions = new Map<string, GridPosition>();
+	seed?.characters?.forEach((entry) => {
+	seededPositions.set(entry.id, { x: clamp(entry.x), y: clamp(entry.y) });
 	});
+	const playerOverride = seed?.playerPosition
+	? { x: clamp(seed.playerPosition.x), y: clamp(seed.playerPosition.y) }
+	: undefined;
+
+	const circlePlacement = (index: number): GridPosition => {
+	const angle = (index * 2 * Math.PI) / Math.max(charactersAtLocation.length - 1, 1);
+	const radius = 2;
+	return {
+	x: clamp(5 + radius * Math.cos(angle)),
+	y: clamp(5 + radius * Math.sin(angle)),
+	};
+	};
+
+	const characterPositions: GridCharacterPosition[] = charactersAtLocation.map((char, index) => {
+	let position = seededPositions.get(char.id);
+	if (!position && char.isPlayer && playerOverride) {
+	position = playerOverride;
+	}
+	if (!position && !char.isPlayer && seed?.characters) {
+	const fallback = seed.characters.find((entry) => entry.name === char.name);
+	if (fallback) {
+	position = { x: clamp(fallback.x), y: clamp(fallback.y) };
+	}
+	}
+	if (!position) {
+	position = char.isPlayer ? { x: 5, y: 5 } : circlePlacement(index);
+	}
+
+	return {
+	characterId: char.id,
+	characterName: char.name,
+	position,
+	isPlayer: char.isPlayer,
+	avatarBase64: char.avatarBase64,
+	};
+	});
+
+	const seededElements = seed?.elements?.map((element, index) => ({
+	id: `seed_element_${gameState.id}_${index}_${Date.now()}`,
+	symbol: element.symbol,
+	name: element.name,
+	description: element.description,
+	position: { x: clamp(element.x), y: clamp(element.y) },
+	}));
 
 	return {
 		id: `grid_${gameState.id}_${Date.now()}`,
 		gameId: gameState.id,
 		atMessageNumber: messageNumber,
 		timestamp: Date.now(),
-		locationId: gameState.currentLocationId,
-		locationName: currentLocation?.name || 'Unknown',
+		locationId: seed?.locationId || gameState.currentLocationId,
+		locationName: seed?.locationName || currentLocation?.name || 'Unknown',
 		characterPositions,
+		elements: seededElements && seededElements.length > 0 ? seededElements : undefined,
 		locationBackgroundImage: currentLocation?.backgroundImage,
 	};
 };

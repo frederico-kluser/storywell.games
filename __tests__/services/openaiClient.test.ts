@@ -493,33 +493,45 @@ describe('openaiClient API functions', () => {
 	describe('initializeStory', () => {
 		it('should return initial game state structure', async () => {
 			const { queryLLM } = await import('../../utils/ai');
-			(queryLLM as jest.Mock).mockResolvedValueOnce({
-				text: JSON.stringify({
-					messages: [{ type: 'narration', text: 'Welcome to your adventure.', voiceTone: 'warm' }],
-					stateUpdates: {
-						newLocations: [
-							{
-								id: 'loc-1',
-								name: 'Starting Point',
-								description: 'Your journey begins here',
-								connectedLocationIds: [],
-							},
-						],
-						newCharacters: [
-							{
-								id: 'player-1',
-								name: 'Hero',
-								description: 'The protagonist',
-								locationId: 'loc-1',
-								state: 'idle',
-								stats: [{ key: 'hp', value: 100 }],
-								inventory: ['clothes'],
-							},
-						],
-						eventLog: 'Story initialized',
-					},
-				}),
-			});
+			const blueprintResponse = {
+				locationSeeds: [
+					{ id: 'loc_start', name: 'Start Atrium', environment: 'atrium', hook: 'A liminal hall flickers online.', tone: 'hopeful' },
+				],
+				playerSeed: { id: 'player-1', name: 'Hero', archetype: 'Rogue', motivation: 'Explore', visualTraits: 'Tall silhouette', gearFocus: 'Daggers' },
+				npcSeeds: [],
+				toneDirectives: ['Moody'],
+				economyPreset: 'standard',
+				questDifficultyTier: 'balanced',
+			};
+			const locationResponse = { id: 'loc_start', name: 'Start Atrium', description: 'The world assembles.', connectedExits: [], hazards: [], sensoryNotes: [] };
+			const playerSheetResponse = {
+				id: 'player-1',
+				seedId: 'player-1',
+				name: 'Hero',
+				description: 'Brave',
+				stats: { hp: 100, maxHp: 100, gold: 25 },
+				inventory: [
+					{ name: 'Cloak', description: 'Warm layer', quantity: 1, category: 'armor', stackable: false, consumable: false },
+				],
+				relationships: [],
+			};
+			const narrationResponse = { messages: [{ type: 'narration', text: 'You awaken in the atrium.', voiceTone: 'neutral' }] };
+			const questResponse = {
+				eventLog: 'Adventure begins.',
+				mainMission: 'Find answers',
+				currentMission: 'Look around',
+				activeProblems: [],
+				currentConcerns: [],
+				importantNotes: [],
+			};
+			(queryLLM as jest.Mock)
+				.mockResolvedValueOnce({ text: JSON.stringify(blueprintResponse) })
+				.mockResolvedValueOnce({ text: 'A vast universe context.' })
+				.mockResolvedValueOnce({ text: JSON.stringify(locationResponse) })
+				.mockResolvedValueOnce({ text: JSON.stringify(playerSheetResponse) })
+				.mockResolvedValueOnce({ text: JSON.stringify({ npcs: [] }) })
+				.mockResolvedValueOnce({ text: JSON.stringify(narrationResponse) })
+				.mockResolvedValueOnce({ text: JSON.stringify(questResponse) });
 
 			const { initializeStory } = await import('../../services/ai/openaiClient');
 
@@ -536,7 +548,9 @@ describe('openaiClient API functions', () => {
 			const result = await initializeStory('test-key', config, 'en');
 
 			expect(result.gmResponse.messages).toBeDefined();
-			expect(result.gmResponse.stateUpdates).toBeDefined();
+			expect(result.gmResponse.stateUpdates?.newLocations?.[0].id).toBe('loc_start');
+			expect(result.heavyContextSeed?.mainMission).toBe('Find answers');
+			expect(Array.isArray(result.telemetry)).toBe(true);
 			expect(typeof result.universeContext).toBe('string');
 		});
 	});

@@ -1,79 +1,102 @@
-# Story Initialization Parallelization Plan
+# Plano de Paralelização da Inicialização de Histórias (versão GPT-4.1 full)
 
-## 1. Background & Problem Statement
-- The "Characters" phase during world generation currently waits for a **single large GPT‑4.1 request** (`initializeStory`) to return the entire initial GM payload (locations, player sheet, NPCs, narration, etc.).
-- This monolithic request routinely takes **60+ seconds** because it asks the model to synthesize multiple artifacts in one go and also chains avatar generation afterward.
-- If the request stalls or hits rate limits, the UI has no partial progress to show, and the user experiences a hard freeze.
+## 1. Contexto e Problema
+- A fase “Characters” da criação de mundos depende de **uma única chamada GPT-4.1** (`initializeStory`) que precisa gerar, em um payload massivo, locais, ficha do jogador, NPCs e narração inicial.
+- A solicitação concentra requisitos heterogêneos, consome ~60 s e, quando falha, obriga um retry caro sem feedback incremental para o usuário.
+- Após o retorno do GM ainda executamos geração de avatar, alongando ainda mais o tempo “sem resposta”.
 
-## 2. Current Pipeline (Simplified)
+## 2. Objetivos
+1. Reduzir o tempo perceptível de inicialização para **≤ 20 s**, exibindo progresso em etapas.
+2. Eliminar o ponto único de falha fragmentando o trabalho em **módulos paralelos**, todos alimentados por um blueprint compartilhado.
+3. **Padronizar o uso de GPT-4.1** em todas as etapas para maximizar coerência narrativa, mesmo que cada requisição seja menor.
+4. Facilitar extensões futuras (pets, facções, etc.) adicionando novos módulos plugáveis.
+
+## 3. Pipeline Atual (resumo)
 ```
 handleCreateStory
- ├─ generateThemeColors (in parallel)
- └─ initializeStory (single GPT call → gmResponse + universeContext)
-       └─ generateCharacterAvatar (player)  ← sequential inside initializeStory
+ ├─ generateThemeColors (paralelo)
+ └─ initializeStory (GPT-4.1 monolítico)
+      └─ generateCharacterAvatar (sequencial, pós-resposta)
 ```
-- `initializeStory` builds one massive prompt (`storyInitialization.prompt.ts`) and expects the GM schema back.
-- The response contains: `stateUpdates.newLocations`, `stateUpdates.newCharacters`, and `messages` (opening narration) all at once.
+- `initializeStory` usa `storyInitialization.prompt.ts` para obter `stateUpdates + messages` em um único JSON.
+- Não existe forma de parcializar o estado ou monitorar gargalos específicos.
 
-## 3. Proposed Multi-Request Architecture
-We will split the initialization into a blueprint step followed by **5–7 focused requests** that can run in parallel via `Promise.all`. Total LLM calls for the stage will stay **≤ 7**.
+## 4. Arquitetura Proposta (GPT-4.1 em todas as etapas)
+Usaremos um **seed sequencial** seguido por um **lote paralelo** de requisições independentes, todas feitas com GPT-4.1 (preview) para preservar consistência estilística.
 
-### 3.1 Sequential Seed
-1. **`generateStoryBlueprint`** (gpt-4.1-mini)
-   - Produces immutable IDs and high-level descriptors:
-     - `locationSeeds[]` (id, name, type: interior/exterior, short hook)
-     - `playerSeed` (id, class archetype, key traits)
-     - `npcSeeds[]` (optional supporting roles)
-     - `toneDirectives` (genre-specific notes)
-   - Lightweight JSON (<1k tokens) that all other requests consume to stay in sync.
+### 4.1 Seed Sequencial
+1. `generateStoryBlueprint` (GPT-4.1)
+   - Saídas: `locationSeeds[]`, `playerSeed`, `npcSeeds[]`, `toneDirectives`, `economyPreset`, `questDifficultyTier`.
+   - Limite de 900–1100 tokens para manter latência baixa. O blueprint define IDs imutáveis e metadados que os módulos posteriores consomem.
 
-### 3.2 Parallel Detail Requests (Promise.all)
-| Request | Model | Inputs | Output | Notes |
+### 4.2 Lote Paralelo (Promise.all)
+| Request | Modelo | Entradas principais | Saídas | Observações |
 | --- | --- | --- | --- | --- |
-| `generateStartingLocation` | gpt-4.1 | blueprint.locationSeeds[0], onboarding config | Full location description, exits, interior/exterior flag, `connectedLocationIds` seeds | Drives grid + background clarity |
-| `generatePlayerSheet` | gpt-4.1-mini | playerSeed + economy presets | Stats, inventory, avatar brief | Splits stats/inventory from narration to reduce payload |
-| `generateSupportingNPCs` | gpt-4.1-mini | npcSeeds + location context | Up to 3 NPCs with bios/inventory | Can be skipped if user picked "solo" |
-| `generateOpeningNarration` | gpt-4.1 | blueprint tone + location detail | Array of GM messages (narration/dialogue) | Keeps textual intro independent |
-| `generateQuestHooks` | gpt-4.1-mini | tone directives + background | Mission summary, concerns, economy hints | Seeds heavy context & objective text |
-| `generateGridSeed` (optional) | gpt-4.1-mini | location detail + player sheet | Starting grid positions/elements | Allows consistent map initialization |
+| `generateStartingLocation` | GPT-4.1 | `locationSeeds[0]`, preferências do usuário, clima | Descrição completa, conexões, hazards, background prompt para TTS | Garante coesão espacial inicial |
+| `generatePlayerSheet` | GPT-4.1 | `playerSeed`, presets de economia | Atributos, perícias, inventário, brief de avatar textual | Libera avatar generation imediatamente após resolver |
+| `generateSupportingNPCs` | GPT-4.1 | `npcSeeds[]`, dados do local | Até 3 NPCs com motivações, recursos e intenções reativas | Pode retornar lista vazia; mantém IDs do seed |
+| `generateOpeningNarration` | GPT-4.1 | `toneDirectives`, local detalhado | Array de mensagens GM (narrativa + diálogo) com pacing markers | Independente da ficha do jogador para minimizar dependências |
+| `generateQuestHooks` | GPT-4.1 | `toneDirectives`, `questDifficultyTier`, economia | 2–3 objetivos prioritários, ameaças latentes, hooks para heavy context | Alimenta painel de objetivos e event log |
+| `generateGridSeed` (opcional) | GPT-4.1 | Local + ficha do jogador | Snapshot 10×10, entidades iniciais, texto para as tiles | Rodamos apenas quando o usuário habilita mapa tático |
 
-Total requests per run: **1 seed + 5 core + optional grid = 6 or 7**, satisfying the “≤ 8” requirement while giving us enough granularity.
+Total: **1 seed + 5 core + opcional grid = 6–7 chamadas GPT-4.1**, atendendo ao limite (<8) com máxima qualidade.
 
-## 4. Aggregation Strategy
-1. After `Promise.all`, a new `assembleInitialState()` utility will:
-   - Merge location + NPC outputs into `stateUpdates.newLocations` / `stateUpdates.newCharacters`.
-   - Convert narration JSON straight into `GMResponse.messages`.
-   - Insert quest hooks into both `stateUpdates.eventLog` and `heavyContext` defaults.
-   - Fall back to seed data if any request fails (graceful degradation).
-2. Because IDs come from the blueprint, we maintain referential integrity without waiting for one model to invent everything.
-3. Avatar generation moves **outside** of `initializeStory`: once `playerSheet` resolves we trigger avatar creation in parallel with the other jobs, instead of blocking the final response.
+### 4.3 Diagrama Textual do Fluxo
+```
+handleCreateStory
+ ├─ generateThemeColors (paralelo leve)
+ ├─ generateStoryBlueprint (GPT-4.1)
+ └─ Promise.all([
+       generateStartingLocation,
+       generatePlayerSheet,
+       generateSupportingNPCs,
+       generateOpeningNarration,
+       generateQuestHooks,
+       generateGridSeed? ,
+       generateCharacterAvatar (usa brief da ficha)
+     ])
+       ↳ assembleInitialState
+```
+- `generateCharacterAvatar` passa a disparar **assim que `generatePlayerSheet` resolver**, aproveitando o brief rico produzido por GPT-4.1.
 
-## 5. Implementation Notes
-- Create new prompt builders under `services/ai/prompts/initialization/` (e.g., `storyBlueprint.prompt.ts`, `startingLocation.prompt.ts`, etc.) to keep prompts short and specialized.
-- Introduce a new TypeScript module `services/ai/storyInitialization.ts` that orchestrates the sequence:
-  ```ts
-  const blueprint = await generateStoryBlueprint(...);
-  const [location, player, npcs, narration, hooks, grid] = await Promise.all([
-    generateStartingLocation(blueprint, ...),
-    generatePlayerSheet(blueprint, ...),
-    generateSupportingNPCs(blueprint, ...),
-    generateOpeningNarration(blueprint, ...),
-    generateQuestHooks(blueprint, ...),
-    generateGridSeed(blueprint, ...),
-  ]);
-  return assembleInitialState({ blueprint, location, player, npcs, narration, hooks, grid });
-  ```
-- Update `handleCreateStory` to call this new orchestrator instead of the current `initializeStory` monolith.
-- Keep `generateUniverseContext` as-is (can still run in parallel with the Promise.all group).
+## 5. Estratégia de Orquestração e Resiliência
+1. Criar `services/ai/storyInitialization.ts` para encapsular a sequência.
+2. `assembleInitialState` combinará resultados mantendo IDs do blueprint e aplicará defaults quando algum módulo falhar.
+3. Política de retry: até 2 tentativas por módulo, com backoff exponencial curto (500 ms, 1500 ms). Falhas definitivas ativam fallback:
+   - `generateSupportingNPCs` → retorna NPC neutro baseado no seed.
+   - `generateQuestHooks` → injeta template reutilizável do tema escolhido.
+4. Registrar `LLMJobTelemetry` com timestamps de enqueue, start, finish e token usage para cada request.
+5. Garantir que qualquer exceção parcial não bloqueie todo o pipeline; apenas o módulo impactado é reprocessado.
 
-## 6. Expected Benefits
-- **Latency:** Smaller payloads + parallelism should cut perceived wait time from ~60s to ~15–20s (each mini request <10s, running simultaneously).
-- **Resilience:** If one specialized request fails, we can retry only that piece or fall back to a template without restarting the whole world gen.
-- **Telemetry:** We can log timings per request to identify hot spots (e.g., if NPC generation is the bottleneck we can downgrade its model).
-- **Extensibility:** New onboarding options (e.g., companion pets) can plug in as another parallel request without touching existing prompts.
+## 6. Organização dos Prompts
+- Criar pasta `services/ai/prompts/initialization/` contendo prompts discretos (`storyBlueprint.prompt.ts`, `startingLocation.prompt.ts`, etc.), todos otimizados para GPT-4.1.
+- Cada prompt terá seção fixa “Shared Blueprint Context” para reutilizar campos chave (IDs, tom, restrições econômicas) e reduzir divergências.
+- Incluir instruções explícitas de formato JSON Schema para evitar drift e facilitar validação com `zod`/`superstruct`.
 
-## 7. Next Steps
-1. Scaffold the new prompt builders + orchestrator module.
-2. Add feature flags to switch between legacy and parallel initialization for gradual rollout.
-3. Instrument timing metrics to verify speed improvements.
-4. Once stable, remove the old monolithic `initializeStory` code path.
+## 7. Observabilidade e Planejamento de Capacidade
+- Adicionar logs estruturados (`storyInitPhase`, `model`, `durationMs`, `tokensIn`, `tokensOut`).
+- Configurar métricas no dashboard (Grafana):
+  - `story_init.total_duration`
+  - `story_init.phase_duration{phase="openingNarration"}`
+  - `story_init.retry_count`
+- Alertas: disparar aviso se `total_duration_p95` > 25 s ou se a taxa de erro de qualquer fase > 5% em 15 min.
+
+## 8. Migração e Feature Flag
+1. Implementar flag `feature.storyInitV2` no contexto do jogador.
+2. Etapas:
+   - **Fase 0:** código legado default, novo pipeline oculto.
+   - **Fase 1:** dark launch — executar pipeline novo em background e comparar outputs (sem impactar o usuário) para validar consistência.
+   - **Fase 2:** ativar V2 para 10% dos usuários com telemetria reforçada.
+   - **Fase 3:** rollout completo, remover código legado após 2 semanas estáveis.
+
+## 9. Indicadores de Sucesso
+- `TTI` (time-to-interaction) <= 20 s P90.
+- Taxa de retry total < 8% por história.
+- NPS específico da etapa de criação de mundos +15 após rollout.
+- Nenhum bug de consistência (IDs quebrados, NPCs sem localização) relatado durante a fase beta.
+
+## 10. Próximas Ações
+1. Scaffold dos novos prompts + módulos (`storyInitialization.ts`, `assembleInitialState.ts`).
+2. Implementar telemetry wrapper e retries por módulo.
+3. Construir testes de contrato para cada resposta GPT-4.1 (schema validation + snapshots controlados).
+4. Documentar fluxo no README técnico e treinar o time de suporte sobre o novo comportamento.
