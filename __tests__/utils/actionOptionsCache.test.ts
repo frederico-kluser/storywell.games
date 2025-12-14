@@ -2,16 +2,18 @@ import {
   getCachedActionOptions,
   saveCachedActionOptions,
   CachedActionOptions,
+  fetchActionOptionsWithCache,
 } from '../../utils/actionOptionsCache';
 import { ActionOption } from '../../types';
 
 describe('actionOptionsCache', () => {
   const mockStoryId = 'test-story-123';
   const mockMessageId = 'msg-456';
+  const mockCacheKey = `turn-5_${mockMessageId}`;
   const mockOptions: ActionOption[] = [
-    { text: 'Attack the dragon', probability: 30, hint: 'Risky move' },
-    { text: 'Run away', probability: 80, hint: 'Safe choice' },
-    { text: 'Negotiate', probability: 50, hint: 'Depends on charisma' },
+    { text: 'Attack the dragon', goodChance: 30, badChance: 40, goodHint: 'Critical Success: Dragon flees', badHint: 'Critical Error: Tail swipe' },
+    { text: 'Study surroundings', goodChance: 20, badChance: 10 },
+    { text: 'Fortify position', goodChance: 15, badChance: 5 },
   ];
 
   beforeEach(() => {
@@ -21,24 +23,26 @@ describe('actionOptionsCache', () => {
 
   describe('saveCachedActionOptions', () => {
     it('should save options to localStorage', () => {
-      saveCachedActionOptions(mockStoryId, mockMessageId, mockOptions);
+      saveCachedActionOptions(mockStoryId, mockCacheKey, mockMessageId, mockOptions);
 
       const stored = localStorage.getItem(`storywell_options_cache_${mockStoryId}`);
       expect(stored).not.toBeNull();
 
       const parsed = JSON.parse(stored!) as CachedActionOptions;
+      expect(parsed.cacheKey).toBe(mockCacheKey);
       expect(parsed.lastMessageId).toBe(mockMessageId);
       expect(parsed.options).toEqual(mockOptions);
     });
 
     it('should overwrite existing cache for same story', () => {
-      const oldOptions: ActionOption[] = [{ text: 'Old option', probability: 10 }];
-      saveCachedActionOptions(mockStoryId, 'old-msg', oldOptions);
+      const oldOptions: ActionOption[] = [{ text: 'Old option', goodChance: 10, badChance: 5 }];
+      saveCachedActionOptions(mockStoryId, 'turn-1_old-msg', 'old-msg', oldOptions);
 
-      saveCachedActionOptions(mockStoryId, mockMessageId, mockOptions);
+      saveCachedActionOptions(mockStoryId, mockCacheKey, mockMessageId, mockOptions);
 
       const stored = localStorage.getItem(`storywell_options_cache_${mockStoryId}`);
       const parsed = JSON.parse(stored!) as CachedActionOptions;
+      expect(parsed.cacheKey).toBe(mockCacheKey);
       expect(parsed.lastMessageId).toBe(mockMessageId);
       expect(parsed.options).toEqual(mockOptions);
     });
@@ -50,14 +54,13 @@ describe('actionOptionsCache', () => {
         throw new Error('Storage full');
       });
 
-      // Should not throw
       expect(() => {
-        saveCachedActionOptions(mockStoryId, mockMessageId, mockOptions);
+        saveCachedActionOptions(mockStoryId, mockCacheKey, mockMessageId, mockOptions);
       }).not.toThrow();
 
       expect(consoleSpy).toHaveBeenCalledWith(
         'Failed to save options cache:',
-        expect.any(Error)
+        expect.any(Error),
       );
 
       Storage.prototype.setItem = originalSetItem;
@@ -65,7 +68,7 @@ describe('actionOptionsCache', () => {
     });
 
     it('should save empty options array', () => {
-      saveCachedActionOptions(mockStoryId, mockMessageId, []);
+      saveCachedActionOptions(mockStoryId, mockCacheKey, mockMessageId, []);
 
       const stored = localStorage.getItem(`storywell_options_cache_${mockStoryId}`);
       const parsed = JSON.parse(stored!) as CachedActionOptions;
@@ -75,11 +78,12 @@ describe('actionOptionsCache', () => {
 
   describe('getCachedActionOptions', () => {
     it('should return cached options when available', () => {
-      saveCachedActionOptions(mockStoryId, mockMessageId, mockOptions);
+      saveCachedActionOptions(mockStoryId, mockCacheKey, mockMessageId, mockOptions);
 
       const result = getCachedActionOptions(mockStoryId);
 
       expect(result).not.toBeNull();
+      expect(result!.cacheKey).toBe(mockCacheKey);
       expect(result!.lastMessageId).toBe(mockMessageId);
       expect(result!.options).toEqual(mockOptions);
     });
@@ -107,7 +111,7 @@ describe('actionOptionsCache', () => {
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
         'Failed to read options cache:',
-        expect.any(Error)
+        expect.any(Error),
       );
 
       consoleSpy.mockRestore();
@@ -125,11 +129,44 @@ describe('actionOptionsCache', () => {
       expect(result).toBeNull();
       expect(consoleSpy).toHaveBeenCalledWith(
         'Failed to read options cache:',
-        expect.any(Error)
+        expect.any(Error),
       );
 
       Storage.prototype.getItem = originalGetItem;
       consoleSpy.mockRestore();
+    });
+
+    it('should normalize legacy payloads without cacheKey', () => {
+      const legacyPayload = JSON.stringify({ lastMessageId: mockMessageId, options: mockOptions });
+      localStorage.setItem(`storywell_options_cache_${mockStoryId}`, legacyPayload);
+
+      const result = getCachedActionOptions(mockStoryId);
+
+      expect(result).not.toBeNull();
+      expect(result!.cacheKey).toBe(mockMessageId);
+      expect(result!.options).toEqual(mockOptions);
+    });
+  });
+
+  describe('fetchActionOptionsWithCache', () => {
+    it('should reuse cached options when cacheKey matches', async () => {
+      saveCachedActionOptions(mockStoryId, mockCacheKey, mockMessageId, mockOptions);
+      const fetcher = jest.fn();
+
+      const result = await fetchActionOptionsWithCache(mockStoryId, mockCacheKey, mockMessageId, fetcher);
+
+      expect(result).toEqual(mockOptions);
+      expect(fetcher).not.toHaveBeenCalled();
+    });
+
+    it('should call fetcher when cacheKey differs', async () => {
+      saveCachedActionOptions(mockStoryId, mockCacheKey, mockMessageId, mockOptions);
+      const fetcher = jest.fn().mockResolvedValue(mockOptions);
+
+      const result = await fetchActionOptionsWithCache(mockStoryId, 'turn-99_new', 'new-msg', fetcher);
+
+      expect(result).toEqual(mockOptions);
+      expect(fetcher).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -137,11 +174,11 @@ describe('actionOptionsCache', () => {
     it('should keep separate caches for different stories', () => {
       const storyId1 = 'story-1';
       const storyId2 = 'story-2';
-      const options1: ActionOption[] = [{ text: 'Option 1', probability: 10 }];
-      const options2: ActionOption[] = [{ text: 'Option 2', probability: 20 }];
+      const options1: ActionOption[] = [{ text: 'Option 1', goodChance: 10, badChance: 5 }];
+      const options2: ActionOption[] = [{ text: 'Option 2', goodChance: 20, badChance: 15 }];
 
-      saveCachedActionOptions(storyId1, 'msg-1', options1);
-      saveCachedActionOptions(storyId2, 'msg-2', options2);
+      saveCachedActionOptions(storyId1, 'turn-1_msg-1', 'msg-1', options1);
+      saveCachedActionOptions(storyId2, 'turn-2_msg-2', 'msg-2', options2);
 
       const cached1 = getCachedActionOptions(storyId1);
       const cached2 = getCachedActionOptions(storyId2);
@@ -153,11 +190,13 @@ describe('actionOptionsCache', () => {
 
   describe('CachedActionOptions interface', () => {
     it('should have correct structure', () => {
-      saveCachedActionOptions(mockStoryId, mockMessageId, mockOptions);
+      saveCachedActionOptions(mockStoryId, mockCacheKey, mockMessageId, mockOptions);
       const cached = getCachedActionOptions(mockStoryId);
 
+      expect(cached).toHaveProperty('cacheKey');
       expect(cached).toHaveProperty('lastMessageId');
       expect(cached).toHaveProperty('options');
+      expect(typeof cached!.cacheKey).toBe('string');
       expect(typeof cached!.lastMessageId).toBe('string');
       expect(Array.isArray(cached!.options)).toBe(true);
     });

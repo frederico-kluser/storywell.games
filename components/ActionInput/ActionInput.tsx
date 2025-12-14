@@ -63,6 +63,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 		const currentMessageCount = activeStory.messages.length;
 		const lastMessage = activeStory.messages[currentMessageCount - 1];
 		const lastMessageId = lastMessage?.id || '';
+		const turnCacheKey = `${activeStory.turnCount}_${lastMessageId || 'pending'}`;
 
 		// Only regenerate if we have messages and the count changed (new turn happened)
 		if (currentMessageCount > 0 && currentMessageCount !== lastMessageCount && !isProcessing) {
@@ -71,16 +72,16 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 
 			// Check cache first - especially useful on page reload
 			const cached = getCachedActionOptions(activeStory.id);
-			if (cached && cached.lastMessageId === lastMessageId && cached.options.length > 0) {
+			if (cached && cached.cacheKey === turnCacheKey && cached.options.length > 0) {
 				// Cache hit! Use cached options instead of regenerating
 				setOptions(cached.options);
 				return;
 			}
 
 			// Cache miss or invalid - generate new options
-			loadOptions();
+			loadOptions(turnCacheKey, lastMessageId);
 		}
-	}, [activeStory.messages.length, isProcessing, activeStory.id]);
+	}, [activeStory.messages.length, isProcessing, activeStory.id, activeStory.turnCount]);
 
 	// Notify parent of actions count changes
 	useEffect(() => {
@@ -89,10 +90,12 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 		}
 	}, [options.length, onActionsCountChange]);
 
-	const loadOptions = async () => {
+	const loadOptions = async (cacheKey?: string, lastMessageIdOverride?: string) => {
 		if (!apiKey || isLoadingOptions) return;
 		const lastMessage = activeStory.messages[activeStory.messages.length - 1];
-		if (!lastMessage) return;
+		const fallbackMessageId = lastMessage?.id || 'pending-message';
+		const lastMessageId = lastMessageIdOverride || fallbackMessageId;
+		const effectiveCacheKey = cacheKey || `${activeStory.turnCount}_${lastMessageId}`;
 
 		setIsLoadingOptions(true);
 		setShowCustomInput(false);
@@ -103,7 +106,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 
 		try {
 			const storyLang = activeStory.config?.language || language;
-			const newOptions = await fetchActionOptionsWithCache(activeStory.id, lastMessage.id, () =>
+			const newOptions = await fetchActionOptionsWithCache(activeStory.id, effectiveCacheKey, lastMessageId, () =>
 				generateActionOptions(apiKey, activeStory, storyLang),
 			);
 			setOptions(newOptions);
