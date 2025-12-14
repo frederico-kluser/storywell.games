@@ -8,46 +8,46 @@ Each entry lists: thematic bucket, suggested sound name, text prompt for the mod
 
 | # | Theme / Scenario | Sound Name | Text Prompt for stable-audio-open-1.0 | Output File | Storage Path |
 |---|------------------|------------|----------------------------------------|-------------|--------------|
-| 01 | High Fantasy – Elven Forest | `silvergrove_canopy` | "Quiet elven forest dawn, gentle birds, trickling brook, faint magical breeze" | `silvergrove_canopy.wav` | `public/audio/ambience/high-fantasy/` |
-| 02 | High Fantasy – Dwarven Forge | `emberforge_heartbeat` | "Stone forge hall, steady hammer rhythm, low furnace roar" | `emberforge_heartbeat.wav` | `public/audio/ambience/high-fantasy/` |
-| 03 | High Fantasy – Arcane Library | `celestial_stacks` | "Still arcane library night, candle crackle, soft whispering air" | `celestial_stacks.wav` | `public/audio/ambience/high-fantasy/` |
-| 04 | Sword & Sorcery Desert | `sunscorch_dunes` | "Calm desert wind over dunes, sparse drum pulse, soft charm rattle" | `sunscorch_dunes.wav` | `public/audio/ambience/sword-sorcery/` |
-| 05 | Dark Fantasy – Haunted Keep | `ashen_keep_echoes` | "Empty stone keep corridor, hollow wind, slow chain sway, low drone" | `ashen_keep_echoes.wav` | `public/audio/ambience/dark-fantasy/` |
-| 06 | Gothic Horror – Misty Graveyard | `midnight_dirge` | "Misty graveyard dusk, distant bell toll, crows circling, rustling ivy" | `midnight_dirge.wav` | `public/audio/ambience/gothic-horror/` |
-| 07 | Lovecraftian Horror – Coastal Town | `innsmouth_tide` | "Coastal storm night, choppy waves, warped foghorn, damp dripping docks" | `innsmouth_tide.wav` | `public/audio/ambience/lovecraft/` |
-| 08 | Steampunk City | `brassworks_boulevard` | "Steampunk avenue, light gear ticks, soft steam release, polite crowd murmur" | `brassworks_boulevard.wav` | `public/audio/ambience/steampunk/` |
-| 09 | Steampunk Airship Deck | `altitude_aether` | "Airship deck cruise, steady prop wash, creaking rails, high cloud gusts" | `altitude_aether.wav` | `public/audio/ambience/steampunk/` |
-| 10 | Cyberpunk Megacity – Street Level | `neon_rain_grid` | "Neon alley rain, buzzing signs, muted footsteps, far sirens" | `neon_rain_grid.wav` | `public/audio/ambience/cyberpunk/` |
-| 11 | Cyberpunk Megacity – Corporate Atrium | `chrome_atrium_loop` | "Corporate atrium hush, HVAC wash, glass fountain, soft piano taps" | `chrome_atrium_loop.wav` | `public/audio/ambience/cyberpunk/` |
-| 12 | Sci-Fi – Starship Bridge | `voidnav_bridge` | "Starship bridge idle, console beeps, reactor hum, faint comm chatter" | `voidnav_bridge.wav` | `public/audio/ambience/sci-fi/` |
-| 13 | Sci-Fi – Engine Room | `quantum_coreflow` | "Engine room core, pulsing reactor, coolant hiss, rotating turbines" | `quantum_coreflow.wav` | `public/audio/ambience/sci-fi/` |
-| 14 | Sci-Fi – Alien Jungle | `lumina_wilds` | "Alien jungle night, glowing insect chirps, wet leaf drip, airy pad" | `lumina_wilds.wav` | `public/audio/ambience/sci-fi/` |
-| 15 | Space Western – Frontier Cantina | `duststar_saloon` | "Frontier cantina, twangy loop, glass clinks, low chatter" | `duststar_saloon.wav` | `public/audio/ambience/space-western/` |
-| 16 | Post-Apocalyptic Wasteland | `ashen_wind_barrows` | "Wasteland plain, abrasive wind, distant metal groan, sparse crow calls" | `ashen_wind_barrows.wav` | `public/audio/ambience/post-apoc/` |
-| 17 | Post-Apocalyptic Safehouse | `emberlight_refuge` | "Bunker safehouse, generator hum, simmering pot, muffled radio" | `emberlight_refuge.wav` | `public/audio/ambience/post-apoc/` |
-| 18 | Modern Thriller – Corporate Lobby | `mirrorstone_lobby` | "Corporate lobby sheen, soft jazz keys, elevator chime, filtered traffic" | `mirrorstone_lobby.wav` | `public/audio/ambience/modern/thriller/` |
-| 19 | Modern Thriller – Surveillance Van | `cobalt_ops_van` | "Surveillance van, laptop fans, scanner bursts, steady typing" | `cobalt_ops_van.wav` | `public/audio/ambience/modern/thriller/` |
-| 20 | Historical – 18th Century Harbor | `corsair_quay` | "Harbor morning, gull calls, creaking docks, small waves" | `corsair_quay.wav` | `public/audio/ambience/historical/` |
-| 21 | Historical – Medieval Market | `lanternfair_market` | "Medieval market, crowd murmur, barter shouts, light lute strum" | `lanternfair_market.wav` | `public/audio/ambience/historical/` |
-| 22 | Historical – Samurai Dojo | `kurokami_dojo` | "Dojo interior, bamboo wind, deliberate breaths, wooden strike echoes" | `kurokami_dojo.wav` | `public/audio/ambience/historical/` |
-| 23 | Mythic Underworld | `obsidian_river` | "Underworld cavern, echoing drips, slow river rumble, distant choir" | `obsidian_river.wav` | `public/audio/ambience/mythic/` |
-| 24 | Feywild Celebration | `bloomveil_revel` | "Fey glade dusk, fairy bells, playful flutes, swirling breeze" | `bloomveil_revel.wav` | `public/audio/ambience/mythic/` |
-| 25 | Arctic Expedition | `aurora_icefield` | "Arctic night, low wind howl, ice crack, distant wolf call" | `aurora_icefield.wav` | `public/audio/ambience/exploration/` |
-| 26 | Deep Jungle Expedition | `emerald_vault` | "Jungle midday, waterfall wash, insect bed, monkey chatter" | `emerald_vault.wav` | `public/audio/ambience/exploration/` |
-| 27 | Desert Caravan Night | `starlit_caravan` | "Desert camp night, embers crackle, soft oud notes, calm wind" | `starlit_caravan.wav` | `public/audio/ambience/exploration/` |
-| 28 | Submerged City Ruins | `tideglass_cathedral` | "Sunken city, filtered current, creaking metal, whale call" | `tideglass_cathedral.wav` | `public/audio/ambience/underwater/` |
-| 29 | Urban Fantasy – Hidden Speakeasy | `aether_speakeasy` | "Hidden speakeasy, muted crowd, vinyl crackle, portal hum" | `aether_speakeasy.wav` | `public/audio/ambience/urban-fantasy/` |
-| 30 | Urban Fantasy – Rooftop Chase | `midnight_chaseband` | "Rooftop chase, pounding steps, helicopter wash, car horns below" | `midnight_chaseband.wav` | `public/audio/ambience/urban-fantasy/` |
-| 31 | Mecha Battlefield Hangar | `ironwing_hangar` | "Mech hangar, servo whirs, welding sparks, intercom clips" | `ironwing_hangar.wav` | `public/audio/ambience/mecha/` |
-| 32 | Mecha Battlefield Frontline | `titanfall_standoff` | "Battlefront distance, artillery thumps, heavy mech steps, radio commands" | `titanfall_standoff.wav` | `public/audio/ambience/mecha/` |
-| 33 | Pirate Ship Deck – Storm | `maelstrom_deck` | "Storm ship deck, whipping sails, crashing waves, shouted orders" | `maelstrom_deck.wav` | `public/audio/ambience/pirate/` |
-| 34 | Pirate Cove Hideout | `skullreef_hideaway` | "Pirate cove night, gentle tide, muffled revelry, cave drips" | `skullreef_hideaway.wav` | `public/audio/ambience/pirate/` |
-| 35 | Superhero – City Patrol | `sentinel_overwatch` | "High patrol, rushing wind, distant sirens, steady synth pad" | `sentinel_overwatch.wav` | `public/audio/ambience/superhero/` |
-| 36 | Superhero – Villain Lair | `nemesis_core` | "Villain lair core, pulsing reactor, glitchy monitors, metallic hits" | `nemesis_core.wav` | `public/audio/ambience/superhero/` |
-| 37 | Cozy Mystery – Bookshop | `quill_and_kettle` | "Bookshop cafe, rain on windows, fireplace pop, page turns" | `quill_and_kettle.wav` | `public/audio/ambience/cozy/` |
-| 38 | Cozy Mystery – Seaside Town | `harbor_mist_murmur` | "Seaside town dawn, gentle surf, bike bell, light chatter" | `harbor_mist_murmur.wav` | `public/audio/ambience/cozy/` |
-| 39 | Survival Horror – Research Lab | `redline_lab` | "Dark research lab, humming lights, dripping pipes, alarm fragments" | `redline_lab.wav` | `public/audio/ambience/horror/` |
-| 40 | Survival Horror – Forest Night | `blackpine_watch` | "Forest night, restless wind, cracking twigs, distant growl" | `blackpine_watch.wav` | `public/audio/ambience/horror/` |
+| 01 | High Fantasy – Elven Forest | `silvergrove_canopy` | "forest morning; birds; small creek; soft wind; ambient sound only; no music" | `silvergrove_canopy.wav` | `public/audio/ambience/high-fantasy/` |
+| 02 | High Fantasy – Dwarven Forge | `emberforge_heartbeat` | "stone forge hall; hammer hits; furnace roar; ambient sound only; no music" | `emberforge_heartbeat.wav` | `public/audio/ambience/high-fantasy/` |
+| 03 | High Fantasy – Arcane Library | `celestial_stacks` | "library night; candle crackle; quiet air; ambient sound only; no music" | `celestial_stacks.wav` | `public/audio/ambience/high-fantasy/` |
+| 04 | Sword & Sorcery Desert | `sunscorch_dunes` | "desert day; wind over dunes; hand drum pulse; charm rattle; ambient sound only; no music" | `sunscorch_dunes.wav` | `public/audio/ambience/sword-sorcery/` |
+| 05 | Dark Fantasy – Haunted Keep | `ashen_keep_echoes` | "stone keep; cold wind; slow chain swing; low drone; ambient sound only; no music" | `ashen_keep_echoes.wav` | `public/audio/ambience/dark-fantasy/` |
+| 06 | Gothic Horror – Misty Graveyard | `midnight_dirge` | "graveyard evening; bell toll; crows; leaves; ambient sound only; no music" | `midnight_dirge.wav` | `public/audio/ambience/gothic-horror/` |
+| 07 | Lovecraftian Horror – Coastal Town | `innsmouth_tide` | "stormy pier; strong waves; warped foghorn; dripping docks; ambient sound only; no music" | `innsmouth_tide.wav` | `public/audio/ambience/lovecraft/` |
+| 08 | Steampunk City | `brassworks_boulevard` | "city street; gear ticks; steam vents; crowd murmur; ambient sound only; no music" | `brassworks_boulevard.wav` | `public/audio/ambience/steampunk/` |
+| 09 | Steampunk Airship Deck | `altitude_aether` | "airship deck; propellers; creaking rails; wind gusts; ambient sound only; no music" | `altitude_aether.wav` | `public/audio/ambience/steampunk/` |
+| 10 | Cyberpunk Megacity – Street Level | `neon_rain_grid` | "rainy alley; neon buzz; footsteps; distant siren; ambient sound only; no music" | `neon_rain_grid.wav` | `public/audio/ambience/cyberpunk/` |
+| 11 | Cyberpunk Megacity – Corporate Atrium | `chrome_atrium_loop` | "atrium; hvac hum; glass fountain; soft piano; ambient sound only; no music" | `chrome_atrium_loop.wav` | `public/audio/ambience/cyberpunk/` |
+| 12 | Sci-Fi – Starship Bridge | `voidnav_bridge` | "bridge; console beeps; reactor hum; comm chatter; ambient sound only; no music" | `voidnav_bridge.wav` | `public/audio/ambience/sci-fi/` |
+| 13 | Sci-Fi – Engine Room | `quantum_coreflow` | "engine room; reactor pulse; coolant hiss; turbines; ambient sound only; no music" | `quantum_coreflow.wav` | `public/audio/ambience/sci-fi/` |
+| 14 | Sci-Fi – Alien Jungle | `lumina_wilds` | "alien jungle night; insect chirps; water drops; airy pad; ambient sound only; no music" | `lumina_wilds.wav` | `public/audio/ambience/sci-fi/` |
+| 15 | Space Western – Frontier Cantina | `duststar_saloon` | "cantina; twang loop; glasses; low chatter; ambient sound only; no music" | `duststar_saloon.wav` | `public/audio/ambience/space-western/` |
+| 16 | Post-Apocalyptic Wasteland | `ashen_wind_barrows` | "wasteland; harsh wind; metal groan; lone bird; ambient sound only; no music" | `ashen_wind_barrows.wav` | `public/audio/ambience/post-apoc/` |
+| 17 | Post-Apocalyptic Safehouse | `emberlight_refuge` | "safehouse; generator; simmering pot; radio static; ambient sound only; no music" | `emberlight_refuge.wav` | `public/audio/ambience/post-apoc/` |
+| 18 | Modern Thriller – Corporate Lobby | `mirrorstone_lobby` | "lobby; soft keys; elevator chime; traffic; ambient sound only; no music" | `mirrorstone_lobby.wav` | `public/audio/ambience/modern/thriller/` |
+| 19 | Modern Thriller – Surveillance Van | `cobalt_ops_van` | "surveillance van; laptop fan; scanner bursts; typing; ambient sound only; no music" | `cobalt_ops_van.wav` | `public/audio/ambience/modern/thriller/` |
+| 20 | Historical – 18th Century Harbor | `corsair_quay` | "harbor morning; gulls; creaking docks; waves; ambient sound only; no music" | `corsair_quay.wav` | `public/audio/ambience/historical/` |
+| 21 | Historical – Medieval Market | `lanternfair_market` | "market; crowd; barter shouts; lute; ambient sound only; no music" | `lanternfair_market.wav` | `public/audio/ambience/historical/` |
+| 22 | Historical – Samurai Dojo | `kurokami_dojo` | "dojo; bamboo chime; controlled breaths; wooden hits; ambient sound only; no music" | `kurokami_dojo.wav` | `public/audio/ambience/historical/` |
+| 23 | Mythic Underworld | `obsidian_river` | "cavern; water drips; deep river; distant choir; ambient sound only; no music" | `obsidian_river.wav` | `public/audio/ambience/mythic/` |
+| 24 | Feywild Celebration | `bloomveil_revel` | "fey glade; bells; light flute; swirl wind; ambient sound only; no music" | `bloomveil_revel.wav` | `public/audio/ambience/mythic/` |
+| 25 | Arctic Expedition | `aurora_icefield` | "arctic night; wind; ice crack; wolf call; ambient sound only; no music" | `aurora_icefield.wav` | `public/audio/ambience/exploration/` |
+| 26 | Deep Jungle Expedition | `emerald_vault` | "jungle; waterfall; insects; monkeys; ambient sound only; no music" | `emerald_vault.wav` | `public/audio/ambience/exploration/` |
+| 27 | Desert Caravan Night | `starlit_caravan` | "desert camp; fire; oud; night wind; ambient sound only; no music" | `starlit_caravan.wav` | `public/audio/ambience/exploration/` |
+| 28 | Submerged City Ruins | `tideglass_cathedral` | "sunken city; slow current; creaking metal; whale tone; ambient sound only; no music" | `tideglass_cathedral.wav` | `public/audio/ambience/underwater/` |
+| 29 | Urban Fantasy – Hidden Speakeasy | `aether_speakeasy` | "speakeasy; vinyl; crowd murmur; portal hum; ambient sound only; no music" | `aether_speakeasy.wav` | `public/audio/ambience/urban-fantasy/` |
+| 30 | Urban Fantasy – Rooftop Chase | `midnight_chaseband` | "rooftop chase; running steps; helicopter; car horns; ambient sound only; no music" | `midnight_chaseband.wav` | `public/audio/ambience/urban-fantasy/` |
+| 31 | Mecha Battlefield Hangar | `ironwing_hangar` | "hangar; servo whirs; welding; intercom; ambient sound only; no music" | `ironwing_hangar.wav` | `public/audio/ambience/mecha/` |
+| 32 | Mecha Battlefield Frontline | `titanfall_standoff` | "battlefront; artillery; mech steps; radio; ambient sound only; no music" | `titanfall_standoff.wav` | `public/audio/ambience/mecha/` |
+| 33 | Pirate Ship Deck – Storm | `maelstrom_deck` | "storm ship deck; sails; waves; shouted orders; ambient sound only; no music" | `maelstrom_deck.wav` | `public/audio/ambience/pirate/` |
+| 34 | Pirate Cove Hideout | `skullreef_hideaway` | "pirate cove night; small waves; muffled party; cave drips; ambient sound only; no music" | `skullreef_hideaway.wav` | `public/audio/ambience/pirate/` |
+| 35 | Superhero – City Patrol | `sentinel_overwatch` | "city patrol; fast wind; distant siren; synth pad; ambient sound only; no music" | `sentinel_overwatch.wav` | `public/audio/ambience/superhero/` |
+| 36 | Superhero – Villain Lair | `nemesis_core` | "villain base; reactor pulse; glitch monitors; metal hits; ambient sound only; no music" | `nemesis_core.wav` | `public/audio/ambience/superhero/` |
+| 37 | Cozy Mystery – Bookshop | `quill_and_kettle` | "bookshop; rain on windows; fireplace; page flips; ambient sound only; no music" | `quill_and_kettle.wav` | `public/audio/ambience/cozy/` |
+| 38 | Cozy Mystery – Seaside Town | `harbor_mist_murmur` | "seaside town; surf; bike bell; light chatter; ambient sound only; no music" | `harbor_mist_murmur.wav` | `public/audio/ambience/cozy/` |
+| 39 | Survival Horror – Research Lab | `redline_lab` | "research lab; lights hum; dripping pipes; alarm fragments; ambient sound only; no music" | `redline_lab.wav` | `public/audio/ambience/horror/` |
+| 40 | Survival Horror – Forest Night | `blackpine_watch` | "forest night; wind; twig snaps; growl; ambient sound only; no music" | `blackpine_watch.wav` | `public/audio/ambience/horror/` |
 
 ---
 
