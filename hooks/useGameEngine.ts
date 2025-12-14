@@ -947,9 +947,12 @@ export const useGameEngine = (): UseGameEngineReturn => {
 		const lastMessage = story.messages[story.messages.length - 1];
 		if (!lastMessage) return;
 
+		const lastMessageId = lastMessage.id;
+		const cacheKey = `${story.turnCount}_${lastMessageId || 'pending'}`;
+
 		try {
 			const storyLang = story.config?.language || language;
-			await fetchActionOptionsWithCache(story.id, lastMessage.id, () =>
+			await fetchActionOptionsWithCache(story.id, cacheKey, lastMessageId, () =>
 				generateActionOptions(apiKey, story, storyLang),
 			);
 		} catch (error) {
@@ -1278,40 +1281,54 @@ export const useGameEngine = (): UseGameEngineReturn => {
 			const gridUpdatePromise = (async () => {
 				try {
 					const latestStory = storiesRef.current.find((s) => s.id === activeStoryId);
+					const storyForSnapshot = latestStory || contextStory;
+					if (!storyForSnapshot) return;
+
 					const currentMessageNumber = latestStory
 						? latestStory.messages.length
 						: contextStory.messages.length + (response.messages?.length || 0);
-					const hasGridSnapshots = latestStory?.gridSnapshots && latestStory.gridSnapshots.length > 0;
+					const hasGridSnapshots = Boolean(storyForSnapshot.gridSnapshots && storyForSnapshot.gridSnapshots.length > 0);
 
-					if (!hasGridSnapshots) {
-						const initialSnapshot = createInitialGridSnapshot(latestStory || contextStory, currentMessageNumber);
+					const appendSnapshot = (snapshot: GridSnapshot) => {
 						safeUpdateStory(
 							(prev) => ({
 								...prev,
-								gridSnapshots: [...(prev.gridSnapshots || []), initialSnapshot],
+								gridSnapshots: [...(prev.gridSnapshots || []), snapshot],
 							}),
 							activeStoryId,
 						);
+					};
+
+					const ensureLocationSnapshot = () => {
+						const refreshedStory = storiesRef.current.find((s) => s.id === activeStoryId) || storyForSnapshot;
+						if (!refreshedStory) return;
+						const snapshots = refreshedStory.gridSnapshots || [];
+						const lastSnapshot = snapshots[snapshots.length - 1];
+						if (!lastSnapshot || lastSnapshot.locationId !== refreshedStory.currentLocationId) {
+							const fallbackSnapshot = createInitialGridSnapshot(refreshedStory, currentMessageNumber);
+							appendSnapshot(fallbackSnapshot);
+						}
+					};
+
+					if (!hasGridSnapshots) {
+						const initialSnapshot = createInitialGridSnapshot(storyForSnapshot, currentMessageNumber);
+						appendSnapshot(initialSnapshot);
 						console.log('[Grid] Created initial grid snapshot');
 					} else {
 						const gridResult = await updateGridPositions(
 							apiKey,
-							latestStory || contextStory,
+							storyForSnapshot,
 							response,
 							storyLang,
 							currentMessageNumber,
 						);
 
 						if (gridResult.updated && gridResult.snapshot) {
-							safeUpdateStory(
-								(prev) => ({
-									...prev,
-									gridSnapshots: [...(prev.gridSnapshots || []), gridResult.snapshot!],
-								}),
-								activeStoryId,
-							);
+							appendSnapshot(gridResult.snapshot);
 						}
 					}
+
+					ensureLocationSnapshot();
 				} catch (gridErr) {
 					console.error('Grid update failed:', gridErr);
 				}
