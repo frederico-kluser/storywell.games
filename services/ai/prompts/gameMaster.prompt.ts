@@ -641,6 +641,13 @@ Match by semantic meaning (e.g., "tavern", "the inn", "bar" = same location if c
 If destination is NOT in <known_locations>, create via "newLocations".
 Format: { "id": "loc_${gameState.turnCount}_[shortname]_[random4digits]", "name": "...", "description": "..." }
 
+### Interior vs Exterior (SCENARIO SHIFT)
+- Treat **every meaningful interior** (shops, houses, rooms, caves) as its own location ID, even if it is inside an existing building.
+- When the player exits back outside (streets, plazas, wilderness), switch to the appropriate exterior location ID.
+- Each locationChange MUST reflect where the camera should be: interiors describe enclosed ambience, exteriors describe open-air context.
+- If the player crosses a portal/door and the vibe/background should change, create/choose a location that encodes that ambiance so the grid scene can refresh.
+- Describe sensory cues (lighting, materials, crowd noise, smells) so the scene/background generator understands how this scenario differs from the previous one.
+
 ## Example - Returning to existing location:
 Player: "I go back to the tavern"
 <known_locations> includes: "Dragon's Breath Tavern" (ID: loc_1_tavern_2847)
