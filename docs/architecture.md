@@ -49,14 +49,14 @@ Todos os builders retornam strings prontas para `queryLLM`, acompanhadas de sche
 
 | Componente | Função | Detalhes técnicos |
 | --- | --- | --- |
-| `ActionInput` | Painel de ações e Fate | Cacheia opções (`fetchActionOptionsWithCache`), chama `rollFate`, controla o modal de análise customizada. |
+| `ActionInput` | Painel de ações e Fate | Dispara `generateActionOptions` a cada turno, chama `rollFate` e controla o modal de análise customizada. |
 | `StoryCard` | Render de narrativa | Integra o chat, controles de TTS/STT e o flip para o `GridMap`. |
 | `GridMap` | Mapa 10x10 | Renderiza `gridSnapshots` e destaca player/NPCs com tooltips. |
 | `FateToast` | Feedback de destino | Sincroniza evento positivo/negativo com cores/sons. |
 | `VoiceInput` | Speech-to-Text | Usa Whisper direto do navegador, sem backend.
 
 Hooks importantes:
-- `useGameEngine`: orquestra prompts, salva no IndexedDB, atualiza heavyContext, pré-carrega ações e controla o fluxo de loading.
+- `useGameEngine`: orquestra prompts, salva no IndexedDB, atualiza heavyContext, solicita novas ações e controla o fluxo de loading.
 - `useCardNavigation`: acesso rápido ao histórico via teclado/swipe.
 - `useThemeColors`: aplica paletas dinâmicas geradas pela IA.
 

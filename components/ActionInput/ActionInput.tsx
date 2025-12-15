@@ -10,7 +10,6 @@ import {
 	CustomActionAnalysisResult,
 } from '../../services/ai/openaiClient';
 import { useThemeColors } from '../../hooks/useThemeColors';
-import { fetchActionOptionsWithCache, getCachedActionOptions } from '../../utils/actionOptionsCache';
 
 interface ActionInputProps {
 	apiKey: string;
@@ -61,25 +60,12 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 	// Generate options when messages change (new turn)
 	useEffect(() => {
 		const currentMessageCount = activeStory.messages.length;
-		const lastMessage = activeStory.messages[currentMessageCount - 1];
-		const lastMessageId = lastMessage?.id || '';
-		const turnCacheKey = `${activeStory.turnCount}_${lastMessageId || 'pending'}`;
 
 		// Only regenerate if we have messages and the count changed (new turn happened)
 		if (currentMessageCount > 0 && currentMessageCount !== lastMessageCount && !isProcessing) {
 			setLastMessageCount(currentMessageCount);
 			setLastFateResult(null); // Clear fate result when new options load
-
-			// Check cache first - especially useful on page reload
-			const cached = getCachedActionOptions(activeStory.id);
-			if (cached && cached.cacheKey === turnCacheKey && cached.options.length > 0) {
-				// Cache hit! Use cached options instead of regenerating
-				setOptions(cached.options);
-				return;
-			}
-
-			// Cache miss or invalid - generate new options
-			loadOptions(turnCacheKey, lastMessageId);
+			loadOptions();
 		}
 	}, [activeStory.messages.length, isProcessing, activeStory.id, activeStory.turnCount]);
 
@@ -90,12 +76,9 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 		}
 	}, [options.length, onActionsCountChange]);
 
-	const loadOptions = async (cacheKey?: string, lastMessageIdOverride?: string) => {
+	const loadOptions = async () => {
 		if (!apiKey || isLoadingOptions) return;
-		const lastMessage = activeStory.messages[activeStory.messages.length - 1];
-		const fallbackMessageId = lastMessage?.id || 'pending-message';
-		const lastMessageId = lastMessageIdOverride || fallbackMessageId;
-		const effectiveCacheKey = cacheKey || `${activeStory.turnCount}_${lastMessageId}`;
+		if (!activeStory.messages.length) return;
 
 		setIsLoadingOptions(true);
 		setShowCustomInput(false);
@@ -106,9 +89,7 @@ export const ActionInput: React.FC<ActionInputProps> = ({
 
 		try {
 			const storyLang = activeStory.config?.language || language;
-			const newOptions = await fetchActionOptionsWithCache(activeStory.id, effectiveCacheKey, lastMessageId, () =>
-				generateActionOptions(apiKey, activeStory, storyLang),
-			);
+			const newOptions = await generateActionOptions(apiKey, activeStory, storyLang);
 			setOptions(newOptions);
 		} catch (e) {
 			console.error('Failed to load options:', e);

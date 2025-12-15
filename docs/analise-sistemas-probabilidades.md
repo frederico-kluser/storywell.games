@@ -3,7 +3,7 @@
 Este documento descreve, de forma reflexiva, como os três blocos que envolvem porcentagens de sucesso/falha funcionam hoje: a geração das opções sugeridas, a análise quando o jogador prefere escrever algo próprio e a resolução narrativa que considera o bônus de sucesso ou o demérito de falha. Ele serve como guia para quem precisar ajustar prompts, fluxos ou validações.
 
 ## 1. Fluxo Geral de Uma Ação
-1. **Sugestões carregadas** – O componente `components/ActionInput/ActionInput.tsx` observa quando um novo turno termina e chama `generateActionOptions` (em `services/ai/openaiClient.ts`). O resultado fica em memória e no cache local (`utils/actionOptionsCache.ts`) até que outra mensagem mude o contexto.
+1. **Sugestões carregadas** – O componente `components/ActionInput/ActionInput.tsx` observa quando um novo turno termina e chama `generateActionOptions` (em `services/ai/openaiClient.ts`). O resultado permanece apenas no estado local do componente e é substituído assim que outra mensagem muda o contexto.
 
 ```
 [Fim de turno detectado]
@@ -16,11 +16,7 @@ ActionInput (ActionInput.tsx)
 
 `generateActionOptions`
 
-      ↓ persiste (guarda resposta)
-
-Memória + cache local
-
-      ↓ disponibiliza (expõe ao jogador)
+      ↓ devolve lista
 
 Lista atualizada de sugestões
 ```
@@ -106,8 +102,7 @@ Atualização de mensagens, stats, inventário e NPCs
 ```
 
 **Como cada função se encaixa nesse fluxo:**
-- `ActionInput` atua como o orquestrador visual: ele decide quando buscar prompts novos, mostra o loader, cuida do cache e agrega a escolha do jogador (seja sugerida ou customizada) antes de despachar para `handleSendMessage`.
-- `fetchActionOptionsWithCache` + `getCachedActionOptions` protegem o sistema contra chamadas redundantes; eles comparam uma chave composta (`turnCount + lastMessageId`) e só invocam o LLM se a história avançou para um novo turno.
+- `ActionInput` atua como o orquestrador visual: ele decide quando buscar prompts novos, mostra o loader e agrega a escolha do jogador (seja sugerida ou customizada) antes de despachar para `handleSendMessage`.
 - `generateActionOptions` e `analyzeCustomAction` são wrappers que montam mensagens para o modelo, chamam `queryLLM` e normalizam o JSON retornado, aplicando clamps de 0–50 e defaults quando necessário.
 - `rollFate` converte as porcentagens em um evento concreto: ele avalia primeiro `badChance`, depois `goodChance`, registra a dica (`hint`) e agora classifica implicitamente o turno em **critical success** (good), **critical failure** (bad) ou **neutral**, rótulo que o prompt do GM usa para impor o desfecho.
 - `handleSendMessage` (dentro do hook `useGameEngine`) injeta o Fate result no pipeline, chama `classifyAndProcessPlayerInput` para harmonizar estilo e então `generateGameTurn` para a resolução final.
@@ -115,11 +110,11 @@ Atualização de mensagens, stats, inventário e NPCs
 
 **O que está sendo bem executado nesta sessão:**
 - O fluxo segue fielmente a separação de responsabilidades descrita no README (componentes → hooks → services), evitando lógica de rede na UI.
-- Existe um caminho feliz claro que combina cachê local e prompts, reduzindo custo de tokens e latência perceptível.
+- Existe um caminho feliz claro que dispara a geração assim que o turno vira, reduzindo latência perceptível e mantendo a UI previsível.
 - O pipeline mantém contratos tipados (`GMResponse`, `ActionOption`, `FateResult`), o que simplifica debugging quando algo foge do esperado.
 
 **Sugestões de melhoria (5):**
-1. Instrumentar cada etapa (ActionInput, fetch/cache, analyze, GM) com tracing leve para medir latência e custo por turno, alinhando-se ao roadmap de observabilidade citado na documentação.
+1. Instrumentar cada etapa (ActionInput, análise personalizada, GM) com tracing leve para medir latência e custo por turno, alinhando-se ao roadmap de observabilidade citado na documentação.
 
 ```
 ActionInput / fetch / analyze / GM
@@ -187,14 +182,12 @@ LLM recebe prompt antigo ou novo sem duplicar código
 ## 2. Sistema de Geração de Opções com Probabilidades
 - **`buildActionOptionsPrompt` (services/ai/prompts/actionOptions.prompt.ts)**: o builder monta um dossiê com nove blocos de contexto. Ele começa descrevendo o universo e a localização atual (incluindo conexões disponíveis para sugerir deslocamentos), depois serializa o jogador com HP em porcentagem, ouro, inventário normalizado via `formatInventorySimple` e status atual. Em seguida lista NPCs vivos na cena com notas sobre itens/ouro, junta resumos do `heavyContext`, injeta os últimos 100 diálogos/eventos (usando o helper `getRecentMessagesForPrompt`) e, se houver snapshot do grid, contextualiza distância. Por fim adiciona as regras de economia vindas de `getItemAwarenessRulesForPrompt`, um bloco **Probability Calibration** (faixas Safe/Moderate/High/Extreme com limites explícitos e soma ≤ 80), o novo **Critical Outcome Directive** (explica que qualquer `goodChance` gera CRITICAL SUCCESS, qualquer `badChance` gera CRITICAL ERROR e que o GM é obrigado a obedecer aos hints) e um **Quality Rubric** que define o que é uma opção “boa”, “cautelosa” ou “ousada” e exige evitar repetições recentes. O checklist de regras agora obriga que ações cautelosas permaneçam na banda Safe, que cada opção seja internamente classificada no band adequado antes de definir os números, que qualquer ação High/Extreme traga, no `goodHint`, o payoff concreto que justifica o risco e que todo hint comece explicitamente com “Critical Success:” ou “Critical Error:” para instruir o GM.
 - **`generateActionOptions` (services/ai/openaiClient.ts)**: esta função envia o prompt acima para o modelo `MODEL_CONFIG.actionOptions`, instruindo-o com um system prompt especializado (“You generate RPG action options…”). Após receber o JSON, ela normaliza cada opção: garante exatamente cinco itens, clampa `goodChance` e `badChance` para 0–50, substitui hints faltantes por strings vazias e cai em `getDefaultOptions` quando o parsing falha. A estratégia é manter o jogo previsível do ponto de vista da UI enquanto delega a criatividade ao prompt.
-- **`fetchActionOptionsWithCache` e `getCachedActionOptions` (utils/actionOptionsCache.ts)**: o cache combina `storyId` + `turnCount` + `lastMessageId`. Quando o jogador volta para o mesmo turno (ex.: reload da página), `ActionInput` lê primeiro da memória/localStorage; só quando detecta um novo turno (ou um novo `messageId`) é que `generateActionOptions` é chamado novamente. Esse comportamento também evita que o LLM seja solicitado duas vezes para o mesmo estado durante animações longas.
 - **`rollFate` (services/ai/openaiClient.ts)**: ainda que simples, ele fecha o raciocínio desta sessão ao transformar as porcentagens das opções em um evento discreto. A função considera o intervalo cumulativo (primeiro falha, depois sucesso) e devolve um `FateResult` com `hint` alinhado ao que o prompt descreveu, garantindo consistência quando o GM for instruído posteriormente.
 - **Quando modificar**: Alterar o “estilo mental” das sugestões (ex.: priorizar stealth) exige editar os blocos narrativos do prompt; alterar formato de saída ou limites demanda mudanças coordenadas em `buildActionOptionsPrompt`, no schema `actionOptionsSchema` e no pós-processamento de `generateActionOptions`. Já ajustes em UX (ordem, destaque visual) pertencem exclusivamente ao `ActionInput`.
 
 **O que está sendo bem executado nesta sessão:**
 - O prompt injeta praticamente todo o estado rico descrito no README (economia, grid, heavy context, inventário), reduzindo alucinações.
 - A função de geração aplica sanitização rigorosa (clamp + fallback), mantendo previsibilidade mesmo quando o modelo varia.
-- O cache híbrido memória/localStorage conversa bem com o modelo de “turnos em fila”, evitando chamadas duplicadas quando o usuário recarrega a página.
 
 **Sugestões de melhoria (5):**
 1. Incorporar dados de ritmo narrativo (`pacingState`) e threads ativas ao prompt para orientar melhor a variedade (ex.: mais ações de investigação quando a tensão cai).
@@ -454,7 +447,7 @@ Mapa 10x10 é sincronizado + elementos transformados
 
 **O que está sendo bem executado nesta sessão:**
 - A seção consolida dependências críticas (UI ↔ hooks ↔ prompts) e conecta esses pontos com o que o README e `docs/architecture.md` ressaltam sobre observabilidade e governança de prompts. Isso dá à equipe uma visão macro que vai além de um único arquivo.
-- A análise já evidencia que temos mecanismos de fallback (cache local, clamps, defaults) que mantêm o jogo funcional mesmo sem telemetria, algo alinhado à estratégia “browser-first” descrita na arquitetura.
+- A análise já evidencia que temos mecanismos de fallback (clamps, defaults) que mantêm o jogo funcional mesmo sem telemetria, algo alinhado à estratégia “browser-first” descrita na arquitetura.
 - Há uma preocupação explícita com consistência de idiomas e schemas — requisito listado tanto na seção de internacionalização quanto no catálogo de prompts do README — mostrando que o documento não ignora os compromissos globais do projeto.
 
 **Sugestões de melhoria (5):**

@@ -372,20 +372,4 @@ describe('ActionInput', () => {
     });
   });
 
-  describe('caching', () => {
-    beforeEach(() => {
-      localStorage.clear();
-    });
-
-    it('should cache options in localStorage', async () => {
-      renderWithTheme(<ActionInput {...defaultProps} />);
-
-      await waitFor(() => {
-        expect(screen.getByText('Look around')).toBeInTheDocument();
-      }, { timeout: 3000 });
-
-      const cacheKey = `storywell_options_cache_${defaultProps.activeStory.id}`;
-      expect(localStorage.getItem(cacheKey)).toBeTruthy();
-    });
-  });
 });

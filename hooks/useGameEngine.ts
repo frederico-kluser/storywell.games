@@ -39,7 +39,6 @@ import { parseOpenAIError } from '../utils/errorHandler';
 import { ErrorType } from '../components/ErrorModal';
 import { migrateGameState, needsMigration } from '../utils/migration';
 import { DEFAULT_PLAYER_STATS, getStartingGold } from '../constants/economy';
-import { fetchActionOptionsWithCache } from '../utils/actionOptionsCache';
 import { useThemeColors } from './useThemeColors';
 
 // Creation phase type for progress tracking
@@ -946,23 +945,6 @@ export const useGameEngine = (): UseGameEngineReturn => {
 		console.log('[Font Size] Updated to:', roundedSize);
 	};
 
-	const prefetchActionOptions = async (story: GameState) => {
-		if (!apiKey || !story.messages.length) return;
-		const lastMessage = story.messages[story.messages.length - 1];
-		if (!lastMessage) return;
-
-		const lastMessageId = lastMessage.id;
-		const cacheKey = `${story.turnCount}_${lastMessageId || 'pending'}`;
-
-		try {
-			const storyLang = story.config?.language || language;
-			await fetchActionOptionsWithCache(story.id, cacheKey, lastMessageId, () =>
-				generateActionOptions(apiKey, story, storyLang),
-			);
-		} catch (error) {
-			console.error('Action options prefetch failed:', error);
-		}
-	};
 
 	const queueAvatarGeneration = (story: GameState, characterIds: string[]) => {
 		if (!apiKey || !characterIds.length) return;
@@ -1251,7 +1233,6 @@ export const useGameEngine = (): UseGameEngineReturn => {
 
 			const storyAfterTurn = storiesRef.current.find((s) => s.id === activeStoryId);
 			if (storyAfterTurn) {
-				void prefetchActionOptions(storyAfterTurn);
 				if (newCharacterIds.length > 0) {
 					queueAvatarGeneration(storyAfterTurn, newCharacterIds);
 				}

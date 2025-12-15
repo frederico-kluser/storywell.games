@@ -54,325 +54,55 @@ exports[`ActionInput snapshots should match snapshot for custom input mode 1`] =
 exports[`ActionInput snapshots should match snapshot for loading state 1`] = `
 <div>
   <div
-    class="border-t-2 w-full max-w-full overflow-hidden"
+    class="p-2 md:p-6 border-t-2 w-full max-w-full overflow-hidden"
     style="background-color: rgb(255, 255, 255); border-top-color: #d6d3d1;"
   >
     <div
-      class="p-1.5 md:p-6 max-h-[50vh] md:max-h-none overflow-y-auto block"
+      class="max-w-full md:max-w-5xl mx-auto"
     >
       <div
-        class="max-w-full md:max-w-5xl mx-auto"
+        class="flex flex-col items-center gap-3 py-4 md:py-6"
       >
         <div
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3"
+          class="relative"
         >
-          <button
-            class="p-2.5 md:p-4 border-2 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 min-w-0 overflow-hidden"
-            style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; color: rgb(28, 25, 23);"
-          >
-            <div
-              class="font-bold uppercase text-sm md:text-base tracking-wide md:tracking-wider mb-1.5 md:mb-2 line-clamp-2 break-words"
-            >
-              Look around
-            </div>
-            <div
-              class="flex items-center gap-2 md:gap-4 text-xs md:text-sm flex-wrap"
-            >
-              <span
-                class="flex items-center gap-1 font-medium"
-                style="color: rgb(120, 113, 108);"
-                title="Find something"
-              >
-                <span
-                  data-testid="sparkles-icon"
-                >
-                  Sparkles
-                </span>
-                10
-                %
-              </span>
-              <span
-                class="flex items-center gap-1 font-medium"
-                style="color: rgb(120, 113, 108);"
-                title="Get spotted"
-              >
-                <span
-                  data-testid="alert-icon"
-                >
-                  Alert
-                </span>
-                5
-                %
-              </span>
-            </div>
-            <div
-              class="mt-2 pt-2 border-t text-xs md:text-sm tracking-wide"
-              style="border-color: #d6d3d1;"
-            >
-              <div
-                class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(22, 101, 52);"
-              >
-                <span
-                  data-testid="sparkles-icon"
-                >
-                  Sparkles
-                </span>
-                <span
-                  class="italic"
-                >
-                  Find something
-                </span>
-              </div>
-              <div
-                class="flex items-start gap-1.5"
-                style="color: rgb(220, 38, 38);"
-              >
-                <span
-                  data-testid="alert-icon"
-                >
-                  Alert
-                </span>
-                <span
-                  class="italic"
-                >
-                  Get spotted
-                </span>
-              </div>
-            </div>
-          </button>
-          <button
-            class="p-2.5 md:p-4 border-2 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 min-w-0 overflow-hidden"
-            style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; color: rgb(28, 25, 23);"
-          >
-            <div
-              class="font-bold uppercase text-sm md:text-base tracking-wide md:tracking-wider mb-1.5 md:mb-2 line-clamp-2 break-words"
-            >
-              Talk to merchant
-            </div>
-            <div
-              class="flex items-center gap-2 md:gap-4 text-xs md:text-sm flex-wrap"
-            >
-              <span
-                class="flex items-center gap-1 font-medium"
-                style="color: rgb(68, 64, 60);"
-                title="Get info"
-              >
-                <span
-                  data-testid="sparkles-icon"
-                >
-                  Sparkles
-                </span>
-                20
-                %
-              </span>
-              <span
-                class="flex items-center gap-1 font-medium"
-                style="color: rgb(120, 113, 108);"
-                title="Offend them"
-              >
-                <span
-                  data-testid="alert-icon"
-                >
-                  Alert
-                </span>
-                10
-                %
-              </span>
-            </div>
-            <div
-              class="mt-2 pt-2 border-t text-xs md:text-sm tracking-wide"
-              style="border-color: #d6d3d1;"
-            >
-              <div
-                class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(22, 101, 52);"
-              >
-                <span
-                  data-testid="sparkles-icon"
-                >
-                  Sparkles
-                </span>
-                <span
-                  class="italic"
-                >
-                  Get info
-                </span>
-              </div>
-              <div
-                class="flex items-start gap-1.5"
-                style="color: rgb(220, 38, 38);"
-              >
-                <span
-                  data-testid="alert-icon"
-                >
-                  Alert
-                </span>
-                <span
-                  class="italic"
-                >
-                  Offend them
-                </span>
-              </div>
-            </div>
-          </button>
-          <button
-            class="p-2.5 md:p-4 border-2 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 min-w-0 overflow-hidden"
-            style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; color: rgb(28, 25, 23);"
-          >
-            <div
-              class="font-bold uppercase text-sm md:text-base tracking-wide md:tracking-wider mb-1.5 md:mb-2 line-clamp-2 break-words"
-            >
-              Move forward
-            </div>
-            <div
-              class="flex items-center gap-2 md:gap-4 text-xs md:text-sm flex-wrap"
-            >
-              <span
-                class="flex items-center gap-1 font-medium"
-                style="color: rgb(68, 64, 60);"
-                title="Progress"
-              >
-                <span
-                  data-testid="sparkles-icon"
-                >
-                  Sparkles
-                </span>
-                15
-                %
-              </span>
-              <span
-                class="flex items-center gap-1 font-medium"
-                style="color: rgb(217, 119, 6);"
-                title="Danger"
-              >
-                <span
-                  data-testid="alert-icon"
-                >
-                  Alert
-                </span>
-                15
-                %
-              </span>
-            </div>
-            <div
-              class="mt-2 pt-2 border-t text-xs md:text-sm tracking-wide"
-              style="border-color: #d6d3d1;"
-            >
-              <div
-                class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(22, 101, 52);"
-              >
-                <span
-                  data-testid="sparkles-icon"
-                >
-                  Sparkles
-                </span>
-                <span
-                  class="italic"
-                >
-                  Progress
-                </span>
-              </div>
-              <div
-                class="flex items-start gap-1.5"
-                style="color: rgb(220, 38, 38);"
-              >
-                <span
-                  data-testid="alert-icon"
-                >
-                  Alert
-                </span>
-                <span
-                  class="italic"
-                >
-                  Danger
-                </span>
-              </div>
-            </div>
-          </button>
-          <button
-            class="p-2.5 md:p-4 border-2 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 min-w-0 overflow-hidden"
-            style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; color: rgb(28, 25, 23);"
-          >
-            <div
-              class="font-bold uppercase text-sm md:text-base tracking-wide md:tracking-wider mb-1.5 md:mb-2 line-clamp-2 break-words"
-            >
-              Check inventory
-            </div>
-            <div
-              class="flex items-center gap-2 md:gap-4 text-xs md:text-sm flex-wrap"
-            >
-              <span
-                class="flex items-center gap-1 font-medium"
-                style="color: rgb(120, 113, 108);"
-                title="Find item"
-              >
-                <span
-                  data-testid="sparkles-icon"
-                >
-                  Sparkles
-                </span>
-                5
-                %
-              </span>
-            </div>
-            <div
-              class="mt-2 pt-2 border-t text-xs md:text-sm tracking-wide"
-              style="border-color: #d6d3d1;"
-            >
-              <div
-                class="flex items-start gap-1.5 mb-1"
-                style="color: rgb(22, 101, 52);"
-              >
-                <span
-                  data-testid="sparkles-icon"
-                >
-                  Sparkles
-                </span>
-                <span
-                  class="italic"
-                >
-                  Find item
-                </span>
-              </div>
-            </div>
-          </button>
-          <button
-            class="p-2.5 md:p-4 border-2 text-left transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-0.5 min-w-0 overflow-hidden"
-            style="background-color: rgb(255, 255, 255); border-color: #d6d3d1; color: rgb(28, 25, 23);"
-          >
-            <div
-              class="font-bold uppercase text-sm md:text-base tracking-wide md:tracking-wider mb-1.5 md:mb-2 line-clamp-2 break-words"
-            >
-              Rest
-            </div>
-            <div
-              class="flex items-center gap-2 md:gap-4 text-xs md:text-sm flex-wrap"
-            >
-              <span
-                class="text-xs md:text-sm font-medium tracking-wide"
-                style="color: rgb(120, 113, 108);"
-              >
-                Safe
-              </span>
-            </div>
-          </button>
-          <button
-            class="p-2.5 md:p-4 border-2 border-dashed text-left font-bold uppercase transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm md:text-base tracking-wide md:tracking-wider flex items-center gap-2 md:gap-3 min-w-0 overflow-hidden"
-            style="border-color: #d6d3d1; background-color: rgb(231, 229, 228); color: rgb(120, 113, 108);"
+          <div
+            class="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center"
+            style="background-color: rgb(28, 25, 23);"
           >
             <span
-              data-testid="more-icon"
+              data-testid="sparkles-icon"
             >
-              More
+              Sparkles
             </span>
-            <span
-              class="truncate"
+          </div>
+          <div
+            class="absolute inset-0 rounded-full border-3 border-t-transparent animate-spin"
+            style="border-color: #1c191740; border-top-color: transparent; border-width: 3px;"
+          />
+        </div>
+        <div
+          class="text-sm md:text-base font-bold uppercase tracking-wide"
+          style="color: rgb(28, 25, 23);"
+        >
+          Generating options...
+        </div>
+        <div
+          class="w-48 md:w-64"
+        >
+          <div
+            class="h-1.5 rounded-full overflow-hidden"
+            style="background-color: rgb(214, 211, 209);"
+          >
+            <div
+              class="h-full rounded-full relative overflow-hidden animate-pulse"
+              style="width: 60%; background-color: rgb(22, 101, 52);"
             >
-              Custom Action
-            </span>
-          </button>
+              <div
+                class="absolute inset-0 animate-shimmer"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

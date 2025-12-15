@@ -20,7 +20,7 @@ Este documento consolida os padrões observados no código atual (React 19 + Typ
 | Hooks | snake? não, `useCamelCase` | `hooks/useGameEngine.ts`, `hooks/useThemeColors.tsx` |
 | Serviços | descritivo em camelCase | `services/db.ts`, `services/ai/openaiClient.ts` |
 | Builders de prompt | `<nome>.prompt.ts` com função `build<Name>Prompt` | `services/ai/prompts/actionOptions.prompt.ts` |
-| Utilitários | camelCase curto | `utils/actionOptionsCache.ts`, `utils/inventory.ts` |
+| Utilitários | camelCase curto | `utils/inventory.ts`, `utils/messages.ts` |
 | Constantes | arquivos em `constants/`, nomes UPPER_SNAKE | `constants/economy.ts`, `constants/fonts.ts` |
 | Testes | `__tests__/` espelhando pasta alvo | `__tests__/components/ActionInput.test.tsx`, `__tests__/services/openaiClient.test.ts` |
 
@@ -41,7 +41,7 @@ Este documento consolida os padrões observados no código atual (React 19 + Typ
 
 ## 5. Hooks personalizados
 
-- Nome iniciando com `use`, retorno explícito. `useGameEngine` exemplifica: expõe funções (`handleSendMessage`, `prefetchActionOptions`) e estado composto.
+- Nome iniciando com `use`, retorno explícito. `useGameEngine` exemplifica: expõe funções (`handleSendMessage`, `handleCreateStory`) e estado composto.
 - **Responsabilidade única:** `useCardNavigation` lida apenas com navegação; `useThemeColors` encapsula contexto visual. Ao criar novos hooks, evite misturar IO e UI.
 
 ## 6. Padrões específicos de prompts
