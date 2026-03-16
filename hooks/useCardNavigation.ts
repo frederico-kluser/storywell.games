@@ -64,10 +64,31 @@ export const useCardNavigation = ({
 	// Touch/Mouse tracking refs
 	const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
 	const isDraggingRef = useRef(false);
+	const swipeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	// Helper to schedule swipe direction reset, cancelling any previous pending reset
+	const scheduleSwipeClear = useCallback(() => {
+		if (swipeTimeoutRef.current !== null) {
+			clearTimeout(swipeTimeoutRef.current);
+		}
+		swipeTimeoutRef.current = setTimeout(() => {
+			setSwipeDirection(null);
+			swipeTimeoutRef.current = null;
+		}, 300);
+	}, []);
 
 	// Detect mobile device on mount
 	useEffect(() => {
 		setIsMobile(isMobileDevice());
+	}, []);
+
+	// Cancel any pending swipe-clear timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (swipeTimeoutRef.current !== null) {
+				clearTimeout(swipeTimeoutRef.current);
+			}
+		};
 	}, []);
 
 	// Keep index within bounds when totalCards changes
@@ -121,9 +142,9 @@ export const useCardNavigation = ({
 			onIndexChange?.(newIndex);
 			onNavigate?.(); // Notify navigation occurred
 			setSwipeDirection('left');
-			setTimeout(() => setSwipeDirection(null), 300);
+			scheduleSwipeClear();
 		}
-	}, [currentIndex, canGoNext, onIndexChange, onNavigate]);
+	}, [currentIndex, canGoNext, onIndexChange, onNavigate, scheduleSwipeClear]);
 
 	const goToPrevious = useCallback(() => {
 		if (canGoPrevious) {
@@ -132,9 +153,9 @@ export const useCardNavigation = ({
 			onIndexChange?.(newIndex);
 			onNavigate?.(); // Notify navigation occurred
 			setSwipeDirection('right');
-			setTimeout(() => setSwipeDirection(null), 300);
+			scheduleSwipeClear();
 		}
-	}, [currentIndex, canGoPrevious, onIndexChange, onNavigate]);
+	}, [currentIndex, canGoPrevious, onIndexChange, onNavigate, scheduleSwipeClear]);
 
 	const goToFirst = useCallback(() => {
 		setCurrentIndexState(0);
@@ -237,8 +258,8 @@ export const useCardNavigation = ({
 		// Reset
 		touchStartRef.current = null;
 		setSwipeProgress(0);
-		setTimeout(() => setSwipeDirection(null), 300);
-	}, [enabled, swipeProgress, swipeDirection, goToNext, goToPrevious]);
+		scheduleSwipeClear();
+	}, [enabled, swipeProgress, swipeDirection, goToNext, goToPrevious, scheduleSwipeClear]);
 
 	// Mouse drag handlers - DISABLED on desktop to prevent swipe
 	// On desktop, users should use arrow keys or navigation buttons
@@ -298,8 +319,8 @@ export const useCardNavigation = ({
 		isDraggingRef.current = false;
 		touchStartRef.current = null;
 		setSwipeProgress(0);
-		setTimeout(() => setSwipeDirection(null), 300);
-	}, [enabled, isMobile, swipeProgress, swipeDirection, goToNext, goToPrevious]);
+		scheduleSwipeClear();
+	}, [enabled, isMobile, swipeProgress, swipeDirection, goToNext, goToPrevious, scheduleSwipeClear]);
 
 	const handleMouseLeave = useCallback(() => {
 		if (isDraggingRef.current && isMobile) {

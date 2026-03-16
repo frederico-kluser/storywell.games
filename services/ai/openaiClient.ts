@@ -2161,7 +2161,6 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 					characterName: pos.characterName,
 					position: normalizedPosition,
 					isPlayer: !!pos.isPlayer,
-					avatarBase64: character?.avatarBase64 || previousPos?.avatarBase64,
 				});
 			});
 		}
@@ -2181,7 +2180,6 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 				mergedPositions.set(playerCharacter.id, {
 					...existingPlayer,
 					isPlayer: true,
-					avatarBase64: existingPlayer.avatarBase64 || playerCharacter.avatarBase64,
 				});
 			}
 		}
@@ -2194,7 +2192,6 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 					characterName: playerCharacter.name,
 					position: playerPosition,
 					isPlayer: true,
-					avatarBase64: playerCharacter.avatarBase64,
 				});
 			}
 			occupiedCells.add(getPositionKey(playerPosition));
@@ -2203,11 +2200,6 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 		// Ensure new characters at location get positions
 		charactersAtLocation.forEach((char) => {
 			if (mergedPositions.has(char.id)) {
-				// Update avatar if missing
-				const existing = mergedPositions.get(char.id)!;
-				if (!existing.avatarBase64 && char.avatarBase64) {
-					mergedPositions.set(char.id, { ...existing, avatarBase64: char.avatarBase64 });
-				}
 				return;
 			}
 
@@ -2219,7 +2211,6 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 				characterName: char.name,
 				position: spawnPosition,
 				isPlayer: char.isPlayer,
-				avatarBase64: char.avatarBase64,
 			});
 		});
 
@@ -2314,7 +2305,6 @@ ${JSON.stringify(gridUpdateSchema, null, 2)}`;
 			locationName: currentLocation?.name || 'Unknown',
 			characterPositions,
 			elements: processedElements.length > 0 ? processedElements : undefined,
-			locationBackgroundImage: currentLocation?.backgroundImage,
 		};
 
 		console.log(
@@ -2381,7 +2371,6 @@ export const createInitialGridSnapshot = (
 	characterName: char.name,
 	position,
 	isPlayer: char.isPlayer,
-	avatarBase64: char.avatarBase64,
 	};
 	});
 
@@ -2402,6 +2391,5 @@ export const createInitialGridSnapshot = (
 		locationName: seed?.locationName || currentLocation?.name || 'Unknown',
 		characterPositions,
 		elements: seededElements && seededElements.length > 0 ? seededElements : undefined,
-		locationBackgroundImage: currentLocation?.backgroundImage,
 	};
 };

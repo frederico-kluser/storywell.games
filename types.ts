@@ -499,6 +499,8 @@ export interface GridPosition {
 
 /**
  * Represents a character's position on the grid.
+ * Note: avatar images are resolved at render time from the active story's characters
+ * to avoid duplicating base64 blobs across every snapshot in the history.
  */
 export interface GridCharacterPosition {
 	/** Character ID */
@@ -509,8 +511,6 @@ export interface GridCharacterPosition {
 	position: GridPosition;
 	/** Whether this is the player character */
 	isPlayer: boolean;
-	/** Avatar base64 for display on map */
-	avatarBase64?: string;
 }
 
 /**
@@ -532,6 +532,8 @@ export interface GridElement {
 /**
  * A snapshot of the grid state at a specific point in the story.
  * Each snapshot is associated with a message/card number.
+ * Note: background images are resolved at render time via locationId to avoid
+ * duplicating large base64 blobs across every snapshot in the history.
  */
 export interface GridSnapshot {
 	/** Unique ID for this snapshot */
@@ -550,8 +552,6 @@ export interface GridSnapshot {
 	characterPositions: GridCharacterPosition[];
 	/** Scene elements on the grid (doors, chests, trees, etc.) */
 	elements?: GridElement[];
-	/** Background image for the location at this snapshot time */
-	locationBackgroundImage?: string;
 }
 
 /**

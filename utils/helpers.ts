@@ -58,6 +58,11 @@ export const playRawAudio = async (base64Audio: string, sampleRate = 24000): Pro
   source.buffer = audioBuffer;
   source.connect(audioContext.destination);
   source.start(0);
+
+  // 4. Close the AudioContext when playback ends to free resources
+  source.onended = () => {
+    audioContext.close().catch(() => {});
+  };
 };
 
 /**

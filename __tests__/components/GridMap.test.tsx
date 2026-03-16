@@ -291,11 +291,11 @@ describe('GridMap', () => {
                 characterName: 'Hero',
                 position: { x: 5, y: 5 },
                 isPlayer: true,
-                avatarBase64: 'data:image/png;base64,iVBORw0KGgo=',
               },
             ],
           }),
         ],
+        characterAvatars: { 'player-1': 'data:image/png;base64,iVBORw0KGgo=' },
       };
       const { container } = render(<GridMap {...props} />);
 

@@ -185,6 +185,36 @@ class SoundService {
 	getState(): AudioContextState | 'not-initialized' {
 		return this.audioContext?.state ?? 'not-initialized';
 	}
+
+	/**
+	 * Tears down the service: stops all active sources, clears buffers, and closes the AudioContext.
+	 * Call this when the app is unloading or the service is no longer needed.
+	 */
+	async teardown(): Promise<void> {
+		this.sounds.forEach((sound) => {
+			if (sound.lastSource) {
+				try {
+					sound.lastSource.stop();
+				} catch {
+					// Already stopped
+				}
+				sound.lastSource = null;
+			}
+		});
+		this.sounds.clear();
+
+		if (this.audioContext) {
+			try {
+				await this.audioContext.close();
+			} catch {
+				// Ignore close errors
+			}
+			this.audioContext = null;
+		}
+
+		this.initialized = false;
+		this.initPromise = null;
+	}
 }
 
 // Export singleton instance

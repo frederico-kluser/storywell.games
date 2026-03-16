@@ -34,6 +34,8 @@ export interface StoryCardProps {
 	gridSnapshots?: GridSnapshot[];
 	currentLocationName?: string;
 	characterAvatars?: Record<string, string | undefined>;
+	/** Map of locationId to backgroundImage for resolving historical backgrounds without storing blobs in snapshots */
+	locationBackgrounds?: Record<string, string | undefined>;
 	hasUnviewedGridChanges?: boolean;
 	onMapViewed?: () => void;
 	// Actions and character sheet controls (mobile navigation)
@@ -76,6 +78,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 	gridSnapshots,
 	currentLocationName,
 	characterAvatars,
+	locationBackgrounds,
 	hasUnviewedGridChanges = false,
 	onMapViewed,
 	isActionsCollapsed = true,
@@ -98,11 +101,11 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 	// State for Grid Map flip
 	const [isMapFlipped, setIsMapFlipped] = useState(false);
 
-	// Get the effective background image from the appropriate grid snapshot
+	// Get the effective background image from the appropriate grid snapshot.
+	// Backgrounds are resolved at render time from locationBackgrounds (no blobs stored in snapshots).
 	const currentMessageNumber = message.pageNumber ?? currentIndex + 1;
 	const effectiveBackgroundImage = useMemo(() => {
-		// Try to get the background from the appropriate grid snapshot
-		if (gridSnapshots && gridSnapshots.length > 0) {
+		if (gridSnapshots && gridSnapshots.length > 0 && locationBackgrounds) {
 			// Find the most recent snapshot at or before this message number
 			let relevantSnapshot: GridSnapshot | null = null;
 			for (const snapshot of gridSnapshots) {
@@ -112,14 +115,15 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 					}
 				}
 			}
-			// If we found a snapshot with a background image, use it
-			if (relevantSnapshot?.locationBackgroundImage) {
-				return relevantSnapshot.locationBackgroundImage;
+			// Resolve the background via the locationId reference
+			if (relevantSnapshot) {
+				const bg = locationBackgrounds[relevantSnapshot.locationId];
+				if (bg) return bg;
 			}
 		}
-		// Fallback to the prop if no snapshot background is available
+		// Fallback to the current location background prop
 		return locationBackgroundImage;
-	}, [gridSnapshots, currentMessageNumber, locationBackgroundImage]);
+	}, [gridSnapshots, currentMessageNumber, locationBackgrounds, locationBackgroundImage]);
 
 	// Manual scroll controls
 	const textContainerRef = useRef<HTMLDivElement>(null);
@@ -618,6 +622,7 @@ export const StoryCardView: React.FC<StoryCardProps> = ({
 								onToggleFlip={() => setIsMapFlipped(false)}
 								locationName={currentLocationName}
 								locationBackgroundImage={effectiveBackgroundImage}
+								locationBackgrounds={locationBackgrounds}
 								characterAvatars={characterAvatars}
 								t={t}
 							/>

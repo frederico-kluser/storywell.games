@@ -355,9 +355,15 @@ export const generateSpeechWithTTS = async (
 
 		const response = await client.audio.speech.create(requestParams);
 
-		// Convert the response to base64
+		// Convert the response to base64 using chunked processing to avoid large string allocations
 		const arrayBuffer = await response.arrayBuffer();
-		const base64 = btoa(new Uint8Array(arrayBuffer).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+		const uint8Array = new Uint8Array(arrayBuffer);
+		let binary = '';
+		const chunkSize = 0x8000; // 32KB chunks to avoid call stack limits
+		for (let i = 0; i < uint8Array.length; i += chunkSize) {
+			binary += String.fromCharCode(...(uint8Array.subarray(i, i + chunkSize) as unknown as number[]));
+		}
+		const base64 = btoa(binary);
 
 		return base64;
 	} catch (e) {

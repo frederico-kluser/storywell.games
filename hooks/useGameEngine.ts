@@ -240,6 +240,7 @@ export const useGameEngine = (): UseGameEngineReturn => {
 	const loadingStoryRef = useRef<string | null>(null);
 	const loadedStoriesRef = useRef<Set<string>>(new Set());
 	const storiesRef = useRef<GameState[]>([]); // Ref to access stories without re-triggering effects
+	const previousStoryIdRef = useRef<string | null>(null); // Track previous story for unloading heavy data
 	const t = translations[language];
 
 	// Keep storiesRef in sync with stories state
@@ -286,6 +287,27 @@ export const useGameEngine = (): UseGameEngineReturn => {
 
 	// Load full story data when selecting a story
 	useEffect(() => {
+		// Unload heavy data from the previous story to keep memory proportional to active story
+		const prevId = previousStoryIdRef.current;
+		if (prevId && prevId !== currentStoryId) {
+			loadedStoriesRef.current.delete(prevId);
+			setStories((prev) =>
+				prev.map((s) => {
+					if (s.id !== prevId) return s;
+					// Strip all heavy collections; keep only lightweight metadata
+					return {
+						...s,
+						messages: [],
+						characters: {},
+						locations: {},
+						events: [],
+						gridSnapshots: [],
+					};
+				}),
+			);
+		}
+		previousStoryIdRef.current = currentStoryId;
+
 		const loadFullStory = async () => {
 			if (!currentStoryId) return;
 
@@ -487,6 +509,27 @@ export const useGameEngine = (): UseGameEngineReturn => {
 			storiesRef.current = newStories;
 
 			dbService.saveGame(sanitizedStory).catch((e) => console.error('Auto-save failed', e));
+			return newStories;
+		});
+	};
+
+	/**
+	 * Updates story state and persists ONLY the lightweight metadata (GAMES store).
+	 * Use for UI-only changes like viewedCards or gridLastViewedMessageNumber to avoid
+	 * re-writing all heavy stores (messages, characters, etc.) on trivial interactions.
+	 */
+	const lightUpdateStory = (updater: (s: GameState) => GameState) => {
+		setStories((prevStories) => {
+			if (!currentStoryId) return prevStories;
+			const index = prevStories.findIndex((s) => s.id === currentStoryId);
+			if (index === -1) return prevStories;
+
+			const newStory = updater(prevStories[index]);
+			const newStories = [...prevStories];
+			newStories[index] = newStory;
+			storiesRef.current = newStories;
+
+			dbService.saveGameMeta(newStory).catch((e) => console.error('Light save failed', e));
 			return newStories;
 		});
 	};
@@ -1473,7 +1516,7 @@ export const useGameEngine = (): UseGameEngineReturn => {
 	const markCardAsViewed = (messageId: string) => {
 		if (!currentStoryId) return;
 
-		safeUpdateStory((prev) => {
+		lightUpdateStory((prev) => {
 			const viewedCards = prev.viewedCards || [];
 			// Only add if not already viewed
 			if (viewedCards.includes(messageId)) return prev;
@@ -1492,7 +1535,7 @@ export const useGameEngine = (): UseGameEngineReturn => {
 	const markGridAsViewed = (messageNumber: number) => {
 		if (!currentStoryId) return;
 
-		safeUpdateStory((prev) => {
+		lightUpdateStory((prev) => {
 			// Only update if the new message number is greater than the last viewed
 			if (prev.gridLastViewedMessageNumber !== undefined && prev.gridLastViewedMessageNumber >= messageNumber) {
 				return prev;

@@ -36,9 +36,11 @@ interface GridMapProps {
   onToggleFlip: () => void;
   /** Current location name for display */
   locationName?: string;
-  /** Location background image for the map */
+  /** Location background image for the map (current location fallback) */
   locationBackgroundImage?: string;
-  /** Map of characterId to avatarBase64 for current avatars (fallback for snapshot data) */
+  /** Map of locationId to backgroundImage, used to resolve historical backgrounds */
+  locationBackgrounds?: Record<string, string | undefined>;
+  /** Map of characterId to avatarBase64 for current avatars (resolved at render time) */
   characterAvatars?: Record<string, string | undefined>;
   /** Translation strings */
   t: Record<string, string>;
@@ -298,6 +300,7 @@ export const GridMap: React.FC<GridMapProps> = ({
   onToggleFlip,
   locationName,
   locationBackgroundImage,
+  locationBackgrounds,
   characterAvatars,
   t,
 }) => {
@@ -310,6 +313,15 @@ export const GridMap: React.FC<GridMapProps> = ({
     [gridSnapshots, currentMessageNumber]
   );
 
+  // Resolve background image from locationBackgrounds map (no blobs stored in snapshots)
+  const resolvedBackgroundImage = useMemo(() => {
+    if (currentGrid && locationBackgrounds) {
+      const bg = locationBackgrounds[currentGrid.locationId];
+      if (bg) return bg;
+    }
+    return locationBackgroundImage;
+  }, [currentGrid, locationBackgrounds, locationBackgroundImage]);
+
   // Generate 10x10 grid cells
   const gridCells = useMemo(() => {
     const cells: { x: number; y: number }[] = [];
@@ -321,17 +333,16 @@ export const GridMap: React.FC<GridMapProps> = ({
     return cells;
   }, []);
 
-  // Characters from current grid snapshot with avatar fallback
+  // Characters from current grid snapshot with avatar resolved from characterAvatars at render time
   const characters = useMemo(() => {
     const positions = currentGrid?.characterPositions || [];
-    // Use current avatars as fallback if snapshot doesn't have them
     if (characterAvatars) {
       return positions.map((char) => ({
         ...char,
-        avatarBase64: char.avatarBase64 || characterAvatars[char.characterId],
+        avatarBase64: characterAvatars[char.characterId],
       }));
     }
-    return positions;
+    return positions.map((char) => ({ ...char, avatarBase64: undefined }));
   }, [currentGrid, characterAvatars]);
 
   // Elements from current grid snapshot
@@ -470,7 +481,7 @@ export const GridMap: React.FC<GridMapProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
-              backgroundImage: locationBackgroundImage ? `url(${locationBackgroundImage})` : undefined,
+              backgroundImage: resolvedBackgroundImage ? `url(${resolvedBackgroundImage})` : undefined,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}

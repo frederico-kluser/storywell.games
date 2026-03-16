@@ -184,6 +184,16 @@ const App: React.FC = () => {
 
 	// File input ref for import
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const importMessageTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	// Cancel import message timeout on unmount
+	useEffect(() => {
+		return () => {
+			if (importMessageTimeoutRef.current !== null) {
+				clearTimeout(importMessageTimeoutRef.current);
+			}
+		};
+	}, []);
 
 	// Use message timeline to keep cards ordered
 	const { visibleMessages } = useMessageQueue(activeStory?.messages || []);
@@ -357,8 +367,14 @@ const App: React.FC = () => {
 			fileInputRef.current.value = '';
 		}
 
-		// Auto-hide message after 3 seconds
-		setTimeout(() => setImportMessage(null), 3000);
+		// Auto-hide message after 3 seconds, cancelling any previous pending hide
+		if (importMessageTimeoutRef.current !== null) {
+			clearTimeout(importMessageTimeoutRef.current);
+		}
+		importMessageTimeoutRef.current = setTimeout(() => {
+			setImportMessage(null);
+			importMessageTimeoutRef.current = null;
+		}, 3000);
 	};
 
 	// --- Landing Page View (API Key) ---
@@ -742,6 +758,9 @@ const App: React.FC = () => {
 												currentLocationName={activeStory.locations[activeStory.currentLocationId]?.name}
 												characterAvatars={Object.fromEntries(
 													Object.entries(activeStory.characters).map(([id, char]) => [id, char.avatarBase64]),
+												)}
+												locationBackgrounds={Object.fromEntries(
+													Object.entries(activeStory.locations).map(([id, loc]) => [id, loc.backgroundImage]),
 												)}
 												hasUnviewedGridChanges={hasPendingGridUpdate}
 												onMapViewed={handleMapViewed}

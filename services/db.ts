@@ -93,8 +93,9 @@ export const dbService = {
       tx.onerror = () => reject(tx.error);
 
       const gameId = gameState.id;
-      const sanitizedMessages = sanitizeMessages(gameState.messages || []);
-      const { characters, locations, events, gridSnapshots, ...metaData } = gameState;
+      // Destructure all heavy collections so metaData only contains lightweight fields
+      const { characters, locations, events, gridSnapshots, messages, ...metaData } = gameState;
+      const sanitizedMessages = sanitizeMessages(messages || []);
       tx.objectStore(STORES.GAMES).put(metaData);
 
       const charStore = tx.objectStore(STORES.CHARACTERS);
@@ -121,6 +122,25 @@ export const dbService = {
       (gridSnapshots || []).forEach(grid => {
         gridStore.put({ ...grid, gameId });
       });
+    });
+  },
+
+  /**
+   * Persists only the lightweight metadata of a game (GAMES store only).
+   * Use for UI-only updates like viewedCards and gridLastViewedMessageNumber
+   * to avoid re-writing all heavy stores on minor interactions.
+   * @param gameState - The current game state (heavy collections are stripped).
+   */
+  saveGameMeta: async (gameState: GameState): Promise<void> => {
+    const db = await dbService.open();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction([STORES.GAMES], 'readwrite');
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+
+      // Strip all heavy collections before writing
+      const { characters: _c, locations: _l, events: _e, gridSnapshots: _g, messages: _m, ...metaData } = gameState;
+      tx.objectStore(STORES.GAMES).put(metaData);
     });
   },
 
